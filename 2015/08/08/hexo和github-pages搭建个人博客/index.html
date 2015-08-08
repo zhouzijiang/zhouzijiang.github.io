@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="胖胖">
 <meta property="og:description" content="搭建个人博客需要用到两个软件git和node.js，所以请先安装完成这两个软件。本教程仅适用于windows平台。
 一、 github的配置我们在本地写完博客以后，会提交到github上。github提供了两种认证方式：用户名密码和ssh。如果使用用户名和密码的认证方式，那么我们每次提交到github的时候都会要求我们输入用户名和密码，这种方式用户体验不好。所以，我们使用ssh认证方式，即在本地生">
-<meta property="og:updated_time" content="2015-08-08T06:51:44.962Z">
+<meta property="og:updated_time" content="2015-08-08T06:57:33.426Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hexo和github pages搭建个人博客">
 <meta name="twitter:description" content="搭建个人博客需要用到两个软件git和node.js，所以请先安装完成这两个软件。本教程仅适用于windows平台。
@@ -114,10 +114,11 @@
 <h2 id="六、_ssh-agent的配置">六、 ssh-agent的配置</h2><p>在上一步骤中提交文件到github的时候，会让我们输入访问密钥证书的密码。每次都要这样，怎么破呢？</p>
 <h2 id="6-1_启动ssh-agent">6.1 启动ssh-agent</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># start the ssh-agent in the background</span></span><br><span class="line">$ <span class="built_in">eval</span> $(ssh-agent <span class="operator">-s</span>)</span><br></pre></td></tr></table></figure>
 <h2 id="6-2_把ssh密钥加入到ssh-agent">6.2 把ssh密钥加入到ssh-agent</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-add ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+<h2 id="6-3_自动启动ssh-agent">6.3 自动启动ssh-agent</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-add ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/08/08/hexo和github-pages搭建个人博客/" data-id="cid2pej3000033o3a7xvxvemw" class="article-share-link">Share</a>
+      <a data-url="https://zhouzijiang.github.io/2015/08/08/hexo和github-pages搭建个人博客/" data-id="cid2plwz20003sw3a1wj27eyd" class="article-share-link">Share</a>
       
       
     </footer>
