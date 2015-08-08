@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="胖胖">
 <meta property="og:description" content="搭建个人博客需要用到两个软件git和node.js，所以请先安装完成这两个软件。本教程仅适用于windows平台。
 一、 github的配置我们在本地写完博客以后，会提交到github上。github提供了两种认证方式：用户名密码和ssh。如果使用用户名和密码的认证方式，那么我们每次提交到github的时候都会要求我们输入用户名和密码，这种方式用户体验不好。所以，我们使用ssh认证方式，即在本地生">
-<meta property="og:updated_time" content="2015-08-08T06:44:17.698Z">
+<meta property="og:updated_time" content="2015-08-08T06:51:44.962Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hexo和github pages搭建个人博客">
 <meta name="twitter:description" content="搭建个人博客需要用到两个软件git和node.js，所以请先安装完成这两个软件。本教程仅适用于windows平台。
@@ -104,7 +104,7 @@
 <h2 id="4-2_新建并初始化博客项目blog">4.2 新建并初始化博客项目blog</h2><p>打开git bash，执行以下命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ hexo init blog</span><br><span class="line">$ <span class="built_in">cd</span> blog</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure></p>
 <h2 id="4-3_在本地浏览博客界面">4.3 在本地浏览博客界面</h2><p>打开git bash，执行以下命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure></p>
 <p>然后，打开浏览器，输入网址<code>http://127.0.0.1:4000/</code>，看到经典的“hello world”，说明配置成功。我们看到的“hello world”文章是hexo为我们发出的第一篇博客。</p>
-<h2 id="五、_利用hexo写一篇博客并发布到github">五、 利用hexo写一篇博客并发布到github</h2><h2 id="5-1_新建一篇博客">5.1 新建一篇博客</h2><p>在git bash中将当前目录切换到“四、 hexo的配置”中的blog目录中<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">'your_first_blog_title'</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="五、_利用hexo写一篇博客并发布到github">五、 利用hexo写一篇博客并发布到github</h2><h2 id="5-1_新建一篇博客">5.1 新建一篇博客</h2><p>在git bash中将当前目录切换到上一步骤中的blog目录<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">'your_first_blog_title'</span></span><br></pre></td></tr></table></figure></p>
 <p>这时，会生成blog/source/_posts/your_first_blog_title.md文件</p>
 <h2 id="5-2_编辑博客">5.2 编辑博客</h2><p>用自己喜欢的编辑工具打开your_first_blog_title.md文件，利用markdown语法来编辑博客，保存。</p>
 <h2 id="5-3_修改项目配置文件">5.3 修改项目配置文件</h2><p>打开blog/_config.yml，修改以下内容<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## <span class="string">Docs:</span> <span class="string">http:</span><span class="comment">//hexo.io/docs/deployment.html</span></span><br><span class="line"><span class="string">deploy:</span></span><br><span class="line"><span class="label">  type:</span> git</span><br><span class="line"><span class="label">  repo:</span> git<span class="annotation">@github</span>.<span class="string">com:</span>user_name/user_name.github.io.git</span><br><span class="line"><span class="label">  branch:</span> master</span><br></pre></td></tr></table></figure></p>
@@ -117,7 +117,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/08/08/hexo和github-pages搭建个人博客/" data-id="cid2oa9iu0003043a4ai1fnua" class="article-share-link">Share</a>
+      <a data-url="https://zhouzijiang.github.io/2015/08/08/hexo和github-pages搭建个人博客/" data-id="cid2pej3000033o3a7xvxvemw" class="article-share-link">Share</a>
       
       
     </footer>
