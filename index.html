@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>胖胖</title>
+  <title>周子江</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description">
 <meta property="og:type" content="website">
-<meta property="og:title" content="胖胖">
+<meta property="og:title" content="周子江">
 <meta property="og:url" content="https://zhouzijiang.github.io/index.html">
-<meta property="og:site_name" content="胖胖">
+<meta property="og:site_name" content="周子江">
 <meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="胖胖">
+<meta name="twitter:title" content="周子江">
 <meta name="twitter:description">
   
-    <link rel="alternative" href="/atom.xml" title="胖胖" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -33,7 +33,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">胖胖</a>
+        <a href="/" id="logo">周子江</a>
       </h1>
       
     </div>
@@ -61,6 +61,142 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-linux内核list分析三-哈希链表" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/08/linux内核list分析三-哈希链表/" class="article-date">
+  <time datetime="2015-11-08T13:07:29.000Z" itemprop="datePublished">2015-11-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/08/linux内核list分析三-哈希链表/">linux内核list分析三:哈希链表</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>linux内核里面的双向循环链表和哈希链表有什么不同呢？1、双向循环链表是循环的，哈希链表不是循环的  2、双向循环链表不区分头结点和数据结点，都用list_head表示，而哈希链表区分头结点(hlist_head)和数据结点(hlist_node)。与哈希链表有关的两个数据结构如下：<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> hlist_head &#123; </span><br><span class="line">    <span class="keyword">struct</span> hlist_node *first;  <span class="comment">//指向每一个hash桶的第一个结点的指针</span></span><br><span class="line">&#125;; </span><br><span class="line"><span class="keyword">struct</span> hlist_node &#123; </span><br><span class="line">    <span class="keyword">struct</span> hlist_node *next;   <span class="comment">//指向下一个结点的指针</span></span><br><span class="line">    <span class="keyword">struct</span> hlist_node **pprev; <span class="comment">//指向上一个结点的next指针的指针</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="1、哈希链表为什么要区分头结点和数据结点？">1、哈希链表为什么要区分头结点和数据结点？</h2><p>头结点和数据结点如果都使用list_head的话，那岂不是更容易实现。内核list.h中描述得很明白：<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span><br><span class="line"> * Double linked lists with a single pointer list head.</span><br><span class="line"> * Mostly useful for hash tables where the two pointer list head is</span><br><span class="line"> * too wasteful.</span><br><span class="line"> * You lose the ability to access the tail in O(1).</span><br><span class="line"> */</span></span><br></pre></td></tr></table></figure></p>
+<p>意思是说这种双向链表的头结点只有一个指针成员(即struct hlist_node *first)，它主要使用在哈希表中。因为哈希表会有很多表项，每个表项如果使用list_head这样含有两个指针成员的数据结构的话，会造成内存空间的浪费。所以，为了尽可能的减少内存空间的浪费，就要使数据结构变得稍微复杂一些，鱼和熊掌不可兼得啊。</p>
+<h2 id="2、hlist_node的pprev成员为什么是struct_hlist_node_**类型的？">2、hlist_node的pprev成员为什么是struct hlist_node **类型的？</h2><p>如果hlist_node的定义是下面这样的话<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> hlist_node &#123; </span><br><span class="line">    <span class="keyword">struct</span> hlist_node *next;</span><br><span class="line">    <span class="keyword">struct</span> hlist_node *prev;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>第一个数据结点的prev成员应该指向头结点，但是因为prev成员指向的是hlist_node的数据类型的指针，而头结点的数据类型是hlist_head，所以无法实现。为了解决这样的问题，才有了下面的hlist_node的定义<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> hlist_node &#123; </span><br><span class="line">    <span class="keyword">struct</span> hlist_node *next;</span><br><span class="line">    <span class="keyword">struct</span> hlist_node **pprev;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p><img src="/img/hlist_1.jpg" alt=""><br>在上图中，第一个数据结点的pprev成员(数据类型struct hlist_node **)指向头结点的first成员(数据类型struct hlist_node *)，第二个数据结点的pprev成员(数据类型struct hlist_node **)指向第一个数据结点的next成员(数据类型struct hlist_node *)，从而对于第一个数据结点的操作和非第一个数据结点的操作就没有区别了，都统一起来了。这样就不用对第一个数据结点进行特殊处理了，为编写代码带来了极大的好处，这种设计有点小艺术。</p>
+<p>其他的hlist的初始化、插入、删除、遍历请自行参阅list.h源文件，源文件是最好的老师。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/11/08/linux内核list分析三-哈希链表/" data-id="cigqjnywf0004fw3aa2jbklln" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-linux内核list分析二-双向循环链表" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/08/linux内核list分析二-双向循环链表/" class="article-date">
+  <time datetime="2015-11-08T09:05:49.000Z" itemprop="datePublished">2015-11-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/08/linux内核list分析二-双向循环链表/">linux内核list分析二:双向循环链表</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>大学时代，我们就已经学过链表了，例如下面的例子<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> person</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> height;</span><br><span class="line">    <span class="keyword">int</span> weight;</span><br><span class="line">    <span class="keyword">struct</span> person *prev, *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 查找指定的person是否存在</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">person_exists</span><span class="params">(<span class="keyword">struct</span> person *head, <span class="keyword">struct</span> person in_person)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">struct</span> person *p;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(p = head-&gt;next; p != head; p = p-&gt;next)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(p-&gt;height == in_person.height &amp;&amp; p-&gt;weight == in_person.weight)</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的代码定义了struct person这样的链表，通常会实现该链表的插入、删除、查找等操作。现在因为业务需求，又需要struct animal这样的链表，同样，我们也会实现该链表的插入、删除、查找等操作。<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> animal</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> legs;</span><br><span class="line">    <span class="keyword">struct</span> animal *prev, *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 查找指定的animal是否存在</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">animal_exists</span><span class="params">(<span class="keyword">struct</span> animal *head, <span class="keyword">struct</span> animal in_animal)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">struct</span> animal *p;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(p = head-&gt;next; p != head; p = p-&gt;next)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(p-&gt;legs == in_animal.legs)</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>那如果再出现其他的数据类型也需要使用到链表的操作，我们也要为新增的数据类型编写新的链表插入、删除、查找等操作，这样就出现了大量的冗余代码。其实，查找person与anmial是否存在的代码处理逻辑都是一样的，只是数据类型不一样而已。所以为了解决这个问题，linux内核中把与链表有关的操作抽象出来，其他需要使用链表操作的数据类型只要使用内核定义的链表就OK，无需自己再开发与链表的基本操作相关的代码。</p>
+<p>linux内核双向循环链表仅仅使用了一个数据结构struct list_head，即链表的头结点和数据结点都是使用struct list_head表示<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> list_head&#123; </span><br><span class="line">    <span class="keyword">struct</span> list_head *next, *prev; </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>让我们看看使用了struct list_head的struct animal是怎样的。下面代码中的INIT_LIST_HEAD、list_add、list_for_each_entry都是linux内核实现的。它的具体实现可以参考include/linux/list.h<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> animal</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> legs;</span><br><span class="line">    <span class="keyword">struct</span> list_head <span class="built_in">list</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 初始化链表头结点</span></span><br><span class="line"><span class="keyword">struct</span> list_head animal_list;</span><br><span class="line">INIT_LIST_HEAD(&amp;animal_list);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化struct animal</span></span><br><span class="line"><span class="keyword">struct</span> animal animal1;</span><br><span class="line">animal1.legs = <span class="number">4</span>;</span><br><span class="line">INIT_LIST_HEAD(&amp;animal1.<span class="built_in">list</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将animal1加入链表</span></span><br><span class="line">list_add(&amp;animal1, &amp;animal_list);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 加入其它animal到链表</span></span><br><span class="line">.....</span><br><span class="line"></span><br><span class="line"><span class="comment">// 遍历 animal_list</span></span><br><span class="line"><span class="keyword">struct</span> animal *p_animal;</span><br><span class="line">list_for_each_entry(p_animal, &amp;animal_list, <span class="built_in">list</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"legs = %d\n"</span>, p_animal-&gt;legs);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>它的内存布局如下：<br><img src="/img/list_head_1.jpg" alt=""></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/11/08/linux内核list分析二-双向循环链表/" data-id="cigqjnywf0003fw3a5piamdsp" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-linux内核list分析一-前言" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/07/linux内核list分析一-前言/" class="article-date">
+  <time datetime="2015-11-07T07:32:36.000Z" itemprop="datePublished">2015-11-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/07/linux内核list分析一-前言/">linux内核list分析一:前言</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>链表list是linux内核最经典的数据结构之一，不过在深入学习链表的实现之前，需要了解几个知识：offsetof、typeof、container_of</p>
+<h2 id="1、offsetof">1、offsetof</h2><p>offsetof的作用是返回结构体中的某个成员在该结构体中的偏移量，请看下面的例子：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> person</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> height;</span><br><span class="line">    <span class="keyword">int</span> weight;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%u\n"</span>, offsetof(<span class="keyword">struct</span> person, height));  <span class="comment">// 0</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%u\n"</span>, offsetof(<span class="keyword">struct</span> person, weight));  <span class="comment">// 4</span></span><br></pre></td></tr></table></figure>
+<p>而offsetof的真实面目是<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">define</span> offsetof(TYPE, MEMBER) ((size_t) &amp;((TYPE *)0)-&gt;MEMBER)</span></span><br></pre></td></tr></table></figure></p>
+<p>这里巧妙的利用了0地址。也许有人会产生疑问，怎么可能会对0地址进行操作呢？为了更容易理解，下面都使用struct person为例。其实，0是一个具体的常量值，它是一个地址，而(struct person *)0则是一个指针，而且是一个指针常量（即指针本身是常量，但它指向的地址里的内容可以改变）。只要我们不去对一个空指针进行读写，就不会存在非法访问内存的问题，例如：<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">//  读取操作</span></span><br><span class="line">    <span class="keyword">struct</span> person *xiao_hua = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">struct</span> person tmp = *xiao_hua; <span class="comment">// error</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//  写入操作</span></span><br><span class="line">    <span class="keyword">struct</span> person *xiao_hua = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">struct</span> person tmp = &#123;<span class="number">180</span>, <span class="number">60</span>&#125;;</span><br><span class="line">    *xiaohua = tmp;  <span class="comment">// error</span></span><br></pre></td></tr></table></figure></p>
+<p>那么，其他的操作都是OK的。</p>
+<p>offsetof(struct person, weight) 经过宏替换后变为 ((size_t) &amp;((struct person <em>)0)-&gt;weight)<br>1、(struct person </em>)0 表示 一个指向struct person结构的指针，虽然这个struct person结构不存在，但只要不去对它进行读写就OK<br>2、(struct person <em>)0)-&gt;weight 表示 1中的指针所指向的那个struct person结构的weight成员<br>3、&amp;((struct person </em>)0)-&gt;weight 表示 1中的指针所指向的那个struct person结构的weight成员的地址<br>4、weight成员的地址 减去 它所在的struct person结构的地址，就可以得出weight在struct person结构中的偏移量，但是此时，struct person结构的地址为0，所以weight成员的地址就是weight在struct person结构中的偏移量</p>
+<h2 id="2、typeof">2、typeof</h2><p>typeof关键字是C语言中的一个新扩展，这个特性在linux内核中应用非常广泛。<br>typeof的参数可以是两种形式：表达式或类型。</p>
+<p>(1) 表达式的例子：<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">//  以下示例声明了int类型的var变量，因为表达式foo()是int类型的。由于表达式不会被执行，所以不会调用foo函数。</span></span><br><span class="line">    <span class="function"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">foo</span><span class="params">()</span></span>;</span><br><span class="line">    typeof(foo()) var; <span class="comment">// 等价于 int var;</span></span><br></pre></td></tr></table></figure></p>
+<p>(2) 类型的例子：<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">typeof(<span class="keyword">int</span> *) a,b; <span class="comment">// 等价于 int *a,*b;</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="3、container_of">3、container_of</h2><p>它的作用是根据一个结构体变量中的一个域成员变量的指针来获取指向整个结构体变量的指针。<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">define</span> container_of(ptr, type, member) (&#123;                      \</span><br><span class="line">        const typeof ( ((type *)0)-&gt;member ) *__mptr = (ptr);   \</span><br><span class="line">        (type *)( ( char *)__mptr - offsetof(type,member) );&#125;)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> person xiao_hua = &#123;<span class="number">180</span>, <span class="number">60</span>&#125;;</span><br><span class="line"><span class="keyword">struct</span> person *p_xiao_hua = container_of(&amp;xiao_hua.weight, <span class="keyword">struct</span> person, weight);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, p_xiao_hua-&gt;height);  <span class="comment">// 180</span></span><br></pre></td></tr></table></figure></p>
+<p>container_of(&amp;xiao_hua.weight, struct person, weight) 宏替换后的结果为<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">const</span> <span class="title">typeof</span> <span class="params">( ((<span class="keyword">struct</span> person *)</span>0)-&gt;weight ) *__mptr </span>= (&amp;xiao_hua.weight);</span><br><span class="line">(<span class="keyword">struct</span> person *)( ( <span class="keyword">char</span> *)__mptr - offsetof(<span class="keyword">struct</span> person,weight) );&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>第一个语句中的‘typeof ( ((struct person <em>)0)-&gt;weight )’ 其实就是 ‘int’，所以第一个语句就是’const int </em>__mptr = (&amp;xiao_hua.weightr)’<br>第二个语句将weight的地址减去weight在struct person中的偏移量就得到了struct person结构变量的地址。</p>
+<p>这里使用了一个中间变量__mptr，也许我们会质疑，它是多余的。但是，请看下面的情况<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">define</span> container_of(ptr, type, member) (&#123;                      \</span><br><span class="line">        (type *)( ( char *)ptr - offsetof(type,member) );&#125;)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> person xiao_hua = &#123;<span class="number">180</span>, <span class="number">60</span>&#125;;</span><br><span class="line"><span class="keyword">struct</span> person *p_xiao_hua = container_of(&amp;xiao_hua, <span class="keyword">struct</span> person, weight); <span class="comment">// 错误使用container_of</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, p_xiao_hua-&gt;height);</span><br></pre></td></tr></table></figure></p>
+<p>所以中间变量__mptr这里起到了提醒开发者的功能。如果开发者传入的ptr指针指向的类型，与结构体中成员的类型不符，编译器在这里会打印一条warning，提示开发者可能存在的错误。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/11/07/linux内核list分析一-前言/" data-id="cigqjnywf0005fw3a91nytwno" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-hexo和github-pages搭建个人博客" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/08/08/hexo和github-pages搭建个人博客/" class="article-date">
@@ -86,7 +222,7 @@
         <p>搭建个人博客需要用到两个软件git和node.js，所以请先安装完成这两个软件。本教程仅适用于windows平台。</p>
 <h2 id="一、_github的配置">一、 github的配置</h2><p>我们在本地写完博客以后，会提交到github上。github提供了两种认证方式：用户名密码和ssh。如果使用用户名和密码的认证方式，那么我们每次提交到github的时候都会要求我们输入用户名和密码，这种方式用户体验不好。所以，我们使用ssh认证方式，即在本地生成一对私钥和公钥，然后把公钥添加到自己在github的账号信息里，这样提交博客到github上时会自动完成认证过程。</p>
 <h2 id="1-1_检查ssh密钥是否已经存在">1.1 检查ssh密钥是否已经存在</h2><p>首先，我们需要检查自己的机器上是否已经存在ssh密钥，打开git bash并输入以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ ls -al ~/.ssh</span><br><span class="line"><span class="comment"># Lists the files in your .ssh directory, if they exist</span></span><br></pre></td></tr></table></figure></p>
-<p>如果存在 id_rsa.pub 和 id_rsa这两个文件，说明之前已经生成过ssh密钥，请忽略步骤2.1.2</p>
+<p>如果存在 id_rsa.pub 和 id_rsa这两个文件，说明之前已经生成过ssh密钥，请忽略步骤1.2</p>
 <h2 id="1-2_生成ssh密钥">1.2 生成ssh密钥</h2><p>打开git bash，执行以下命令，别忘了将邮箱地址替换成自己在github上的邮箱地址。<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">"your_email@example.com"</span></span><br><span class="line"><span class="comment"># Creates a new ssh key, using the provided email as a label</span></span><br><span class="line">Generating public/private rsa key pair.</span><br></pre></td></tr></table></figure></p>
 <p>让密钥文件保存在默认位置，直接按回车键即可。<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Enter file <span class="keyword">in</span> <span class="built_in">which</span> to save the key (/Users/you/.ssh/id_rsa): [Press enter]</span><br></pre></td></tr></table></figure></p>
 <p>输入一个使用密钥文件时需要输入的密码（不然每个人都可以随便使用此密钥文件来访问你的github）<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Enter passphrase (empty <span class="keyword">for</span> no passphrase): [Type a passphrase]</span><br><span class="line">Enter same passphrase again: [Type passphrase again]</span><br></pre></td></tr></table></figure></p>
@@ -101,7 +237,7 @@
 <h2 id="4-1_安装hexo">4.1 安装hexo</h2><p>打开git bash，执行以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-cli -g</span><br></pre></td></tr></table></figure></p>
 <h2 id="4-2_新建并初始化博客项目blog">4.2 新建并初始化博客项目blog</h2><p>打开git bash，执行以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo init blog</span><br><span class="line">$ <span class="built_in">cd</span> blog</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure></p>
 <h2 id="4-3_在本地浏览博客界面">4.3 在本地浏览博客界面</h2><p>打开git bash，执行以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure></p>
-<p>然后，打开浏览器，输入网址<code>http://127.0.0.1:4000/</code>，看到如下图所示的经典的“hello world”，说明配置成功。我们看到的“hello world”文章是hexo为我们发出的第一篇博客。<br><img src="../img/hello_world.PNG" alt=""></p>
+<p>然后，打开浏览器，输入网址<code>http://127.0.0.1:4000/</code>，看到如下图所示的经典的“hello world”，说明配置成功。我们看到的“hello world”文章是hexo为我们发出的第一篇博客。<br><img src="/img/hello_world.PNG" alt=""></p>
 <h2 id="五、_利用hexo写一篇博客并发布到github">五、 利用hexo写一篇博客并发布到github</h2><h2 id="5-1_新建一篇博客">5.1 新建一篇博客</h2><p>在git bash中将当前目录切换到上一步骤中的blog目录<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">'your_first_blog_title'</span></span><br></pre></td></tr></table></figure></p>
 <p>这时，会生成blog/source/_posts/your_first_blog_title.md文件</p>
 <h2 id="5-2_编辑博客">5.2 编辑博客</h2><p>用自己喜欢的编辑工具打开your_first_blog_title.md文件，利用markdown语法来编辑博客，保存。</p>
@@ -115,7 +251,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/08/08/hexo和github-pages搭建个人博客/" data-id="cid2z4cs50003us3az6fo34h5" class="article-share-link">Share</a>
+      <a data-url="https://zhouzijiang.github.io/2015/08/08/hexo和github-pages搭建个人博客/" data-id="cigqjnywf0006fw3act8c8nhn" class="article-share-link">Share</a>
       
       
     </footer>
@@ -160,7 +296,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/07/05/hello-world/" data-id="cid2z4csk0004us3axz1ufy4g" class="article-share-link">Share</a>
+      <a data-url="https://zhouzijiang.github.io/2015/07/05/hello-world/" data-id="cigqjnywf0007fw3auqga9ezd" class="article-share-link">Share</a>
       
       
     </footer>
@@ -245,7 +381,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/07/05/ctags/" data-id="cid2z4cr90000us3a92guxb9y" class="article-share-link">Share</a>
+      <a data-url="https://zhouzijiang.github.io/2015/07/05/ctags/" data-id="cigqjnyvl0000fw3a7329gibc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vim/">vim</a></li></ul>
@@ -286,7 +422,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -298,15 +434,23 @@
       <ul>
         
           <li>
+            <a href="/2015/11/08/linux内核list分析三-哈希链表/">linux内核list分析三:哈希链表</a>
+          </li>
+        
+          <li>
+            <a href="/2015/11/08/linux内核list分析二-双向循环链表/">linux内核list分析二:双向循环链表</a>
+          </li>
+        
+          <li>
+            <a href="/2015/11/07/linux内核list分析一-前言/">linux内核list分析一:前言</a>
+          </li>
+        
+          <li>
             <a href="/2015/08/08/hexo和github-pages搭建个人博客/">hexo和github pages搭建个人博客</a>
           </li>
         
           <li>
             <a href="/2015/07/05/hello-world/">Hello World</a>
-          </li>
-        
-          <li>
-            <a href="/2015/07/05/ctags/">ctags</a>
           </li>
         
       </ul>

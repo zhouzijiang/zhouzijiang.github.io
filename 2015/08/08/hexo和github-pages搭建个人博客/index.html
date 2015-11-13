@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8">
   
-  <title>hexo和github pages搭建个人博客 | 胖胖</title>
+  <title>hexo和github pages搭建个人博客 | 周子江</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="搭建个人博客需要用到两个软件git和node.js，所以请先安装完成这两个软件。本教程仅适用于windows平台。
 一、 github的配置我们在本地写完博客以后，会提交到github上。github提供了两种认证方式：用户名密码和ssh。如果使用用户名和密码的认证方式，那么我们每次提交到github的时候都会要求我们输入用户名和密码，这种方式用户体验不好。所以，我们使用ssh认证方式，即在本地生">
 <meta property="og:type" content="article">
 <meta property="og:title" content="hexo和github pages搭建个人博客">
 <meta property="og:url" content="https://zhouzijiang.github.io/2015/08/08/hexo和github-pages搭建个人博客/index.html">
-<meta property="og:site_name" content="胖胖">
+<meta property="og:site_name" content="周子江">
 <meta property="og:description" content="搭建个人博客需要用到两个软件git和node.js，所以请先安装完成这两个软件。本教程仅适用于windows平台。
 一、 github的配置我们在本地写完博客以后，会提交到github上。github提供了两种认证方式：用户名密码和ssh。如果使用用户名和密码的认证方式，那么我们每次提交到github的时候都会要求我们输入用户名和密码，这种方式用户体验不好。所以，我们使用ssh认证方式，即在本地生">
-<meta property="og:image" content="https://zhouzijiang.github.io/../img/hello_world.PNG">
-<meta property="og:updated_time" content="2015-08-08T11:24:56.983Z">
+<meta property="og:image" content="https://zhouzijiang.github.io/img/hello_world.PNG">
+<meta property="og:updated_time" content="2015-11-13T06:01:50.718Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hexo和github pages搭建个人博客">
 <meta name="twitter:description" content="搭建个人博客需要用到两个软件git和node.js，所以请先安装完成这两个软件。本教程仅适用于windows平台。
 一、 github的配置我们在本地写完博客以后，会提交到github上。github提供了两种认证方式：用户名密码和ssh。如果使用用户名和密码的认证方式，那么我们每次提交到github的时候都会要求我们输入用户名和密码，这种方式用户体验不好。所以，我们使用ssh认证方式，即在本地生">
   
-    <link rel="alternative" href="/atom.xml" title="胖胖" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -38,7 +38,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">胖胖</a>
+        <a href="/" id="logo">周子江</a>
       </h1>
       
     </div>
@@ -89,7 +89,7 @@
         <p>搭建个人博客需要用到两个软件git和node.js，所以请先安装完成这两个软件。本教程仅适用于windows平台。</p>
 <h2 id="一、_github的配置">一、 github的配置</h2><p>我们在本地写完博客以后，会提交到github上。github提供了两种认证方式：用户名密码和ssh。如果使用用户名和密码的认证方式，那么我们每次提交到github的时候都会要求我们输入用户名和密码，这种方式用户体验不好。所以，我们使用ssh认证方式，即在本地生成一对私钥和公钥，然后把公钥添加到自己在github的账号信息里，这样提交博客到github上时会自动完成认证过程。</p>
 <h2 id="1-1_检查ssh密钥是否已经存在">1.1 检查ssh密钥是否已经存在</h2><p>首先，我们需要检查自己的机器上是否已经存在ssh密钥，打开git bash并输入以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ ls -al ~/.ssh</span><br><span class="line"><span class="comment"># Lists the files in your .ssh directory, if they exist</span></span><br></pre></td></tr></table></figure></p>
-<p>如果存在 id_rsa.pub 和 id_rsa这两个文件，说明之前已经生成过ssh密钥，请忽略步骤2.1.2</p>
+<p>如果存在 id_rsa.pub 和 id_rsa这两个文件，说明之前已经生成过ssh密钥，请忽略步骤1.2</p>
 <h2 id="1-2_生成ssh密钥">1.2 生成ssh密钥</h2><p>打开git bash，执行以下命令，别忘了将邮箱地址替换成自己在github上的邮箱地址。<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">"your_email@example.com"</span></span><br><span class="line"><span class="comment"># Creates a new ssh key, using the provided email as a label</span></span><br><span class="line">Generating public/private rsa key pair.</span><br></pre></td></tr></table></figure></p>
 <p>让密钥文件保存在默认位置，直接按回车键即可。<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Enter file <span class="keyword">in</span> <span class="built_in">which</span> to save the key (/Users/you/.ssh/id_rsa): [Press enter]</span><br></pre></td></tr></table></figure></p>
 <p>输入一个使用密钥文件时需要输入的密码（不然每个人都可以随便使用此密钥文件来访问你的github）<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Enter passphrase (empty <span class="keyword">for</span> no passphrase): [Type a passphrase]</span><br><span class="line">Enter same passphrase again: [Type passphrase again]</span><br></pre></td></tr></table></figure></p>
@@ -104,7 +104,7 @@
 <h2 id="4-1_安装hexo">4.1 安装hexo</h2><p>打开git bash，执行以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-cli -g</span><br></pre></td></tr></table></figure></p>
 <h2 id="4-2_新建并初始化博客项目blog">4.2 新建并初始化博客项目blog</h2><p>打开git bash，执行以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo init blog</span><br><span class="line">$ <span class="built_in">cd</span> blog</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure></p>
 <h2 id="4-3_在本地浏览博客界面">4.3 在本地浏览博客界面</h2><p>打开git bash，执行以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure></p>
-<p>然后，打开浏览器，输入网址<code>http://127.0.0.1:4000/</code>，看到如下图所示的经典的“hello world”，说明配置成功。我们看到的“hello world”文章是hexo为我们发出的第一篇博客。<br><img src="../img/hello_world.PNG" alt=""></p>
+<p>然后，打开浏览器，输入网址<code>http://127.0.0.1:4000/</code>，看到如下图所示的经典的“hello world”，说明配置成功。我们看到的“hello world”文章是hexo为我们发出的第一篇博客。<br><img src="/img/hello_world.PNG" alt=""></p>
 <h2 id="五、_利用hexo写一篇博客并发布到github">五、 利用hexo写一篇博客并发布到github</h2><h2 id="5-1_新建一篇博客">5.1 新建一篇博客</h2><p>在git bash中将当前目录切换到上一步骤中的blog目录<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">'your_first_blog_title'</span></span><br></pre></td></tr></table></figure></p>
 <p>这时，会生成blog/source/_posts/your_first_blog_title.md文件</p>
 <h2 id="5-2_编辑博客">5.2 编辑博客</h2><p>用自己喜欢的编辑工具打开your_first_blog_title.md文件，利用markdown语法来编辑博客，保存。</p>
@@ -118,7 +118,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/08/08/hexo和github-pages搭建个人博客/" data-id="cid2z4cs50003us3az6fo34h5" class="article-share-link">Share</a>
+      <a data-url="https://zhouzijiang.github.io/2015/08/08/hexo和github-pages搭建个人博客/" data-id="cigqjnywf0006fw3act8c8nhn" class="article-share-link">Share</a>
       
       
     </footer>
@@ -126,6 +126,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2015/11/07/linux内核list分析一-前言/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          linux内核list分析一:前言
+        
+      </div>
+    </a>
   
   
     <a href="/2015/07/05/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
@@ -166,7 +175,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -178,15 +187,23 @@
       <ul>
         
           <li>
+            <a href="/2015/11/08/linux内核list分析三-哈希链表/">linux内核list分析三:哈希链表</a>
+          </li>
+        
+          <li>
+            <a href="/2015/11/08/linux内核list分析二-双向循环链表/">linux内核list分析二:双向循环链表</a>
+          </li>
+        
+          <li>
+            <a href="/2015/11/07/linux内核list分析一-前言/">linux内核list分析一:前言</a>
+          </li>
+        
+          <li>
             <a href="/2015/08/08/hexo和github-pages搭建个人博客/">hexo和github pages搭建个人博客</a>
           </li>
         
           <li>
             <a href="/2015/07/05/hello-world/">Hello World</a>
-          </li>
-        
-          <li>
-            <a href="/2015/07/05/ctags/">ctags</a>
           </li>
         
       </ul>
