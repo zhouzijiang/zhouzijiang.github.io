@@ -61,6 +61,407 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-svn分支和合并" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/13/svn分支和合并/" class="article-date">
+  <time datetime="2015-12-13T04:11:59.000Z" itemprop="datePublished">2015-12-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/13/svn分支和合并/">svn分支和合并</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Creating_a_Branch">Creating a Branch</h1><p>Creating a branch is very simple—you make a copy of the project in the repository using the svn copy command.<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">copy</span> http:<span class="comment">//svn.example.com/repos/calc/trunk \</span></span><br><span class="line">           http:<span class="comment">//svn.example.com/repos/calc/branches/my-calc-branch \</span></span><br><span class="line">        -<span class="keyword">m</span> <span class="string">"Creating a private branch of /calc/trunk."</span></span><br><span class="line">Committed revision 341.</span><br></pre></td></tr></table></figure></p>
+<h1 id="Working_with_Your_Branch">Working with Your Branch</h1><p>Now that you’ve created a branch of the project, you can check out a new working copy to start using it:<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">$ svn checkout http:<span class="comment">//svn.example.com/repos/calc/branches/my-calc-branch</span></span><br><span class="line">A my-calc-branch/Makefile</span><br><span class="line">A my-calc-branch/integer<span class="class">.c</span></span><br><span class="line">A my-calc-branch/<span class="tag">button</span><span class="class">.c</span></span><br><span class="line">Checked out revision <span class="number">341</span>.</span><br></pre></td></tr></table></figure></p>
+<p>There’s nothing special about this working copy; it simply mirrors a different directory in the repository. Subversion has no internal concept of a branch—it knows only how to make copies. When you copy a directory, the resultant directory is only a “branch” because you attach that meaning to it. You may think of the directory differently, or treat it differently, but to Subversion it’s just an ordinary directory that happens to carry some extra historical information. Most teams follow a convention of putting all branches into a /branches directory, but you’re free to invent any policy you wish.</p>
+<h1 id="Changeset">Changeset</h1><p>A changeset is just a collection of changes with a unique name. The changes might include textual edits to file contents, modifications to tree structure, or tweaks to metadata. In more common speak, a changeset is just a patch with a name you can refer<br>to.<br>In Subversion, a global revision number N names a tree in the repository.  It’s also the name of an implicit changeset: if you<br>compare tree N with tree N-1, you can derive the exact patch that was committed.  For this reason, it’s easy to think of revision N as not just a tree, but a changeset as well. And Subversion’s svn merge command is able to use revision numbers. You can merge specific changesets from one branch to another by naming them in the merge arguments: passing -c 9238 to svn merge would merge changeset r9238 into your working copy.</p>
+<h1 id="Merge">Merge</h1><p>A better name for the merge command might have been svn diff-and-apply, because that’s all that happens: two repository trees are compared, and the differences are applied to a working copy. If you’re using svn merge to do basic copying of changes between branches, it will generally do the right thing automatically. For example, a command such as the following:<br><code>$ svn merge http://svn.example.com/repos/calc/some-branch</code><br>will attempt to duplicate any changes made on some-branch into your current working directory. The command is smart enough to only duplicate changes that your working copy doesn’t yet have. If you repeat this command once a week, it will only duplicate the<br>“newest” branch changes that happened since you last merged.If you choose to use the svn merge command in all its full glory by giving it specific revision ranges to duplicate, the command takes three main arguments:</p>
+<ol>
+<li>An initial repository tree (often called the left side of the comparison)</li>
+<li>A final repository tree (often called the right side of the comparison)</li>
+<li>A working copy to accept the differences as local changes (often called the target of the merge)<br>Once these three arguments are specified, the two trees are compared, and the differences are applied to the target working copy as local modifications. When the command is done, the results are no different than if you had hand-edited the files or run various svn add or svn delete commands yourself. If you like the results, you can commit them. If you don’t like the results, you can simply svn revert all of the changes.<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">$ svn merge <span class="string">http:</span><span class="comment">//svn.example.com/repos/branch1@150 \</span></span><br><span class="line"><span class="string">http:</span><span class="comment">//svn.example.com/repos/branch2@212 \</span></span><br><span class="line">my-working-copy</span><br><span class="line">$ svn merge -r <span class="number">100</span>:<span class="number">200</span> <span class="string">http:</span><span class="comment">//svn.example.com/repos/trunk my-working-copy</span></span><br><span class="line">$ svn merge -r <span class="number">100</span>:<span class="number">200</span> <span class="string">http:</span><span class="comment">//svn.example.com/repos/trunk</span></span><br><span class="line">$ svn merge -c <span class="number">355</span> <span class="string">http:</span><span class="comment">//svn.example.com/repos/calc/trunk</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>The first syntax lays out all three arguments explicitly, naming each tree in the form URL@REV and naming the working copy target. The second syntax can be used as a shorthand for situations when you’re comparing two different revisions of the same URL.<br>The last syntax shows how the working copy argument is optional; if omitted, it defaults to the current directory. The last syntax shows only replicate just a single change.</p>
+<h1 id="Keeping_a_Branch_in_Sync">Keeping a Branch in Sync</h1><p>Let’s suppose that a week has passed since you started working on your private branch. Your new feature isn’t finished yet, but at the same time you know that other people on your team have continued to make important changes in the project’s /trunk. In fact, this is a best practice: frequently keeping your branch in sync with the main development line helps prevent “surprise” conflicts when it comes time for you to fold your changes back into the trunk.<br>Subversion is aware of the history of your branch and knows when it divided away from the trunk. To replicate the latest, greatest trunk changes to your branch, first make sure your working copy of the branch is “clean”—that it has no local modifications reported by svn status. Then simply run:<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">$ svn merge http:<span class="comment">//svn.example.com/repos/calc/trunk</span></span><br><span class="line">--- Merging r345 through r356 into <span class="string">'.'</span>:</span><br><span class="line">U <span class="tag">button</span><span class="class">.c</span></span><br><span class="line">U integer.c</span><br></pre></td></tr></table></figure></p>
+<p>This basic syntax—svn merge URL—tells Subversion to merge all recent changes from the URL to the current working directory. After running the prior example, your branch working copy now contains new local modifications, and these edits are duplications of all of the changes that have happened on the trunk since you first created your branch:<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">$ svn status</span><br><span class="line">M .</span><br><span class="line">M <span class="tag">button</span><span class="class">.c</span></span><br><span class="line">M integer.c</span><br></pre></td></tr></table></figure></p>
+<p>At this point, the wise thing to do is look at the changes carefully with svn diff, and then build and test your branch. Notice that the current working directory (“.”) has also been modified; the svn diff will show that its svn:mergeinfo property has been either created or modified. This is important merge-related metadata that you should not touch, since it will be needed by future svn merge commands.<br>After performing the merge, you might also need to resolve some conflicts (just as you do with svn update) or possibly make some small edits to get things working properly. (Remember, just because there are no syntactic conflicts doesn’t mean there aren’t any semantic conflicts!) If you encounter serious problems, you can always abort the local changes by running svn revert . -R (which will undo all local modifications) and start a long “what’s going on?” discussion with your collaborators. If things look good, however, you can submit these changes into the repository:<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">$ svn commit -m <span class="string">"Merged latest trunk changes to my-calc-branch."</span></span><br><span class="line">Sending .</span><br><span class="line">Sending <span class="tag">button</span><span class="class">.c</span></span><br><span class="line">Sending integer<span class="class">.c</span></span><br><span class="line">Transmitting file data ..</span><br><span class="line">Committed revision <span class="number">357</span>.</span><br></pre></td></tr></table></figure></p>
+<p>At this point, your private branch is now “in sync” with the trunk, so you can rest easier knowing that as you continue to work in isolation, you’re not drifting too far away from what everyone else is doing.<br>Suppose that another week has passed. You’ve committed more changes to your branch, and your comrades have continued to improve the trunk as well. Once again, you’d like to replicate the latest trunk changes to your branch and bring yourself in sync. Just run the same merge command again!<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>svn merge <span class="symbol">http:</span>/<span class="regexp">/svn.example.com/repos</span><span class="regexp">/calc/trunk</span></span><br><span class="line">--- <span class="constant">Merging </span>r357 through r38<span class="number">0</span> into <span class="string">'.'</span><span class="symbol">:</span></span><br><span class="line"><span class="constant">U </span>integer.c</span><br><span class="line"><span class="constant">U Makefile</span></span><br><span class="line"><span class="constant">A README</span></span><br></pre></td></tr></table></figure></p>
+<p>Subversion knows which trunk changes you’ve already replicated to your branch, so it carefully replicates only those changes you don’t yet have. What happens when you finally finish your work, though?  The process is simple. First, bring your branch in sync with the trunk again, just as you’ve been doing all along:<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>svn merge <span class="symbol">http:</span>/<span class="regexp">/svn.example.com/repos</span><span class="regexp">/calc/trunk</span></span><br><span class="line">--- <span class="constant">Merging </span>r381 through r385 into <span class="string">'.'</span><span class="symbol">:</span></span><br><span class="line"><span class="constant">U </span>button.c</span><br><span class="line"><span class="constant">U README</span></span><br><span class="line"><span class="variable">$ </span><span class="comment"># build, test, ...</span></span><br><span class="line"><span class="variable">$ </span>svn commit -m <span class="string">"Final merge of trunk changes to my-calc-branch."</span></span><br><span class="line"><span class="constant">Sending </span>.</span><br><span class="line"><span class="constant">Sending </span>button.c</span><br><span class="line"><span class="constant">Sending README</span></span><br><span class="line"><span class="constant">Transmitting </span>file data ..</span><br><span class="line"><span class="constant">Committed </span>revision <span class="number">390</span>.</span><br></pre></td></tr></table></figure></p>
+<p>Now, you use svn merge to replicate your branch changes back into the trunk. You’ll need an up-to-date working copy of /trunk. However you get a trunk working copy, remember that it’s a best practice to do your merge into a working copy that has no local edits and has been recently updated (i.e., is not a mixture of local revisions).<br><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">$ svn <span class="operator"><span class="keyword">update</span> # (make sure the working copy <span class="keyword">is</span> up <span class="keyword">to</span> <span class="built_in">date</span>)</span><br><span class="line"><span class="keyword">At</span> revision <span class="number">390.</span></span><br><span class="line">$ svn <span class="keyword">merge</span> <span class="comment">--reintegrate http://svn.example.com/repos/calc/branches/my-calc-branch</span></span><br><span class="line"><span class="comment">--- Merging differences between repository URLs into '.':</span></span><br><span class="line">U button.c</span><br><span class="line">U <span class="built_in">integer</span>.c</span><br><span class="line">U Makefile</span><br><span class="line">U .</span><br><span class="line">$ # build, test, verify, ...</span><br><span class="line">$ svn <span class="keyword">commit</span> -m <span class="string">"Merge my-calc-branch back into trunk!"</span></span><br><span class="line">Sending .</span><br><span class="line">Sending button.c</span><br><span class="line">Sending <span class="built_in">integer</span>.c</span><br><span class="line">Sending Makefile</span><br><span class="line">Transmitting file <span class="keyword">data</span> ..</span><br><span class="line">Committed revision <span class="number">391.</span></span></span><br></pre></td></tr></table></figure></p>
+<p>Notice our use of the —reintegrate option this time around. The option is critical for reintegrating changes from a branch back into its original line of development—don’t forget it! It’s needed because this sort of “merge back” is a different sort of work than what you’ve been doing up until now. Now that your private branch is merged to trunk, you may wish to remove it from the repository:<br><figure class="highlight actionscript"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">delete</span> http:<span class="comment">//svn.example.com/repos/calc/branches/my-calc-branch \</span></span><br><span class="line">-m <span class="string">"Remove my-calc-branch."</span></span><br><span class="line">Committed revision <span class="number">392.</span></span><br></pre></td></tr></table></figure></p>
+<p>In Subversion 1.5, once a —reintegrate merge is done from branch to trunk, the branch is no longer usable for further work. It’s not able to correctly absorb new trunk changes, nor can it be properly reintegrated to trunk again. For this reason, if you want to<br>keep working on your feature branch, we recommend destroying it and then recreating it from the trunk:</p>
+<h1 id="Mergeinfo">Mergeinfo</h1><p>The basic mechanism Subversion uses to track changesets—that is, which changes have been merged to which branches—is by recording data in properties. Specifically, merge data is tracked in the svn:mergeinfo property attached to files and directories.<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>cd my-calc-branch</span><br><span class="line"><span class="variable">$ </span>svn propget <span class="symbol">svn:</span>mergeinfo .</span><br><span class="line">/<span class="symbol">trunk:</span><span class="number">341</span>-<span class="number">390</span></span><br></pre></td></tr></table></figure></p>
+<p>There’s also a subcommand, svn mergeinfo, which can be helpful in seeing not only which changesets a directory has absorbed, but also which changesets it’s still eligible to receive. This gives a sort of preview of the next set of changes that svn merge will replicate to your branch.<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>cd my-calc-branch</span><br><span class="line"><span class="comment"># Which changes have already been merged from trunk to branch?</span></span><br><span class="line"><span class="variable">$ </span>svn mergeinfo <span class="symbol">http:</span>/<span class="regexp">/svn.example.com/repos</span><span class="regexp">/calc/trunk</span></span><br><span class="line">r341</span><br><span class="line">r342</span><br><span class="line">…</span><br><span class="line">r389</span><br><span class="line">r39<span class="number">0</span></span><br><span class="line"><span class="comment"># Which changes are still eligible to merge from trunk to branch?</span></span><br><span class="line"><span class="variable">$ </span>svn mergeinfo <span class="symbol">http:</span>/<span class="regexp">/svn.example.com/repos</span><span class="regexp">/calc/trunk</span> --show-revs eligible</span><br><span class="line">r391</span><br><span class="line">r392</span><br><span class="line">r393</span><br><span class="line">r394</span><br><span class="line">r395</span><br></pre></td></tr></table></figure></p>
+<p>The svn mergeinfo command requires a “source” URL (where the changes would be coming from), and takes an optional “target” URL (where the changes would be merged to). If no target URL is given, it assumes that the current working directory is the target. In the prior example, because we’re querying our branch working copy, the command assumes we’re interested in receiving changes to /branches/mybranch from the specified trunk URL. Another way to get a more precise preview of a merge operation is to use the<br>—dry-run option:<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>svn merge <span class="symbol">http:</span>/<span class="regexp">/svn.example.com/repos</span><span class="regexp">/calc/trunk</span> --dry-run</span><br><span class="line"><span class="constant">U </span>integer.c</span><br><span class="line"><span class="variable">$ </span>svn status</span><br><span class="line"><span class="comment"># nothing printed, working copy is still unchanged.</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="Undoing_Changes">Undoing Changes</h1><p>An extremely common use for svn merge is to roll back a change that has already been committed. Suppose you’re working away happily on a working copy of /calc/trunk, and you discover that the change made way back in revision 303, which changed integer.c, is completely wrong. All you need to do is to specify a reverse difference. (You can do this by specifying —revision 303:302, or by an equivalent —change -303.)</p>
+<h1 id="Traversing_Branches">Traversing Branches</h1><p>The svn switch command transforms an existing working copy to reflect a different branch. “Switching” a working copy that has no local modifications to a different branch results in the working copy looking just as it would if you’d done a fresh checkout of the directory.<br><figure class="highlight livecodeserver"><table><tr><td class="code"><pre><span class="line">$ svn info | grep <span class="built_in">URL</span></span><br><span class="line"><span class="built_in">URL</span>: <span class="keyword">http</span>://svn.example.com/repos/calc/trunk</span><br><span class="line">$ svn <span class="keyword">switch</span> <span class="keyword">http</span>://svn.example.com/repos/calc/branches/my-calc-branch</span><br><span class="line">U <span class="keyword">integer</span>.c</span><br><span class="line">U button.c</span><br><span class="line">U Makefile</span><br><span class="line">Updated <span class="built_in">to</span> revision <span class="number">341.</span></span><br><span class="line">$ svn info | grep <span class="built_in">URL</span></span><br><span class="line"><span class="built_in">URL</span>: <span class="keyword">http</span>://svn.example.com/repos/calc/branches/my-calc-branch</span><br></pre></td></tr></table></figure></p>
+<h1 id="Tags">Tags</h1><p>A tag is just a “snapshot” of a project in time. Once again, svn copy comes to the rescue. If you want to create a snapshot of<br>/calc/trunk exactly as it looks in the HEAD revision, make a copy of it:<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">copy</span> http:<span class="comment">//svn.example.com/repos/calc/trunk \</span></span><br><span class="line">           http:<span class="comment">//svn.example.com/repos/calc/tags/release-1.0 \</span></span><br><span class="line">        -<span class="keyword">m</span> <span class="string">"Tagging the 1.0 release of the 'calc' project."</span></span><br><span class="line">Committed revision 902.</span><br></pre></td></tr></table></figure></p>
+<p>This example assumes that a /calc/tags directory already exists. (If it doesn’t, you can create it using svn mkdir.)  After the copy completes, the new release-1.0 directory is forever a snapshot of how the /trunk directory looked in the HEAD revision at the time you made the copy.<br>In Subversion, there’s no difference between a tag and a branch. Both are just ordinary directories that are created by copying. Just as with branches, the only reason a copied directory is a “tag” is because humans have decided to treat it that way: as long as nobody ever commits to the directory, it forever remains a snapshot. If people start committing to it, it becomes a branch.</p>
+<h1 id="Common_Branching_Patterns">Common Branching Patterns</h1><h2 id="1-_Release_Branches">1. Release Branches</h2><p>Most software has a typical life cycle: code, test, release, repeat. There are two problems with this process. First, developers need to keep writing new features while quality assurance teams take time to test supposedly stable versions of the software. New work cannot halt while the software is tested. Second, the team almost always needs to support older, released versions of software; if a bug is discovered in the latest code, it most likely exists in released versions as well, and customers will want to get that bug fix without having to wait for a major new release. The typical procedure looks like this:</p>
+<ol>
+<li>Developers commit all new work to the trunk. Day-to-day changes are committed to /trunk: new features, bug fixes, and so on.</li>
+<li>The trunk is copied to a “release” branch. When the team thinks the software is ready for release (say, a 1.0 release), /trunk might be copied to /branches/1.0.</li>
+<li>Teams continue to work in parallel. One team begins rigorous testing of the release branch, while another team continues new work (say, for version 2.0) on /trunk. If bugs are discovered in either location, fixes are ported back and forth as necessary. At<br>some point, however, even that process stops. The branch is “frozen” for final testing right before a release.</li>
+<li>The branch is tagged and released. When testing is complete, /branches/1.0 is copied to /tags/1.0.0 as a reference snapshot. The tag is packaged and released to customers.</li>
+<li>The branch is maintained over time. While work continues on /trunk for version 2.0, bug fixes continue to be ported from /trunk to /branches/1.0. When enough bug fixes have accumulated, management may decide to do a 1.0.1 release: /branches/1.0 is copied to /tags/1.0.1, and the tag is packaged and released.<br>This entire process repeats as the software matures: when the 2.0 work is complete, a new 2.0 release branch is created, tested, tagged, and eventually released. After some years, the repository ends up with a number of release branches in “maintenance” mode, and a number of tags representing final shipped versions.</li>
+</ol>
+<h2 id="2-_Feature_Branches">2. Feature Branches</h2><p>It’s a temporary branch created to work on a complex change without interfering with the stability of /trunk. Unlike release branches (which may need to be supported forever), feature branches are born, used for a while, merged back to the trunk, and then ultimately deleted.<br>Here’s a great risk to working on a branch for weeks or months; trunk changes may continue to pour in, to the point where the two lines of development differ so greatly that it may become a nightmare trying to merge the branch back to the trunk. This situation is best avoided by regularly merging trunk changes to the branch. Make up a policy: once a week, merge the last week’s worth of trunk changes to the branch.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/12/13/svn分支和合并/" data-id="cii40luo40000s83a3e4mx2a8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svn/">svn</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-locale" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/09/locale/" class="article-date">
+  <time datetime="2015-12-09T11:58:15.000Z" itemprop="datePublished">2015-12-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/09/locale/">locale</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>运行locale指令得到当前系统编码设置的详细资料(UTF-8才是编码世界最通用的语言)。<br><figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="setting">LANG=<span class="value">en_US.UTF-<span class="number">8</span></span></span></span><br><span class="line"><span class="setting">LC_CTYPE=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_NUMERIC=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_TIME=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_COLLATE=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_MONETARY=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_MESSAGES=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_PAPER=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_NAME=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_ADDRESS=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_TELEPHONE=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_MEASUREMENT=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_IDENTIFICATION=<span class="value"><span class="string">"en_US.UTF-8"</span></span></span></span><br><span class="line"><span class="setting">LC_ALL=<span class="value"></span></span></span><br></pre></td></tr></table></figure></p>
+<p>locale 的命名规则为&lt;语言&gt;_&lt;地区&gt;.&lt;字符集编码&gt; ，如zh_CN.UTF-8，zh代表中文，CN代表大陆地区，UTF-8表示字符集。在locale 环境中，有一组变量，代表国际化环境中的不同设置：<br>1、 语言符号及其分类(LC_CTYPE)<br>2、 数字(LC_NUMERIC)<br>3、 比较和排序习惯(LC_COLLATE)<br>4、 时间显示格式(LC_TIME)<br>5、 货币单位(LC_MONETARY)<br>6、 信息主要是提示信息,错误信息, 状态信息, 标题, 标签, 按钮和菜单等(LC_MESSAGES)<br>7、 姓名书写方式(LC_NAME)<br>8、 地址书写方式(LC_ADDRESS)<br>9、 电话号码书写方式(LC_TELEPHONE)<br>10、度量衡表达方式(LC_MEASUREMENT)<br>11、默认纸张尺寸大小(LC_PAPER)<br>12、对locale自身包含信息的概述(LC_IDENTIFICATION)。</p>
+<p>此外，还有两个特殊的设置</p>
+<ul>
+<li>LANG<br>LC_* 的默认值，是最低级别的设置，如果LC_* 没有设置，则使用该值。 </li>
+<li>LC_ALL<br>如果该值设置了，则该值会覆盖所有LC_* 的设置值。注意，LANG 的值不受影响。 </li>
+</ul>
+<p>它们之间有一个优先级的关系：LC_ALL &gt; LC_* &gt; LANG</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/12/09/locale/" data-id="cihyri2gi0000b43awhq1gle7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux点滴/">linux点滴</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-svn高级话题" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/09/svn高级话题/" class="article-date">
+  <time datetime="2015-12-09T07:53:10.000Z" itemprop="datePublished">2015-12-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/09/svn高级话题/">svn高级话题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_Revision_Specifiers">1. Revision Specifiers</h1><p>Revision numbers in Subversion are pretty straightforward—integers that keep getting larger as you commit more changes to<br>your versioned data. Besides the integer revision numbers, svn allows as input some additional forms of revision specifiers: revision keywords and revision dates.</p>
+<ul>
+<li>HEAD<br>The latest (or “youngest”) revision in the repository.</li>
+<li>BASE<br>The revision number of an item in a working copy. If the item has been locally modified, this refers to the way the item appears without those local modifications.</li>
+<li>COMMITTED<br>The most recent revision prior to, or equal to, BASE, in which an item changed.</li>
+<li>PREV<br>The revision immediately before the last revision in which an item changed.<br>Here are some examples of revision keywords in action:<figure class="highlight ruby"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>svn diff -r <span class="constant">PREV</span><span class="symbol">:COMMITTED</span> foo.c</span><br><span class="line"><span class="comment"># shows the last change committed to foo.c</span></span><br><span class="line"><span class="variable">$ </span>svn log -r <span class="constant">HEAD</span></span><br><span class="line"><span class="comment"># shows log message for the latest repository commit</span></span><br><span class="line"><span class="variable">$ </span>svn diff -r <span class="constant">HEAD</span></span><br><span class="line"><span class="comment"># compares your working copy (with all of its local changes) to the</span></span><br><span class="line"><span class="comment"># latest version of that tree in the repository</span></span><br><span class="line"><span class="variable">$ </span>svn diff -r <span class="constant">BASE</span><span class="symbol">:HEAD</span> foo.c</span><br><span class="line"><span class="comment"># compares the unmodified version of foo.c with the latest version of</span></span><br><span class="line"><span class="comment"># foo.c in the repository</span></span><br><span class="line"><span class="variable">$ </span>svn log -r <span class="constant">BASE</span><span class="symbol">:HEAD</span></span><br><span class="line"><span class="comment"># shows all commit logs for the current versioned directory since you</span></span><br><span class="line"><span class="comment"># last updated</span></span><br><span class="line"><span class="variable">$ </span>svn update -r <span class="constant">PREV</span> foo.c</span><br><span class="line"><span class="comment"># rewinds the last change on foo.c, decreasing foo.c's working revision</span></span><br><span class="line"><span class="variable">$ </span>svn diff -r <span class="constant">BASE</span><span class="symbol">:</span><span class="number">14</span> foo.c</span><br><span class="line"><span class="comment"># compares the unmodified version of foo.c with the way foo.c looked</span></span><br><span class="line"><span class="comment"># in revision 14</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="2-_Ignoring_Unversioned_Items">2. Ignoring Unversioned Items</h1><p>In any given working copy, there is a good chance that alongside all those versioned files and directories are other files and directories that are neither versioned nor intended to be.</p>
+<p>So Subversion provides two ways for telling it which files you would prefer that it simply disregard. One of the ways involves the use of Subversion’s runtime configuration system(see the section called “Runtime Configuration Area”), and therefore applies to all the Subversion operations that make use of that runtime configuration—generally those performed on a particular computer or by a particular user of a computer. The other way makes use of Subversion’s directory property support and is more tightly bound to the versioned tree itself, and therefore affects everyone who has a working copy of that tree. Both of the mechanisms use file patterns (strings of literal and special wildcard characters used to match against filenames) to decide which files to ignore.</p>
+<p>The Subversion runtime configuration system provides an option, global-ignores, whose value is a whitespace-delimited collection of file patterns.When found on a versioned directory, the svn:ignore property is expected to contain a list of newline-delimited file patterns that Subversion should use to determine ignorable objects in that same directory. These patterns do not override those found in the global-ignores runtime configuration option, but are instead appended to that list. And it’s worth noting again that, unlike the global-ignores option, the patterns found in the svn:ignore property apply only to the directory on which that property is set, and not to any of its subdirectories. </p>
+<p>Say you have the following output from svn status:<br><figure class="highlight armasm"><table><tr><td class="code"><pre><span class="line">$ svn status calc</span><br><span class="line">M calc/<span class="keyword">button.c</span><br><span class="line"></span>? calc/calculator</span><br><span class="line">? calc/<span class="preprocessor">data</span>.c</span><br><span class="line">? calc/debug_log</span><br><span class="line">? calc/debug_log.<span class="number">1</span></span><br><span class="line">? calc/debug_log.<span class="number">2</span>.gz</span><br><span class="line">? calc/debug_log.<span class="number">3</span>.gz</span><br></pre></td></tr></table></figure></p>
+<p>In this example, you have made some property modifications to button.c, but in your working copy, you also have some unversioned files. And you know that you aren’t interested in seeing those log files every time you run svn status. So you use <code>svn propedit svn:ignore calc</code> to add some ignore patterns to the calc directory. For example, you might add this as the new value of the svn:ignore property:<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">calculator</span><br><span class="line">debug_<span class="built_in">log</span>*</span><br></pre></td></tr></table></figure></p>
+<p>After you’ve added this property, you will now have a local property modification on the calc directory. But notice what else is different about your svn status output:<br><figure class="highlight armasm"><table><tr><td class="code"><pre><span class="line">$ svn status</span><br><span class="line">M calc</span><br><span class="line">M calc/<span class="keyword">button.c</span><br><span class="line"></span>? calc/<span class="preprocessor">data</span>.c</span><br></pre></td></tr></table></figure></p>
+<h1 id="3-_Sparse_Directories">3. Sparse Directories</h1><p>By default, most Subversion operations on directories act in a recursive manner. Subversion introduces a feature called sparse dir-<br>ectories (or shallow checkouts) that allows you to easily check out a working copy—or a portion of a working copy—more shallowly than full recursion, with the freedom to bring in previously ignored files and subdirectories at a later time. Here are the depth values that you can request for a given Subversion operation:</p>
+<ul>
+<li>—depth empty<br>Include only the immediate target of the operation, not any of its file or directory children.</li>
+<li>—depth files<br>Include the immediate target of the operation and any of its immediate file children.</li>
+<li>—depth immediates<br>Include the immediate target of the operation and any of its immediate file or directory children. The directory children will themselves be empty.</li>
+<li>—depth infinity<br>Include the immediate target, its file and directory children, its children’s children, and so on to full recursion.</li>
+</ul>
+<h1 id="4-_Properties">4. Properties</h1><p>In addition to versioning your directories and files, Subversion provides interfaces for adding, modifying, and removing versioned metadata on each of your versioned directories and files. We refer to this metadata as properties, and they can be thought of as two-column tables that map property names to arbitrary values attached to each item in your working copy. And the best part about these properties is that they, too, are versioned, just like the textual contents of your files. Subversion has reserved the set of properties whose names begin with <code>svn:</code> as its own. You should avoid creating custom properties for your own needs whose names begin with this prefix.</p>
+<p>Just as files and directories may have arbitrary property names and values attached to them, each revision as a whole may have<br>arbitrary properties attached to it.The main difference is that revision properties are not versioned.</p>
+<ul>
+<li>svn propset</li>
+</ul>
+<figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">$ svn propset copyright <span class="string">'(c) 2006 Red-Bean Software'</span> calc/<span class="tag">button</span><span class="class">.c</span></span><br><span class="line">property <span class="string">'copyright'</span> set on <span class="string">'calc/button.c'</span></span><br><span class="line"></span><br><span class="line">$ svn propset license -F /path/to/LICENSE calc/<span class="tag">button</span><span class="class">.c</span></span><br><span class="line">property <span class="string">'license'</span> set on <span class="string">'calc/button.c'</span></span><br></pre></td></tr></table></figure>
+<p>In addition to the propset command, the svn program supplies the propedit command. This command uses the configured editor program to add or modify properties.<br><figure class="highlight applescript"><table><tr><td class="code"><pre><span class="line">$ svn propset copyright '(c) <span class="number">2006</span> Red-Bean Software' calc/*</span><br><span class="line"><span class="keyword">property</span> 'copyright' <span class="keyword">set</span> <span class="function_start"><span class="keyword">on</span></span> 'calc/Makefile'</span><br><span class="line"><span class="keyword">property</span> 'copyright' <span class="keyword">set</span> <span class="function_start"><span class="keyword">on</span></span> 'calc/button.c'</span><br><span class="line"><span class="keyword">property</span> 'copyright' <span class="keyword">set</span> <span class="function_start"><span class="keyword">on</span></span> 'calc/<span class="type">integer</span>.c'</span><br></pre></td></tr></table></figure></p>
+<p>The svn proplist command will list the names of properties that exist on a path. Once you know the names of the prop-<br>erties on the node, you can request their values individually using svn propget.<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">$ svn proplist calc/<span class="tag">button</span><span class="class">.c</span></span><br><span class="line">Properties on <span class="string">'calc/button.c'</span>:</span><br><span class="line">copyright</span><br><span class="line">license</span><br><span class="line">$ svn propget copyright calc/<span class="tag">button</span><span class="class">.c</span></span><br><span class="line">(c) <span class="number">2006</span> Red-Bean Software</span><br></pre></td></tr></table></figure></p>
+<p>The last property-related subcommand is propdel.<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">$ svn propdel license calc/<span class="tag">button</span><span class="class">.c</span></span><br><span class="line">property <span class="string">'license'</span> deleted from <span class="string">'calc/button.c'</span>.</span><br></pre></td></tr></table></figure></p>
+<p>Remember those unversioned revision properties? You can modify those, too, using the same svn subcommands that we just described. Simply add the —revprop command-line parameter and specify the revision whose property you wish to modify. Since revisions are global, you don’t need to specify a target path to these property-related commands so long as you are positioned in a working copy of the repository whose revision property you wish to modify. Otherwise, you can simply provide the URL of any path in the repository of interest (including the repository’s root URL). For example, you might want to replace the commit log message of an existing revision. If your current working directory is part of a working copy of your repository, you can simply run the svn propset command with no target path:<br><figure class="highlight livecodeserver"><table><tr><td class="code"><pre><span class="line">$ svn propset svn:<span class="built_in">log</span> <span class="string">'* button.c: Fix a compiler warning.'</span> -r11 <span class="comment">--revprop</span></span><br><span class="line">property <span class="string">'svn:log'</span> <span class="built_in">set</span> <span class="command"><span class="keyword">on</span> <span class="title">repository</span> <span class="title">revision</span> <span class="string">'11'</span></span></span><br></pre></td></tr></table></figure></p>
+<p>But even if you haven’t checked out a working copy from that repository, you can still effect the property change by providing the repository’s root URL:<br><figure class="highlight livecodeserver"><table><tr><td class="code"><pre><span class="line">$ svn propset svn:<span class="built_in">log</span> <span class="string">'* button.c: Fix a compiler warning.'</span> -r11 <span class="comment">--revprop \</span></span><br><span class="line"><span class="keyword">http</span>://svn.example.com/repos/project</span><br><span class="line">property <span class="string">'svn:log'</span> <span class="built_in">set</span> <span class="command"><span class="keyword">on</span> <span class="title">repository</span> <span class="title">revision</span> <span class="string">'11'</span></span></span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/12/09/svn高级话题/" data-id="cihyiqvgj0001x83ar9fhom38" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svn/">svn</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-svn日常工作流程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/09/svn日常工作流程/" class="article-date">
+  <time datetime="2015-12-09T03:42:29.000Z" itemprop="datePublished">2015-12-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/09/svn日常工作流程/">svn日常工作流程</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>The typical work cycle looks like this:</p>
+<ol>
+<li>Update your working copy.<br>• svn update</li>
+<li>Make changes.<br>• svn add<br>• svn delete<br>• svn copy<br>• svn move</li>
+<li>Examine your changes.<br>• svn status<br>• svn diff</li>
+<li>Possibly undo some changes.<br>• svn revert</li>
+<li>Resolve conflicts (merge others’ changes).<br>• svn update<br>• svn resolve</li>
+<li>Commit your changes.<br>• svn commit</li>
+</ol>
+<h1 id="svn_status">svn status</h1><p>To get an overview of your changes before committing, you’ll use the svn status command.  Here are a few examples of the most common status codes that svn status can return. (Note that the text following # is not actually printed by svn status.)<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">? scratch.c         # <span class="keyword">file</span> is not under <span class="keyword">version</span> control</span><br><span class="line">A stuff/loot/bloo.<span class="keyword">h</span> # <span class="keyword">file</span> is scheduled <span class="keyword">for</span> addition</span><br><span class="line">C stuff/loot/lump.c # <span class="keyword">file</span> has textual conflicts from <span class="keyword">an</span> <span class="keyword">update</span></span><br><span class="line"><span class="keyword">D</span> stuff/fish.c      # <span class="keyword">file</span> is scheduled <span class="keyword">for</span> deletion</span><br><span class="line"><span class="keyword">M</span> bar.c             # the content <span class="keyword">in</span> bar.c has <span class="keyword">local</span> modifications</span><br></pre></td></tr></table></figure></p>
+<p>Command <code>svn status</code> does not contact the repository. Instead, they compare the metadata in the .svn directory with the working copy. There is the —show-updates (-u) option, which contacts the repository and adds information about things that are out of date:<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">$ svn status -<span class="keyword">u</span> -v</span><br><span class="line"><span class="keyword">M</span>      *    44 23 sally README</span><br><span class="line"><span class="keyword">M</span>           44 20 harry bar.c</span><br><span class="line"><span class="comment">       *    44 35 harry stuff/trout.c</span></span><br><span class="line"><span class="keyword">D</span>           44 19 ira   stuff/fish.c</span><br><span class="line">A            0  ?  ?    stuff/things/bloo.<span class="literal">h</span></span><br><span class="line">Status against revision: 46</span><br></pre></td></tr></table></figure></p>
+<p><code>svn status</code> also has a —verbose (-v) option, which will show you the status of every item in your working copy, even if it has not been changed. Notice the two asterisks: if you were to run svn update at this point, you would receive changes to README and trout.c. This tells you some very useful information—you’ll need to update and get the server changes on README before you commit, or the repository will reject your commit for being out of date.</p>
+<h1 id="svn_revert">svn revert</h1><p>Suppose while viewing the output of svn diff you determine that all the changes you made to a particular file are mistakes. Maybe you shouldn’t have changed the file at all, or perhaps it would be easier to make different changes starting from scratch.Subversion reverts the file to its premodified state by overwriting it with the cached “pristine” copy from the .svn area. But also note that svn revert can undo any scheduled operations<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>svn status <span class="constant">README</span></span><br><span class="line"><span class="variable">$ </span>svn delete <span class="constant">README</span></span><br><span class="line"><span class="constant">D README</span></span><br><span class="line"><span class="variable">$ </span>svn revert <span class="constant">README</span></span><br><span class="line"><span class="constant">Reverted </span><span class="string">'README'</span></span><br><span class="line"><span class="variable">$ </span>svn status <span class="constant">README</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="Resolve_Conflicts_(Merging_Others’_Changes)">Resolve Conflicts (Merging Others’ Changes)</h1><p>We’ve already seen how svn status -u can predict conflicts. Suppose you run svn update and some interesting things occur:<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">update</span></span><br><span class="line"><span class="keyword">U</span> INSTALL</span><br><span class="line"><span class="keyword">G</span> README</span><br><span class="line">Conflict discovered <span class="keyword">in</span> 'bar.c'.</span><br><span class="line">Select: (p) postpone, (df) diff-full, (<span class="keyword">e</span>) <span class="keyword">edit</span>,</span><br><span class="line">(<span class="keyword">h</span>) <span class="keyword">help</span> <span class="keyword">for</span> <span class="keyword">more</span> options:</span><br></pre></td></tr></table></figure></p>
+<p>The U and G codes are no cause for concern; those files cleanly absorbed changes from the repository. The files marked with U contained no local changes but were Updated with changes from the repository. The G stands for merGed, which means that the file had local changes to begin with, but the changes coming from the repository didn’t overlap with the local changes. But the next two lines are part of a feature called interactive conflict resolution. This means that the changes from the server overlapped with your own, and you have the opportunity to resolve this conflict. The most commonly used options are displayed, but you can see all of the options by typing h:<br><figure class="highlight vim"><table><tr><td class="code"><pre><span class="line">(<span class="keyword">p</span>) postpone - <span class="keyword">mark</span> the conflict <span class="keyword">to</span> <span class="keyword">be</span> resolved <span class="keyword">later</span></span><br><span class="line">(df) diff-full - show <span class="keyword">all</span> <span class="keyword">changes</span> made <span class="keyword">to</span> merged <span class="keyword">file</span></span><br><span class="line">(<span class="keyword">e</span>) <span class="keyword">edit</span> - <span class="keyword">change</span> merged <span class="keyword">file</span> in <span class="keyword">an</span> editor</span><br><span class="line">(<span class="keyword">r</span>) resolved - accept merged <span class="keyword">version</span> of <span class="keyword">file</span></span><br><span class="line">(mf) mine-full - accept my <span class="keyword">version</span> of entire <span class="keyword">file</span> (ignore their <span class="keyword">changes</span>)</span><br><span class="line">(<span class="keyword">tf</span>) theirs-full - accept their <span class="keyword">version</span> of entire <span class="keyword">file</span> (lose my <span class="keyword">changes</span>)</span><br><span class="line">(<span class="keyword">l</span>) launch - launch external tool <span class="keyword">to</span> <span class="built_in">resolve</span> conflict</span><br><span class="line">(<span class="keyword">h</span>) <span class="keyword">help</span> - show this <span class="keyword">list</span></span><br></pre></td></tr></table></figure></p>
+<p>Let’s briefly review each of these options before we go into detail on what each option means.<br><figure class="highlight applescript"><table><tr><td class="code"><pre><span class="line">(p)ostpone</span><br><span class="line">    Leave <span class="keyword">the</span> <span class="type">file</span> <span class="keyword">in</span> a conflicted state <span class="keyword">for</span> you <span class="keyword">to</span> resolve <span class="keyword">after</span> your update <span class="keyword">is</span> complete.</span><br><span class="line">(d)iff</span><br><span class="line">    Display <span class="keyword">the</span> differences <span class="keyword">between</span> <span class="keyword">the</span> base revision <span class="keyword">and</span> <span class="keyword">the</span> conflicted <span class="type">file</span> itself <span class="keyword">in</span> unified </span><br><span class="line">    diff format.</span><br><span class="line">(e)dit</span><br><span class="line">    Open <span class="keyword">the</span> <span class="type">file</span> <span class="keyword">in</span> conflict <span class="keyword">with</span> your favorite editor, <span class="keyword">as</span> <span class="keyword">set</span> <span class="keyword">in</span> <span class="keyword">the</span> environment </span><br><span class="line">    variable EDITOR.</span><br><span class="line">(r)esolved</span><br><span class="line">    After editing a <span class="type">file</span>, <span class="keyword">tell</span> svn <span class="keyword">that</span> you've resolved <span class="keyword">the</span> conflicts <span class="keyword">in</span> <span class="keyword">the</span> <span class="type">file</span> <span class="keyword">and</span> <span class="keyword">that</span> </span><br><span class="line">    <span class="keyword">it</span> should accept <span class="keyword">the</span> current <span class="property">contents</span>—basically <span class="keyword">that</span> you've “resolved” <span class="keyword">the</span> conflict.</span><br><span class="line">(m)ine-(f)ull</span><br><span class="line">    Discard <span class="keyword">the</span> newly received changes <span class="keyword">from</span> <span class="keyword">the</span> server <span class="keyword">and</span> use only your <span class="keyword">local</span> changes <span class="keyword">for</span> </span><br><span class="line">    <span class="keyword">the</span> <span class="type">file</span> under review.</span><br><span class="line">(t)heirs-(f)ull</span><br><span class="line">    Discard your <span class="keyword">local</span> changes <span class="keyword">to</span> <span class="keyword">the</span> <span class="type">file</span> under review <span class="keyword">and</span> use only <span class="keyword">the</span> newly received </span><br><span class="line">    changes <span class="keyword">from</span> <span class="keyword">the</span> server.</span><br><span class="line">(l)aunch</span><br><span class="line">    Launch an external program <span class="keyword">to</span> perform <span class="keyword">the</span> conflict resolution. This requires a bit <span class="keyword">of</span> </span><br><span class="line">    preparation beforehand.</span><br><span class="line">(h)elp</span><br><span class="line">    Show <span class="keyword">the</span> <span class="type">list</span> <span class="keyword">of</span> all possible commands you can use <span class="keyword">in</span> interactive conflict resolution.</span><br></pre></td></tr></table></figure></p>
+<p>Before deciding how to attack a conflict interactively, odds are that you’d like to see exactly<br>what is in conflict, and the diff command (d) is what you’ll use for this:<br><figure class="highlight asciidoc"><table><tr><td class="code"><pre><span class="line">Select: (p) postpone, (df) diff-full, (e) edit,</span><br><span class="line">(h)elp for more options : d</span><br><span class="line"><span class="bullet">--- </span>.svn/text-base/sandwich.txt.svn-base Tue Dec 11 21:33:57 2007</span><br><span class="line"><span class="code">+++</span> .svn/tmp/tempfile.32.tmp Tue Dec 11 21:34:33 2007</span><br><span class="line">@@ -1 +1,5 @@</span><br><span class="line">-Just buy a sandwich.</span><br><span class="line">+&lt;&lt;&lt;&lt;&lt;&lt;&lt; .mine</span><br><span class="line"><span class="header">+Go pick up a cheesesteak.</span><br><span class="line">+=======</span></span><br><span class="line">+Bring me a taco!</span><br><span class="line">+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .r32</span><br></pre></td></tr></table></figure></p>
+<p>The first line of the diff content shows the previous contents of the working copy (the BASE revision), the next content line is your change, and the last content line is the change that was just received from the server (usually the HEAD revision).</p>
+<p>When you <em>postpone</em> a conflict resolution, svn typically does three things to assist you in noticing and resolving that conflict:</p>
+<ol>
+<li>Subversion prints a C during the update and remembers that the file is in a state of conflict.</li>
+<li>If Subversion considers the file to be mergeable, it places conflict markers—special strings of text that delimit the “sides” of the conflict—into the file to visibly demonstrate the overlapping areas. (Subversion uses the svn:mime-type property to decide whether a file is capable of contextual, line-based merging)</li>
+<li>For every conflicted file, Subversion places three extra unversioned files in your working copy:</li>
+</ol>
+<ul>
+<li>filename.mine<br>This is your file as it existed in your working copy before you updated your working<br>copy—that is, without conflict markers. This file has only your latest changes in it. </li>
+<li>filename.rOLDREV<br>This is the file that was the BASE revision before you updated your working copy. That<br>is, the file that you checked out before you made your latest edits.</li>
+<li>filename.rNEWREV<br>This is the file that your Subversion client just received from the server when you updated your working copy. This file corresponds to the HEAD revision of the repository.</li>
+</ul>
+<p>If you’ve postponed a conflict, you need to resolve the conflict before Subversion will allow you to commit your changes. You’ll do this with the svn resolve command and one of several arguments to the —accept option.</p>
+<ul>
+<li>If you want to choose the version of the file that you last checked out before making your edits, choose the base argument.</li>
+<li>If you want to choose the version that contains only your edits, choose the mine-full argument.</li>
+<li>If you want to choose the version that your most recent update pulled from the server, choose the theirs-full argument.</li>
+<li>However, if you want to pick and choose from your changes and the changes that your update fetched from the server, merge the conflicted text “by hand” (by examining and editing the conflict markers within the file) and then choose the working argument.</li>
+</ul>
+<p>svn resolve removes the three temporary files and accepts the version of the file that you specified with the —accept option, and Subversion no longer considers the file to be in a state of conflict:<br><figure class="highlight pf"><table><tr><td class="code"><pre><span class="line">$ svn resolve --accept working sandwich.txt</span><br><span class="line">Resolved conflicted <span class="keyword">state</span> of 'sandwich.txt'</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/12/09/svn日常工作流程/" data-id="cihy9shl60000j03a5no9uuqe" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svn/">svn</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-svn基本操作" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/01/svn基本操作/" class="article-date">
+  <time datetime="2015-12-01T06:42:55.000Z" itemprop="datePublished">2015-12-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/01/svn基本操作/">svn基本操作</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_help">1. help</h1><p><code>svn help subcommand</code> will describe the syntax, options, and behavior of the subcommand.</p>
+<h1 id="2-_import">2. import</h1><p>The <code>svn import</code> command is a quick way to copy an <em>unversioned</em> tree of files into a repository, creating <em>intermediate</em> directories as necessary. You typically use this when you have an existing tree of files that you want to begin tracking in your Subversion repository. 例如，假设svn服务器上存在以下目录<code>https://var/svn/newrepos/</code>，本地机器上存在md5目录，并且md5目录下存在md5.c和md5.h两个文件。现在想把md5这个新的项目导入到svn服务器，使其具有版本管理功能。<br><figure class="highlight coffeescript"><table><tr><td class="code"><pre><span class="line">svn <span class="reserved">import</span> md5 <span class="attribute">https</span>:<span class="regexp">//</span><span class="reserved">var</span>/svn/newrepos/md5 -m <span class="string">'Initial md5'</span></span><br></pre></td></tr></table></figure></p>
+<p>Note that after the import is finished, the original tree is not converted into a working copy. To start working, you still need to <code>svn checkout</code> a fresh working copy of the tree.</p>
+<h1 id="3-_checkout">3. checkout</h1><p>Most of the time, you will start using a Subversion repository by doing a checkout of your project. Checking out a repository creates a “working copy” of it on your local machine.<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line">svn checkout <span class="symbol">https:</span>/<span class="regexp">/var/svn</span><span class="regexp">/newrepos/md</span>5</span><br><span class="line">svn co <span class="symbol">https:</span>/<span class="regexp">/var/svn</span><span class="regexp">/newrepos/md</span>5</span><br></pre></td></tr></table></figure></p>
+<p>While you can certainly check out a working copy with the URL of the repository as the only argument, you can also specify a directory after your repository URL. This places your working copy in the new directory that you name.<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line">svn co <span class="symbol">https:</span>/<span class="regexp">/var/svn</span><span class="regexp">/newrepos/md</span>5 my_md5</span><br></pre></td></tr></table></figure></p>
+<p>That will place your working copy in a directory named my_md5 instead of a directory named md5 as we did previously. The directory my_md5 will be created if it doesn’t already exist.</p>
+<h1 id="4-_Authenticating_As_a_Different_User">4. Authenticating As a Different User</h1><p>If you’re working in a shared working copy such as a system configuration directory or a web server document root. In this case,<br>just pass the —username option on the command line, and Subversion will attempt to authenticate as that user, prompting you for a password if necessary.<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">svn <span class="built_in">list</span> https:<span class="comment">//var/svn/newrepos/md5 --username xiaoming</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="5-_svn_export">5. svn export</h1><p>If you’re building a release and wish to bundle up your files from Subversion but don’t want those pesky .svn directories in the way, you can use svn export to create a local copy of all or part of your repository sans .svn directories.<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">export</span> http:<span class="comment">//svn.example.com/svn/repos1 -r 1729</span></span><br><span class="line"><span class="preprocessor"># Exports revision r1729</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="6-_Examining_History">6. Examining History</h1><p>Several commands can provide you with historical data from the repository:</p>
+<h2 id="svn_log">svn log</h2><p>Shows you broad information: log messages with date and author information attached to revisions and which paths changed in each revision.  If you wish to see a different range of revisions in a particular order or just a single revision, pass the —revision (-r) option:<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">log</span> -r 5:19 # shows logs 5 through 19 <span class="keyword">in</span> chronological <span class="keyword">order</span></span><br><span class="line">$ svn <span class="keyword">log</span> -r 19:5 # shows logs 5 through 19 <span class="keyword">in</span> reverse <span class="keyword">order</span></span><br><span class="line">$ svn <span class="keyword">log</span> -r 8 # shows <span class="keyword">log</span> <span class="keyword">for</span> revision 8</span><br></pre></td></tr></table></figure></p>
+<p>In verbose mode, svn log will include a list of changed paths in a revision in its output:<br><figure class="highlight asciidoc"><table><tr><td class="code"><pre><span class="line"><span class="header">$ svn log -r 8 -v</span><br><span class="line">------------------------------------------------------------------------</span></span><br><span class="line">r8 | sally | 2008-05-21 13:19:25 -0500 (Wed, 21 May 2008) | 1 line</span><br><span class="line">Changed paths:</span><br><span class="line">M /trunk/code/foo.c</span><br><span class="line">M /trunk/code/bar.h</span><br><span class="line">A /trunk/code/doc/README</span><br><span class="line">Frozzled the sub-space winch.</span><br></pre></td></tr></table></figure></p>
+<h2 id="svn_diff">svn diff</h2><p>There are three distinct uses of svn diff:</p>
+<ul>
+<li>Invoking svn diff with no options will compare your working files to the cached “pristine” copies in the .svn area</li>
+<li>If a single —revision (-r) number is passed, your working copy is compared to the specified revision in the repository</li>
+<li>If two revision numbers, separated by a colon, are passed via —revision (-r), the two revisions are directly compared:<br>svn diff -r 2:3 rules.txt</li>
+<li>If a “—change(-c) ARG” is passed, it shows the change made by revision ARG(like -r ARG-1:ARG). If ARG is negative this is<br>like -r ARG:ARG-1</li>
+</ul>
+<h2 id="svn_cat">svn cat</h2><p>Retrieves a file as it existed in a particular revision number and displays it on your screen</p>
+<h2 id="svn_list">svn list</h2><p>Displays the files in a directory for any given revision</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/12/01/svn基本操作/" data-id="cihn0v3ch00013o3ax4zxqrnq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svn/">svn</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-CPU点滴" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/20/CPU点滴/" class="article-date">
+  <time datetime="2015-11-20T05:44:22.000Z" itemprop="datePublished">2015-11-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/20/CPU点滴/">CPU点滴</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-_register_memory_architecture">1. register memory architecture</h2><p>One of the operands for ADD operation may be in memory, while the other is in a register. Examples are IBM 360 and Intel x86.</p>
+<h2 id="2-_register_plus_memory_architecture">2. register plus memory architecture</h2><p>Both operands for ADD operation may be in memory or in registers, or in combinations. </p>
+<h2 id="3-_load/store_architecture">3. load/store architecture</h2><p>Both operands for ADD operation must be in registers. In computer engineering a load/store architecture only allows memory to be accessed by load and store operations, and all values for an operation need to be loaded from memory and be present in registers. Following the operation, the result needs to be stored back to memory. For instance, in a load/store approach both operands for an ADD operation must be in registers. This differs from a register memory architecture in which one of the operands for the ADD operation may be in memory, while the other is in a register. RISC systems such as PowerPC, SPARC, ARM or MIPS use the load/store architecture.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/11/20/CPU点滴/" data-id="cihn0v39000003o3affl3howl" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-CPU访问外部设备" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/14/CPU访问外部设备/" class="article-date">
+  <time datetime="2015-11-14T12:35:36.000Z" itemprop="datePublished">2015-11-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/14/CPU访问外部设备/">CPU访问外部设备</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>整个计算机由CPU、内存和外部设备组成。当CPU要对内存中的内容进行读写操作时，地址总线负责传输地址，控制总线指明是读取操作还是写入操作，数据总线则用来传输写入内存或从内存读出的信息。而CPU与外部设备的交互，则是通过CPU读写外部设备上的寄存器实现的，外设寄存器也称为“I/O端口”。<br>我们知道，内存中的每个存储单元都有一个地址与其对应，CPU根据这个地址就可以指定自己想要访问的存储单元。那外部设备呢？外部设备中的寄存器也需要有一个地址与之相对应，才能让CPU根据寄存器的地址来区分不同设备之间的寄存器和同一个设备中的不同寄存器。既然，外部设备中的寄存器也需要有一个地址，那么现在的问题是外部设备中的寄存器地址与内存地址的关系是什么呢。<br>1、独立编址(ISOLATED I/O): 也称为“I/O端口”方式，外部设备中的寄存器(I/O端口)地址与内存地址是相互独立、互不影响的，它们分别位于不同的地址空间内。即I/O端口地址位于I/O地址空间内，而内存地址则位于内存地址空间内。不同的地址空间，这个如何理解呢。举个例子，I/O地址空间内存在0xff这样的地址，内存地址空间也可以存在0xff这样的地址，它们两个互不影响。那当地址总线上出现0xff这个地址时，CPU到底是想访问内存还是想访问I/O端口呢，这个是由I/O读控制线、I/O写控制线、内存读控制线、内存写控制线来决定的。如果CPU访问的是I/O端口，那么I/O读控制线或者I/O写控制线被激活；如果CPU访问的是内存，那么内存读控制线或者内存写控制线被激活。所以，采用独立编址方式，对于某个地址（例如0xff）而言，它既可以存在于I/O地址空间内，也可以位于内存地址空间内。在采用独立编址的体系架构下，CPU通过MOV指令来访问内存，而对I/O端口的访问则是通过IN和OUT指令来完成的。IN指令和OUT指令的具体例子如下：<br><figure class="highlight x86asm"><table><tr><td class="code"><pre><span class="line"><span class="keyword">IN</span> <span class="literal">AL</span>, <span class="number">21H</span>  // 从<span class="number">21H</span>端口读取一字节数据到<span class="literal">AL</span>寄存器</span><br><span class="line"><span class="keyword">OUT</span> <span class="number">21H</span>, <span class="literal">AL</span> // 将寄存器<span class="literal">AL</span>的值写入<span class="number">21H</span>端口</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line">汇编语言中的数字：</span><br><span class="line">二进制     <span class="number">11111111B</span>     <span class="number">00001111B</span>    // 数字后加B</span><br><span class="line">十进制        <span class="number">255</span>            <span class="number">16</span></span><br><span class="line">十六进制     <span class="number">0FFH</span>            <span class="number">0FH</span>      // 数字后加HS</span><br><span class="line">另外，当十六进制数的第一个字符是字母时，必须在第一个字符之前添加一个<span class="number">0</span> </span><br><span class="line">*/</span><br></pre></td></tr></table></figure></p>
+<p>32位处理器的内存地址空间大小是4G，而独立编址的I/O地址空间的大小为64K，即它由65536个8bit的I/O端口组成。I/O端口的编号从 0x0000到0xFFFF，有16位，80x86架构用低16位地址线A0-A15来寻址。连续两个8bit的端口可以组成一个16bit的端口，连续4个组成一个 32bit的端口。采用独立编址的典型例子是intel 80x86。</p>
+<p>2、统一编址(Memory-Mapped I/O)：也称为“I/O内存”方式。外部设备中的寄存器和内存中的存储单元被同等看待，每个I/O端口占用一个内存存储单元的地址，将内存地址的一部分划出来用作IO地址空间。I/O端口占用了内存的地址空间，使内存的存储量容量减小。对于一个32位系统来说，它的4G的地址空间被内存和外部设备中的寄存器共同瓜分。采用统一编址方式，CPU访问外部设备IO端口时，不再需要额外的IN和OUT指令，CPU只需要使用同一套指令就可以访问内存或者IO端口。arm，powerpc在这一类的嵌入式处理器中采用统一编址方式。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/11/14/CPU访问外部设备/" data-id="cihn0v3ds000a3o3alkg6oobv" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-linux内核list分析三-哈希链表" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/11/08/linux内核list分析三-哈希链表/" class="article-date">
@@ -94,7 +495,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/11/08/linux内核list分析三-哈希链表/" data-id="cigx9shhj0004ws3a5pj1122m" class="article-share-link">Share</a>
+      <a data-url="https://zhouzijiang.github.io/2015/11/08/linux内核list分析三-哈希链表/" data-id="cihn0v3ds00033o3aemfmglgx" class="article-share-link">Share</a>
       
       
     </footer>
@@ -136,7 +537,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/11/08/linux内核list分析二-双向循环链表/" data-id="cigx9shhd0003ws3ad80vrieg" class="article-share-link">Share</a>
+      <a data-url="https://zhouzijiang.github.io/2015/11/08/linux内核list分析二-双向循环链表/" data-id="cihn0v3ds00023o3accimlyf4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -187,7 +588,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/11/07/linux内核list分析一-前言/" data-id="cigx9shhk0005ws3as32dfo5g" class="article-share-link">Share</a>
+      <a data-url="https://zhouzijiang.github.io/2015/11/07/linux内核list分析一-前言/" data-id="cihn0v3ds00043o3axtkrb9tg" class="article-share-link">Share</a>
       
       
     </footer>
@@ -197,202 +598,10 @@
 
 
   
-    <article id="post-hexo和github-pages搭建个人博客" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/08/08/hexo和github-pages搭建个人博客/" class="article-date">
-  <time datetime="2015-08-08T02:05:30.000Z" itemprop="datePublished">2015-08-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/08/hexo和github-pages搭建个人博客/">hexo和github pages搭建个人博客</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>搭建个人博客需要用到两个软件git和node.js，所以请先安装完成这两个软件。本教程仅适用于windows平台。</p>
-<h2 id="一、_github的配置">一、 github的配置</h2><p>我们在本地写完博客以后，会提交到github上。github提供了两种认证方式：用户名密码和ssh。如果使用用户名和密码的认证方式，那么我们每次提交到github的时候都会要求我们输入用户名和密码，这种方式用户体验不好。所以，我们使用ssh认证方式，即在本地生成一对私钥和公钥，然后把公钥添加到自己在github的账号信息里，这样提交博客到github上时会自动完成认证过程。</p>
-<h2 id="1-1_检查ssh密钥是否已经存在">1.1 检查ssh密钥是否已经存在</h2><p>首先，我们需要检查自己的机器上是否已经存在ssh密钥，打开git bash并输入以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ ls -al ~/.ssh</span><br><span class="line"><span class="comment"># Lists the files in your .ssh directory, if they exist</span></span><br></pre></td></tr></table></figure></p>
-<p>如果存在 id_rsa.pub 和 id_rsa这两个文件，说明之前已经生成过ssh密钥，请忽略步骤1.2</p>
-<h2 id="1-2_生成ssh密钥">1.2 生成ssh密钥</h2><p>打开git bash，执行以下命令，别忘了将邮箱地址替换成自己在github上的邮箱地址。<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">"your_email@example.com"</span></span><br><span class="line"><span class="comment"># Creates a new ssh key, using the provided email as a label</span></span><br><span class="line">Generating public/private rsa key pair.</span><br></pre></td></tr></table></figure></p>
-<p>让密钥文件保存在默认位置，直接按回车键即可。<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Enter file <span class="keyword">in</span> <span class="built_in">which</span> to save the key (/Users/you/.ssh/id_rsa): [Press enter]</span><br></pre></td></tr></table></figure></p>
-<p>输入一个使用密钥文件时需要输入的密码（不然每个人都可以随便使用此密钥文件来访问你的github）<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Enter passphrase (empty <span class="keyword">for</span> no passphrase): [Type a passphrase]</span><br><span class="line">Enter same passphrase again: [Type passphrase again]</span><br></pre></td></tr></table></figure></p>
-<p>输入密码之后，界面会输出成功生成密钥的信息<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Your identification has been saved <span class="keyword">in</span> /Users/you/.ssh/id_rsa.</span><br><span class="line">Your public key has been saved <span class="keyword">in</span> /Users/you/.ssh/id_rsa.pub.</span><br><span class="line">The key fingerprint is:</span><br><span class="line"><span class="number">01</span>:<span class="number">0</span>f:f4:<span class="number">3</span>b:ca:<span class="number">85</span>:d6:<span class="number">17</span>:a1:<span class="number">7</span>d:f0:<span class="number">68</span>:<span class="number">9</span>d:f0:a2:db your_email@example.com</span><br></pre></td></tr></table></figure></p>
-<h2 id="1-3_把公钥添加到自己的github账号">1.3 把公钥添加到自己的github账号</h2><p>打开公钥文件/Users/you/.ssh/id_rsa.pub，复制一下里面的全部内容。需要注意的一点是，复制公钥的时候不能多了换行符或者空格，否则添加公钥时会失败。然后，参见github的<a href="https://help.github.com/articles/generating-ssh-keys/" target="_blank" rel="external">添加ssh密钥的官方文档</a>的“Step 4: Add your SSH key to your account”章节，将自己的公钥添加到github账号。</p>
-<h2 id="1-4_测试是否能ssh连接到github">1.4 测试是否能ssh连接到github</h2><p>打开git bash，输入<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="comment"># Attempts to ssh to GitHub</span></span><br></pre></td></tr></table></figure></p>
-<p>你会看到以下信息<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">The authenticity of host <span class="string">'github.com (207.97.227.239)'</span> can<span class="string">'t be established.</span><br><span class="line">RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span></span><br></pre></td></tr></table></figure></p>
-<p>输入yes，看到以下信息说明ssh配置成功<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Hi username! You<span class="string">'ve successfully authenticated, but GitHub does not</span><br><span class="line">provide shell access.</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="二、_github_pages的配置">二、 github pages的配置</h2><p>首先，github是一个具有版本管理功能的代码仓库，我们可以在上面建立多个项目。每一个项目会有自己的一个默认主页，主页内只会列出项目的源文件。这对于一个新手来说，不知从何入手。人们需要有一个对这个项目的具体介绍的主页，以帮助第一次接触这个项目的人对此项目有一个大概的了解。所以我们应该自定义项目的主页，来代替原本只是列出项目源文件的主页。github pages就是完成这样的功能的。github pages能够建立两种类型的网站，第一种是为每一个github用户或者组织建立的网站，用来介绍该用户或组织，这种网站每个用户或者组织只能建立一个；第二种是为用户或者组织的github上的项目建立的网站，用来介绍项目的情况，这种网站每个用户或者组织能建立多个。我们搭建个人博客需要建立的网站是第一种网站，所以需要在github上新建一个项目，这个项目的名字有特殊的要求，即项目的名字必须符合“username.github.io”这种格式，其中username是自己在github上的账户名称。</p>
-<h2 id="三、_git的配置">三、 git的配置</h2><p>Git会根据用户的名字和邮箱来记录提交，GitHub也是用这些信息来做权限的处理。所在在使用git向github提交文件之前，需要先在git中设置自己的github用户名和邮箱。<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git config --global user.name  <span class="string">"github_user_name"</span></span><br><span class="line">$ git config --global user.email <span class="string">"your_email@youremail.com"</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="四、_hexo的配置">四、 hexo的配置</h2><p>hexo是一款基于node.js的静态博客框架。</p>
-<h2 id="4-1_安装hexo">4.1 安装hexo</h2><p>打开git bash，执行以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-cli -g</span><br></pre></td></tr></table></figure></p>
-<h2 id="4-2_新建并初始化博客项目blog">4.2 新建并初始化博客项目blog</h2><p>打开git bash，执行以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo init blog</span><br><span class="line">$ <span class="built_in">cd</span> blog</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure></p>
-<h2 id="4-3_在本地浏览博客界面">4.3 在本地浏览博客界面</h2><p>打开git bash，执行以下命令<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure></p>
-<p>然后，打开浏览器，输入网址<code>http://127.0.0.1:4000/</code>，看到如下图所示的经典的“hello world”，说明配置成功。我们看到的“hello world”文章是hexo为我们发出的第一篇博客。<br><img src="/img/hello_world.PNG" alt=""></p>
-<h2 id="五、_利用hexo写一篇博客并发布到github">五、 利用hexo写一篇博客并发布到github</h2><h2 id="5-1_新建一篇博客">5.1 新建一篇博客</h2><p>在git bash中将当前目录切换到上一步骤中的blog目录<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">'your_first_blog_title'</span></span><br></pre></td></tr></table></figure></p>
-<p>这时，会生成blog/source/_posts/your_first_blog_title.md文件</p>
-<h2 id="5-2_编辑博客">5.2 编辑博客</h2><p>用自己喜欢的编辑工具打开your_first_blog_title.md文件，利用markdown语法来编辑博客，保存。</p>
-<h2 id="5-3_修改项目配置文件">5.3 修改项目配置文件</h2><p>打开blog/_config.yml，修改以下内容<br><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## <span class="string">Docs:</span> <span class="string">http:</span><span class="comment">//hexo.io/docs/deployment.html</span></span><br><span class="line"><span class="string">deploy:</span></span><br><span class="line"><span class="label">  type:</span> git</span><br><span class="line"><span class="label">  repo:</span> git<span class="annotation">@github</span>.<span class="string">com:</span>user_name/user_name.github.io.git</span><br><span class="line"><span class="label">  branch:</span> master</span><br></pre></td></tr></table></figure></p>
-<h2 id="5-4_生成静态网站">5.4 生成静态网站</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<h2 id="5-5_发布到github">5.5 发布到github</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<h2 id="5-6_欣赏">5.6 欣赏</h2><p>在浏览器中输入网址<code>https://user_name.github.io</code>，欣赏一下自己刚刚发布的博客吧！</p>
-<h2 id="六、_ssh-agent的配置">六、 ssh-agent的配置</h2><p>在上一步骤中提交文件到github的时候，会让我们输入访问密钥证书的密码。每次都要这样，怎么破呢？ssh-agent可以帮助我们解决这个问题。我们需要在打开git bash的时候自动运行ssh-agent，所以需要把下面的shell代码复制到~/.profile或者~/.bashrc文件中。<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Note: ~/.ssh/environment should not be used, as it</span></span><br><span class="line"><span class="comment">#       already has a different purpose in SSH.</span></span><br><span class="line"></span><br><span class="line">env=~/.ssh/agent.env</span><br><span class="line"></span><br><span class="line"><span class="comment"># Note: Don't bother checking SSH_AGENT_PID. It's not used</span></span><br><span class="line"><span class="comment">#       by SSH itself, and it might even be incorrect</span></span><br><span class="line"><span class="comment">#       (for example, when using agent-forwarding over SSH).</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">agent_is_running</span></span>() &#123;</span><br><span class="line">    <span class="keyword">if</span> [ <span class="string">"<span class="variable">$SSH_AUTH_SOCK</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="comment"># ssh-add returns:</span></span><br><span class="line">        <span class="comment">#   0 = agent running, has keys</span></span><br><span class="line">        <span class="comment">#   1 = agent running, no keys</span></span><br><span class="line">        <span class="comment">#   2 = agent not running</span></span><br><span class="line">        ssh-add <span class="operator">-l</span> &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span> || [ $? <span class="operator">-eq</span> <span class="number">1</span> ]</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="literal">false</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">agent_has_keys</span></span>() &#123;</span><br><span class="line">    ssh-add <span class="operator">-l</span> &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">agent_load_env</span></span>() &#123;</span><br><span class="line">    . <span class="string">"<span class="variable">$env</span>"</span> &gt;/dev/null</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">agent_start</span></span>() &#123;</span><br><span class="line">    (<span class="built_in">umask</span> <span class="number">077</span>; ssh-agent &gt;<span class="string">"<span class="variable">$env</span>"</span>)</span><br><span class="line">    . <span class="string">"<span class="variable">$env</span>"</span> &gt;/dev/null</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ! agent_is_running; <span class="keyword">then</span></span><br><span class="line">    agent_load_env</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># if your keys are not stored in ~/.ssh/id_rsa or ~/.ssh/id_dsa, you'll need</span></span><br><span class="line"><span class="comment"># to paste the proper path after ssh-add</span></span><br><span class="line"><span class="keyword">if</span> ! agent_is_running; <span class="keyword">then</span></span><br><span class="line">    agent_start</span><br><span class="line">    ssh-add</span><br><span class="line"><span class="keyword">elif</span> ! agent_has_keys; <span class="keyword">then</span></span><br><span class="line">    ssh-add</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">unset</span> env</span><br></pre></td></tr></table></figure></p>
-<p>保存文件后，在第一次打开git bash的时候，会提示我们输入访问ssh密钥的密码，我们输入正确的密码之后，以后再提交博客到github的时候就是完全自动化的。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/08/08/hexo和github-pages搭建个人博客/" data-id="cigx9shhl0006ws3a84bvp1gi" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/07/05/hello-world/" class="article-date">
-  <time datetime="2015-07-05T07:48:53.427Z" itemprop="datePublished">2015-07-05</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/05/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/07/05/hello-world/" data-id="cigx9shhn0007ws3aywb9lefg" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-ctags" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/07/05/ctags/" class="article-date">
-  <time datetime="2015-07-05T07:13:46.000Z" itemprop="datePublished">2015-07-05</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/05/ctags/">ctags</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Ability">Ability</h2><p>ctags可以使我们在函数调用和函数定义之间来回跳转，方便阅读源代。The ability to jump from the current source file to definitions of functions and structures in other files. A tag is an identifier that appears in a “tags” file.  It is a sort of label that can be jumped to.  For example: In C programs each function name can be used as a tag.  The “tags” file has to be generated by a program like ctags, before the tag commands can be used.</p>
-<h2 id="原理">原理</h2><p>ctags分析源代码中的函数、变量、宏定义等信息，将这些tag的名字和它们所在的文件，以及如何通过命令跳转到这些tag等信息保存到名为tags的文件中。</p>
-<h2 id="用法">用法</h2><ol>
-<li><p><code>ctags -R *</code><br> 要想使用ctags带来的在函数调用和函数定义之间来回跳转的功能，首先要生成名为tags的文件。在<strong>shell</strong>环境中切换到源代码根目录，输入命令<code>ctags -R *</code>，即可在源代码根目录下生成tags文件。</p>
-</li>
-<li><p><code>vim -t &lt;tag&gt;</code><br> To search for a specific tag and open Vim to its definition, run the above command in your shell.</p>
-</li>
-<li><p>Open any source file in Vim and use the following basic commands:</p>
-</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th>Keyboard command</th>
-<th>Action </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Ctrl-]</td>
-<td>Jump to the tag underneath the cursor</td>
-</tr>
-<tr>
-<td>Ctrl-t</td>
-<td>Jump back up in the tag stack</td>
-</tr>
-<tr>
-<td><code>:tag &lt;tag&gt;</code></td>
-<td>Position the cursor on the tag</td>
-</tr>
-<tr>
-<td><code>:ts &lt;tag&gt;</code></td>
-<td>Search for a particular tag</td>
-</tr>
-<tr>
-<td>:tags</td>
-<td>Show where you are in the tag stack</td>
-</tr>
-<tr>
-<td>:tn</td>
-<td>Go to the next definition for the last tag</td>
-</tr>
-<tr>
-<td>:tp</td>
-<td>Go to the previous definition for the last tag</td>
-</tr>
-</tbody>
-</table>
-<h2 id="注意">注意</h2><p>运行vim的时候，必须在tags文件所在的目录下运行，因为vim启动时会在当前目录内寻找tags文件并加载它。否则，运行vim的时候还要用<code>:set tags=</code>命令设定tags文件的路径，这样vim才能找到tags文件。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://zhouzijiang.github.io/2015/07/05/ctags/" data-id="cigx9shgq0000ws3aj50enu2l" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vim/">vim</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    </nav>
   
 </section>
         
@@ -404,7 +613,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -413,7 +622,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+      <a href="/tags/linux点滴/" style="font-size: 10px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 20px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
     </div>
   </div>
 
@@ -422,7 +631,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -434,23 +643,23 @@
       <ul>
         
           <li>
-            <a href="/2015/11/08/linux内核list分析三-哈希链表/">linux内核list分析三:哈希链表</a>
+            <a href="/2015/12/13/svn分支和合并/">svn分支和合并</a>
           </li>
         
           <li>
-            <a href="/2015/11/08/linux内核list分析二-双向循环链表/">linux内核list分析二:双向循环链表</a>
+            <a href="/2015/12/09/locale/">locale</a>
           </li>
         
           <li>
-            <a href="/2015/11/07/linux内核list分析一-前言/">linux内核list分析一:前言</a>
+            <a href="/2015/12/09/svn高级话题/">svn高级话题</a>
           </li>
         
           <li>
-            <a href="/2015/08/08/hexo和github-pages搭建个人博客/">hexo和github pages搭建个人博客</a>
+            <a href="/2015/12/09/svn日常工作流程/">svn日常工作流程</a>
           </li>
         
           <li>
-            <a href="/2015/07/05/hello-world/">Hello World</a>
+            <a href="/2015/12/01/svn基本操作/">svn基本操作</a>
           </li>
         
       </ul>

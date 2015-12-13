@@ -3,17 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2015/11 | 周子江</title>
+  <title>CPU点滴 | 周子江</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="周子江">
-<meta property="og:url" content="https://zhouzijiang.github.io/archives/2015/11/index.html">
+  <meta name="description" content="1. register memory architectureOne of the operands for ADD operation may be in memory, while the other is in a register. Examples are IBM 360 and Intel x86.
+2. register plus memory architectureBoth op">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CPU点滴">
+<meta property="og:url" content="https://zhouzijiang.github.io/2015/11/20/CPU点滴/index.html">
 <meta property="og:site_name" content="周子江">
-<meta property="og:description">
+<meta property="og:description" content="1. register memory architectureOne of the operands for ADD operation may be in memory, while the other is in a register. Examples are IBM 360 and Intel x86.
+2. register plus memory architectureBoth op">
+<meta property="og:updated_time" content="2015-11-20T05:53:59.471Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="周子江">
-<meta name="twitter:description">
+<meta name="twitter:title" content="CPU点滴">
+<meta name="twitter:description" content="1. register memory architectureOne of the operands for ADD operation may be in memory, while the other is in a register. Examples are IBM 360 and Intel x86.
+2. register plus memory architectureBoth op">
   
     <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
   
@@ -59,115 +63,64 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/11/20/CPU点滴/" class="archive-article-date">
-  <time datetime="2015-11-20T05:44:22.000Z" itemprop="datePublished">11月 20</time>
+        <section id="main"><article id="post-CPU点滴" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/20/CPU点滴/" class="article-date">
+  <time datetime="2015-11-20T05:44:22.000Z" itemprop="datePublished">2015-11-20</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/11/20/CPU点滴/">CPU点滴</a>
+    <h1 class="article-title" itemprop="name">
+      CPU点滴
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/11/14/CPU访问外部设备/" class="archive-article-date">
-  <time datetime="2015-11-14T12:35:36.000Z" itemprop="datePublished">11月 14</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/11/14/CPU访问外部设备/">CPU访问外部设备</a>
-    </h1>
-  
+        <h2 id="1-_register_memory_architecture">1. register memory architecture</h2><p>One of the operands for ADD operation may be in memory, while the other is in a register. Examples are IBM 360 and Intel x86.</p>
+<h2 id="2-_register_plus_memory_architecture">2. register plus memory architecture</h2><p>Both operands for ADD operation may be in memory or in registers, or in combinations. </p>
+<h2 id="3-_load/store_architecture">3. load/store architecture</h2><p>Both operands for ADD operation must be in registers. In computer engineering a load/store architecture only allows memory to be accessed by load and store operations, and all values for an operation need to be loaded from memory and be present in registers. Following the operation, the result needs to be stored back to memory. For instance, in a load/store approach both operands for an ADD operation must be in registers. This differs from a register memory architecture in which one of the operands for the ADD operation may be in memory, while the other is in a register. RISC systems such as PowerPC, SPARC, ARM or MIPS use the load/store architecture.</p>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/11/08/linux内核list分析三-哈希链表/" class="archive-article-date">
-  <time datetime="2015-11-08T13:07:29.000Z" itemprop="datePublished">11月 8</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/11/08/linux内核list分析三-哈希链表/">linux内核list分析三:哈希链表</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/11/08/linux内核list分析二-双向循环链表/" class="archive-article-date">
-  <time datetime="2015-11-08T09:05:49.000Z" itemprop="datePublished">11月 8</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/11/20/CPU点滴/" data-id="cihn0v39000003o3affl3howl" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/11/08/linux内核list分析二-双向循环链表/">linux内核list分析二:双向循环链表</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/11/07/linux内核list分析一-前言/" class="archive-article-date">
-  <time datetime="2015-11-07T07:32:36.000Z" itemprop="datePublished">11月 7</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/11/07/linux内核list分析一-前言/">linux内核list分析一:前言</a>
-    </h1>
-  
-
-    </header>
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/12/01/svn基本操作/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          svn基本操作
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/11/14/CPU访问外部设备/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">CPU访问外部设备</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
+
 </section>
         
           <aside id="sidebar">

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>CPU访问外部设备 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="整个计算机由CPU、内存和外部设备组成。当CPU要对内存中的内容进行读写操作时，地址总线负责传输地址，控制总线指明是读取操作还是写入操作，数据总线则用来传输写入内存或从内存读出的信息。而CPU与外部设备的交互，则是通过CPU读写外部设备上的寄存器实现的，外设寄存器也称为“I/O端口”。我们知道，内存中的每个存储单元都有一个地址与其对应，CPU根据这个地址就可以指定自己想要访问的存储单元。那外部设备">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CPU访问外部设备">
+<meta property="og:url" content="https://zhouzijiang.github.io/2015/11/14/CPU访问外部设备/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="整个计算机由CPU、内存和外部设备组成。当CPU要对内存中的内容进行读写操作时，地址总线负责传输地址，控制总线指明是读取操作还是写入操作，数据总线则用来传输写入内存或从内存读出的信息。而CPU与外部设备的交互，则是通过CPU读写外部设备上的寄存器实现的，外设寄存器也称为“I/O端口”。我们知道，内存中的每个存储单元都有一个地址与其对应，CPU根据这个地址就可以指定自己想要访问的存储单元。那外部设备">
+<meta property="og:updated_time" content="2015-11-15T08:45:28.805Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CPU访问外部设备">
+<meta name="twitter:description" content="整个计算机由CPU、内存和外部设备组成。当CPU要对内存中的内容进行读写操作时，地址总线负责传输地址，控制总线指明是读取操作还是写入操作，数据总线则用来传输写入内存或从内存读出的信息。而CPU与外部设备的交互，则是通过CPU读写外部设备上的寄存器实现的，外设寄存器也称为“I/O端口”。我们知道，内存中的每个存储单元都有一个地址与其对应，CPU根据这个地址就可以指定自己想要访问的存储单元。那外部设备">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-CPU访问外部设备" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/14/CPU访问外部设备/" class="article-date">
+  <time datetime="2015-11-14T12:35:36.000Z" itemprop="datePublished">2015-11-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CPU访问外部设备
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>整个计算机由CPU、内存和外部设备组成。当CPU要对内存中的内容进行读写操作时，地址总线负责传输地址，控制总线指明是读取操作还是写入操作，数据总线则用来传输写入内存或从内存读出的信息。而CPU与外部设备的交互，则是通过CPU读写外部设备上的寄存器实现的，外设寄存器也称为“I/O端口”。<br>我们知道，内存中的每个存储单元都有一个地址与其对应，CPU根据这个地址就可以指定自己想要访问的存储单元。那外部设备呢？外部设备中的寄存器也需要有一个地址与之相对应，才能让CPU根据寄存器的地址来区分不同设备之间的寄存器和同一个设备中的不同寄存器。既然，外部设备中的寄存器也需要有一个地址，那么现在的问题是外部设备中的寄存器地址与内存地址的关系是什么呢。<br>1、独立编址(ISOLATED I/O): 也称为“I/O端口”方式，外部设备中的寄存器(I/O端口)地址与内存地址是相互独立、互不影响的，它们分别位于不同的地址空间内。即I/O端口地址位于I/O地址空间内，而内存地址则位于内存地址空间内。不同的地址空间，这个如何理解呢。举个例子，I/O地址空间内存在0xff这样的地址，内存地址空间也可以存在0xff这样的地址，它们两个互不影响。那当地址总线上出现0xff这个地址时，CPU到底是想访问内存还是想访问I/O端口呢，这个是由I/O读控制线、I/O写控制线、内存读控制线、内存写控制线来决定的。如果CPU访问的是I/O端口，那么I/O读控制线或者I/O写控制线被激活；如果CPU访问的是内存，那么内存读控制线或者内存写控制线被激活。所以，采用独立编址方式，对于某个地址（例如0xff）而言，它既可以存在于I/O地址空间内，也可以位于内存地址空间内。在采用独立编址的体系架构下，CPU通过MOV指令来访问内存，而对I/O端口的访问则是通过IN和OUT指令来完成的。IN指令和OUT指令的具体例子如下：<br><figure class="highlight x86asm"><table><tr><td class="code"><pre><span class="line"><span class="keyword">IN</span> <span class="literal">AL</span>, <span class="number">21H</span>  // 从<span class="number">21H</span>端口读取一字节数据到<span class="literal">AL</span>寄存器</span><br><span class="line"><span class="keyword">OUT</span> <span class="number">21H</span>, <span class="literal">AL</span> // 将寄存器<span class="literal">AL</span>的值写入<span class="number">21H</span>端口</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line">汇编语言中的数字：</span><br><span class="line">二进制     <span class="number">11111111B</span>     <span class="number">00001111B</span>    // 数字后加B</span><br><span class="line">十进制        <span class="number">255</span>            <span class="number">16</span></span><br><span class="line">十六进制     <span class="number">0FFH</span>            <span class="number">0FH</span>      // 数字后加HS</span><br><span class="line">另外，当十六进制数的第一个字符是字母时，必须在第一个字符之前添加一个<span class="number">0</span> </span><br><span class="line">*/</span><br></pre></td></tr></table></figure></p>
+<p>32位处理器的内存地址空间大小是4G，而独立编址的I/O地址空间的大小为64K，即它由65536个8bit的I/O端口组成。I/O端口的编号从 0x0000到0xFFFF，有16位，80x86架构用低16位地址线A0-A15来寻址。连续两个8bit的端口可以组成一个16bit的端口，连续4个组成一个 32bit的端口。采用独立编址的典型例子是intel 80x86。</p>
+<p>2、统一编址(Memory-Mapped I/O)：也称为“I/O内存”方式。外部设备中的寄存器和内存中的存储单元被同等看待，每个I/O端口占用一个内存存储单元的地址，将内存地址的一部分划出来用作IO地址空间。I/O端口占用了内存的地址空间，使内存的存储量容量减小。对于一个32位系统来说，它的4G的地址空间被内存和外部设备中的寄存器共同瓜分。采用统一编址方式，CPU访问外部设备IO端口时，不再需要额外的IN和OUT指令，CPU只需要使用同一套指令就可以访问内存或者IO端口。arm，powerpc在这一类的嵌入式处理器中采用统一编址方式。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/11/14/CPU访问外部设备/" data-id="cihn0v3ds000a3o3alkg6oobv" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/11/20/CPU点滴/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          CPU点滴
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/11/08/linux内核list分析三-哈希链表/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">linux内核list分析三:哈希链表</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/linux点滴/" style="font-size: 10px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 20px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/12/13/svn分支和合并/">svn分支和合并</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/locale/">locale</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/svn高级话题/">svn高级话题</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/svn日常工作流程/">svn日常工作流程</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/01/svn基本操作/">svn基本操作</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

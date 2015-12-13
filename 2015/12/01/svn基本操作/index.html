@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>svn基本操作 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. helpsvn help subcommand will describe the syntax, options, and behavior of the subcommand.
+2. importThe svn import command is a quick way to copy an unversioned tree of files into a repository, cre">
+<meta property="og:type" content="article">
+<meta property="og:title" content="svn基本操作">
+<meta property="og:url" content="https://zhouzijiang.github.io/2015/12/01/svn基本操作/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="1. helpsvn help subcommand will describe the syntax, options, and behavior of the subcommand.
+2. importThe svn import command is a quick way to copy an unversioned tree of files into a repository, cre">
+<meta property="og:updated_time" content="2015-12-13T04:38:21.863Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="svn基本操作">
+<meta name="twitter:description" content="1. helpsvn help subcommand will describe the syntax, options, and behavior of the subcommand.
+2. importThe svn import command is a quick way to copy an unversioned tree of files into a repository, cre">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-svn基本操作" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/01/svn基本操作/" class="article-date">
+  <time datetime="2015-12-01T06:42:55.000Z" itemprop="datePublished">2015-12-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      svn基本操作
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-_help">1. help</h1><p><code>svn help subcommand</code> will describe the syntax, options, and behavior of the subcommand.</p>
+<h1 id="2-_import">2. import</h1><p>The <code>svn import</code> command is a quick way to copy an <em>unversioned</em> tree of files into a repository, creating <em>intermediate</em> directories as necessary. You typically use this when you have an existing tree of files that you want to begin tracking in your Subversion repository. 例如，假设svn服务器上存在以下目录<code>https://var/svn/newrepos/</code>，本地机器上存在md5目录，并且md5目录下存在md5.c和md5.h两个文件。现在想把md5这个新的项目导入到svn服务器，使其具有版本管理功能。<br><figure class="highlight coffeescript"><table><tr><td class="code"><pre><span class="line">svn <span class="reserved">import</span> md5 <span class="attribute">https</span>:<span class="regexp">//</span><span class="reserved">var</span>/svn/newrepos/md5 -m <span class="string">'Initial md5'</span></span><br></pre></td></tr></table></figure></p>
+<p>Note that after the import is finished, the original tree is not converted into a working copy. To start working, you still need to <code>svn checkout</code> a fresh working copy of the tree.</p>
+<h1 id="3-_checkout">3. checkout</h1><p>Most of the time, you will start using a Subversion repository by doing a checkout of your project. Checking out a repository creates a “working copy” of it on your local machine.<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line">svn checkout <span class="symbol">https:</span>/<span class="regexp">/var/svn</span><span class="regexp">/newrepos/md</span>5</span><br><span class="line">svn co <span class="symbol">https:</span>/<span class="regexp">/var/svn</span><span class="regexp">/newrepos/md</span>5</span><br></pre></td></tr></table></figure></p>
+<p>While you can certainly check out a working copy with the URL of the repository as the only argument, you can also specify a directory after your repository URL. This places your working copy in the new directory that you name.<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line">svn co <span class="symbol">https:</span>/<span class="regexp">/var/svn</span><span class="regexp">/newrepos/md</span>5 my_md5</span><br></pre></td></tr></table></figure></p>
+<p>That will place your working copy in a directory named my_md5 instead of a directory named md5 as we did previously. The directory my_md5 will be created if it doesn’t already exist.</p>
+<h1 id="4-_Authenticating_As_a_Different_User">4. Authenticating As a Different User</h1><p>If you’re working in a shared working copy such as a system configuration directory or a web server document root. In this case,<br>just pass the —username option on the command line, and Subversion will attempt to authenticate as that user, prompting you for a password if necessary.<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">svn <span class="built_in">list</span> https:<span class="comment">//var/svn/newrepos/md5 --username xiaoming</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="5-_svn_export">5. svn export</h1><p>If you’re building a release and wish to bundle up your files from Subversion but don’t want those pesky .svn directories in the way, you can use svn export to create a local copy of all or part of your repository sans .svn directories.<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">export</span> http:<span class="comment">//svn.example.com/svn/repos1 -r 1729</span></span><br><span class="line"><span class="preprocessor"># Exports revision r1729</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="6-_Examining_History">6. Examining History</h1><p>Several commands can provide you with historical data from the repository:</p>
+<h2 id="svn_log">svn log</h2><p>Shows you broad information: log messages with date and author information attached to revisions and which paths changed in each revision.  If you wish to see a different range of revisions in a particular order or just a single revision, pass the —revision (-r) option:<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">log</span> -r 5:19 # shows logs 5 through 19 <span class="keyword">in</span> chronological <span class="keyword">order</span></span><br><span class="line">$ svn <span class="keyword">log</span> -r 19:5 # shows logs 5 through 19 <span class="keyword">in</span> reverse <span class="keyword">order</span></span><br><span class="line">$ svn <span class="keyword">log</span> -r 8 # shows <span class="keyword">log</span> <span class="keyword">for</span> revision 8</span><br></pre></td></tr></table></figure></p>
+<p>In verbose mode, svn log will include a list of changed paths in a revision in its output:<br><figure class="highlight asciidoc"><table><tr><td class="code"><pre><span class="line"><span class="header">$ svn log -r 8 -v</span><br><span class="line">------------------------------------------------------------------------</span></span><br><span class="line">r8 | sally | 2008-05-21 13:19:25 -0500 (Wed, 21 May 2008) | 1 line</span><br><span class="line">Changed paths:</span><br><span class="line">M /trunk/code/foo.c</span><br><span class="line">M /trunk/code/bar.h</span><br><span class="line">A /trunk/code/doc/README</span><br><span class="line">Frozzled the sub-space winch.</span><br></pre></td></tr></table></figure></p>
+<h2 id="svn_diff">svn diff</h2><p>There are three distinct uses of svn diff:</p>
+<ul>
+<li>Invoking svn diff with no options will compare your working files to the cached “pristine” copies in the .svn area</li>
+<li>If a single —revision (-r) number is passed, your working copy is compared to the specified revision in the repository</li>
+<li>If two revision numbers, separated by a colon, are passed via —revision (-r), the two revisions are directly compared:<br>svn diff -r 2:3 rules.txt</li>
+<li>If a “—change(-c) ARG” is passed, it shows the change made by revision ARG(like -r ARG-1:ARG). If ARG is negative this is<br>like -r ARG:ARG-1</li>
+</ul>
+<h2 id="svn_cat">svn cat</h2><p>Retrieves a file as it existed in a particular revision number and displays it on your screen</p>
+<h2 id="svn_list">svn list</h2><p>Displays the files in a directory for any given revision</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/12/01/svn基本操作/" data-id="cihn0v3ch00013o3ax4zxqrnq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svn/">svn</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/12/09/svn日常工作流程/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          svn日常工作流程
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/11/20/CPU点滴/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">CPU点滴</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/linux点滴/" style="font-size: 10px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 20px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/12/13/svn分支和合并/">svn分支和合并</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/locale/">locale</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/svn高级话题/">svn高级话题</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/svn日常工作流程/">svn日常工作流程</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/01/svn基本操作/">svn基本操作</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

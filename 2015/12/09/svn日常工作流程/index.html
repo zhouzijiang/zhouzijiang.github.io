@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>svn日常工作流程 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="The typical work cycle looks like this:
+
+Update your working copy.• svn update
+Make changes.• svn add• svn delete• svn copy• svn move
+Examine your changes.• svn status• svn diff
+Possibly undo some cha">
+<meta property="og:type" content="article">
+<meta property="og:title" content="svn日常工作流程">
+<meta property="og:url" content="https://zhouzijiang.github.io/2015/12/09/svn日常工作流程/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="The typical work cycle looks like this:
+
+Update your working copy.• svn update
+Make changes.• svn add• svn delete• svn copy• svn move
+Examine your changes.• svn status• svn diff
+Possibly undo some cha">
+<meta property="og:updated_time" content="2015-12-09T06:35:06.766Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="svn日常工作流程">
+<meta name="twitter:description" content="The typical work cycle looks like this:
+
+Update your working copy.• svn update
+Make changes.• svn add• svn delete• svn copy• svn move
+Examine your changes.• svn status• svn diff
+Possibly undo some cha">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-svn日常工作流程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/09/svn日常工作流程/" class="article-date">
+  <time datetime="2015-12-09T03:42:29.000Z" itemprop="datePublished">2015-12-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      svn日常工作流程
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>The typical work cycle looks like this:</p>
+<ol>
+<li>Update your working copy.<br>• svn update</li>
+<li>Make changes.<br>• svn add<br>• svn delete<br>• svn copy<br>• svn move</li>
+<li>Examine your changes.<br>• svn status<br>• svn diff</li>
+<li>Possibly undo some changes.<br>• svn revert</li>
+<li>Resolve conflicts (merge others’ changes).<br>• svn update<br>• svn resolve</li>
+<li>Commit your changes.<br>• svn commit</li>
+</ol>
+<h1 id="svn_status">svn status</h1><p>To get an overview of your changes before committing, you’ll use the svn status command.  Here are a few examples of the most common status codes that svn status can return. (Note that the text following # is not actually printed by svn status.)<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">? scratch.c         # <span class="keyword">file</span> is not under <span class="keyword">version</span> control</span><br><span class="line">A stuff/loot/bloo.<span class="keyword">h</span> # <span class="keyword">file</span> is scheduled <span class="keyword">for</span> addition</span><br><span class="line">C stuff/loot/lump.c # <span class="keyword">file</span> has textual conflicts from <span class="keyword">an</span> <span class="keyword">update</span></span><br><span class="line"><span class="keyword">D</span> stuff/fish.c      # <span class="keyword">file</span> is scheduled <span class="keyword">for</span> deletion</span><br><span class="line"><span class="keyword">M</span> bar.c             # the content <span class="keyword">in</span> bar.c has <span class="keyword">local</span> modifications</span><br></pre></td></tr></table></figure></p>
+<p>Command <code>svn status</code> does not contact the repository. Instead, they compare the metadata in the .svn directory with the working copy. There is the —show-updates (-u) option, which contacts the repository and adds information about things that are out of date:<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">$ svn status -<span class="keyword">u</span> -v</span><br><span class="line"><span class="keyword">M</span>      *    44 23 sally README</span><br><span class="line"><span class="keyword">M</span>           44 20 harry bar.c</span><br><span class="line"><span class="comment">       *    44 35 harry stuff/trout.c</span></span><br><span class="line"><span class="keyword">D</span>           44 19 ira   stuff/fish.c</span><br><span class="line">A            0  ?  ?    stuff/things/bloo.<span class="literal">h</span></span><br><span class="line">Status against revision: 46</span><br></pre></td></tr></table></figure></p>
+<p><code>svn status</code> also has a —verbose (-v) option, which will show you the status of every item in your working copy, even if it has not been changed. Notice the two asterisks: if you were to run svn update at this point, you would receive changes to README and trout.c. This tells you some very useful information—you’ll need to update and get the server changes on README before you commit, or the repository will reject your commit for being out of date.</p>
+<h1 id="svn_revert">svn revert</h1><p>Suppose while viewing the output of svn diff you determine that all the changes you made to a particular file are mistakes. Maybe you shouldn’t have changed the file at all, or perhaps it would be easier to make different changes starting from scratch.Subversion reverts the file to its premodified state by overwriting it with the cached “pristine” copy from the .svn area. But also note that svn revert can undo any scheduled operations<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>svn status <span class="constant">README</span></span><br><span class="line"><span class="variable">$ </span>svn delete <span class="constant">README</span></span><br><span class="line"><span class="constant">D README</span></span><br><span class="line"><span class="variable">$ </span>svn revert <span class="constant">README</span></span><br><span class="line"><span class="constant">Reverted </span><span class="string">'README'</span></span><br><span class="line"><span class="variable">$ </span>svn status <span class="constant">README</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="Resolve_Conflicts_(Merging_Others’_Changes)">Resolve Conflicts (Merging Others’ Changes)</h1><p>We’ve already seen how svn status -u can predict conflicts. Suppose you run svn update and some interesting things occur:<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">update</span></span><br><span class="line"><span class="keyword">U</span> INSTALL</span><br><span class="line"><span class="keyword">G</span> README</span><br><span class="line">Conflict discovered <span class="keyword">in</span> 'bar.c'.</span><br><span class="line">Select: (p) postpone, (df) diff-full, (<span class="keyword">e</span>) <span class="keyword">edit</span>,</span><br><span class="line">(<span class="keyword">h</span>) <span class="keyword">help</span> <span class="keyword">for</span> <span class="keyword">more</span> options:</span><br></pre></td></tr></table></figure></p>
+<p>The U and G codes are no cause for concern; those files cleanly absorbed changes from the repository. The files marked with U contained no local changes but were Updated with changes from the repository. The G stands for merGed, which means that the file had local changes to begin with, but the changes coming from the repository didn’t overlap with the local changes. But the next two lines are part of a feature called interactive conflict resolution. This means that the changes from the server overlapped with your own, and you have the opportunity to resolve this conflict. The most commonly used options are displayed, but you can see all of the options by typing h:<br><figure class="highlight vim"><table><tr><td class="code"><pre><span class="line">(<span class="keyword">p</span>) postpone - <span class="keyword">mark</span> the conflict <span class="keyword">to</span> <span class="keyword">be</span> resolved <span class="keyword">later</span></span><br><span class="line">(df) diff-full - show <span class="keyword">all</span> <span class="keyword">changes</span> made <span class="keyword">to</span> merged <span class="keyword">file</span></span><br><span class="line">(<span class="keyword">e</span>) <span class="keyword">edit</span> - <span class="keyword">change</span> merged <span class="keyword">file</span> in <span class="keyword">an</span> editor</span><br><span class="line">(<span class="keyword">r</span>) resolved - accept merged <span class="keyword">version</span> of <span class="keyword">file</span></span><br><span class="line">(mf) mine-full - accept my <span class="keyword">version</span> of entire <span class="keyword">file</span> (ignore their <span class="keyword">changes</span>)</span><br><span class="line">(<span class="keyword">tf</span>) theirs-full - accept their <span class="keyword">version</span> of entire <span class="keyword">file</span> (lose my <span class="keyword">changes</span>)</span><br><span class="line">(<span class="keyword">l</span>) launch - launch external tool <span class="keyword">to</span> <span class="built_in">resolve</span> conflict</span><br><span class="line">(<span class="keyword">h</span>) <span class="keyword">help</span> - show this <span class="keyword">list</span></span><br></pre></td></tr></table></figure></p>
+<p>Let’s briefly review each of these options before we go into detail on what each option means.<br><figure class="highlight applescript"><table><tr><td class="code"><pre><span class="line">(p)ostpone</span><br><span class="line">    Leave <span class="keyword">the</span> <span class="type">file</span> <span class="keyword">in</span> a conflicted state <span class="keyword">for</span> you <span class="keyword">to</span> resolve <span class="keyword">after</span> your update <span class="keyword">is</span> complete.</span><br><span class="line">(d)iff</span><br><span class="line">    Display <span class="keyword">the</span> differences <span class="keyword">between</span> <span class="keyword">the</span> base revision <span class="keyword">and</span> <span class="keyword">the</span> conflicted <span class="type">file</span> itself <span class="keyword">in</span> unified </span><br><span class="line">    diff format.</span><br><span class="line">(e)dit</span><br><span class="line">    Open <span class="keyword">the</span> <span class="type">file</span> <span class="keyword">in</span> conflict <span class="keyword">with</span> your favorite editor, <span class="keyword">as</span> <span class="keyword">set</span> <span class="keyword">in</span> <span class="keyword">the</span> environment </span><br><span class="line">    variable EDITOR.</span><br><span class="line">(r)esolved</span><br><span class="line">    After editing a <span class="type">file</span>, <span class="keyword">tell</span> svn <span class="keyword">that</span> you've resolved <span class="keyword">the</span> conflicts <span class="keyword">in</span> <span class="keyword">the</span> <span class="type">file</span> <span class="keyword">and</span> <span class="keyword">that</span> </span><br><span class="line">    <span class="keyword">it</span> should accept <span class="keyword">the</span> current <span class="property">contents</span>—basically <span class="keyword">that</span> you've “resolved” <span class="keyword">the</span> conflict.</span><br><span class="line">(m)ine-(f)ull</span><br><span class="line">    Discard <span class="keyword">the</span> newly received changes <span class="keyword">from</span> <span class="keyword">the</span> server <span class="keyword">and</span> use only your <span class="keyword">local</span> changes <span class="keyword">for</span> </span><br><span class="line">    <span class="keyword">the</span> <span class="type">file</span> under review.</span><br><span class="line">(t)heirs-(f)ull</span><br><span class="line">    Discard your <span class="keyword">local</span> changes <span class="keyword">to</span> <span class="keyword">the</span> <span class="type">file</span> under review <span class="keyword">and</span> use only <span class="keyword">the</span> newly received </span><br><span class="line">    changes <span class="keyword">from</span> <span class="keyword">the</span> server.</span><br><span class="line">(l)aunch</span><br><span class="line">    Launch an external program <span class="keyword">to</span> perform <span class="keyword">the</span> conflict resolution. This requires a bit <span class="keyword">of</span> </span><br><span class="line">    preparation beforehand.</span><br><span class="line">(h)elp</span><br><span class="line">    Show <span class="keyword">the</span> <span class="type">list</span> <span class="keyword">of</span> all possible commands you can use <span class="keyword">in</span> interactive conflict resolution.</span><br></pre></td></tr></table></figure></p>
+<p>Before deciding how to attack a conflict interactively, odds are that you’d like to see exactly<br>what is in conflict, and the diff command (d) is what you’ll use for this:<br><figure class="highlight asciidoc"><table><tr><td class="code"><pre><span class="line">Select: (p) postpone, (df) diff-full, (e) edit,</span><br><span class="line">(h)elp for more options : d</span><br><span class="line"><span class="bullet">--- </span>.svn/text-base/sandwich.txt.svn-base Tue Dec 11 21:33:57 2007</span><br><span class="line"><span class="code">+++</span> .svn/tmp/tempfile.32.tmp Tue Dec 11 21:34:33 2007</span><br><span class="line">@@ -1 +1,5 @@</span><br><span class="line">-Just buy a sandwich.</span><br><span class="line">+&lt;&lt;&lt;&lt;&lt;&lt;&lt; .mine</span><br><span class="line"><span class="header">+Go pick up a cheesesteak.</span><br><span class="line">+=======</span></span><br><span class="line">+Bring me a taco!</span><br><span class="line">+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .r32</span><br></pre></td></tr></table></figure></p>
+<p>The first line of the diff content shows the previous contents of the working copy (the BASE revision), the next content line is your change, and the last content line is the change that was just received from the server (usually the HEAD revision).</p>
+<p>When you <em>postpone</em> a conflict resolution, svn typically does three things to assist you in noticing and resolving that conflict:</p>
+<ol>
+<li>Subversion prints a C during the update and remembers that the file is in a state of conflict.</li>
+<li>If Subversion considers the file to be mergeable, it places conflict markers—special strings of text that delimit the “sides” of the conflict—into the file to visibly demonstrate the overlapping areas. (Subversion uses the svn:mime-type property to decide whether a file is capable of contextual, line-based merging)</li>
+<li>For every conflicted file, Subversion places three extra unversioned files in your working copy:</li>
+</ol>
+<ul>
+<li>filename.mine<br>This is your file as it existed in your working copy before you updated your working<br>copy—that is, without conflict markers. This file has only your latest changes in it. </li>
+<li>filename.rOLDREV<br>This is the file that was the BASE revision before you updated your working copy. That<br>is, the file that you checked out before you made your latest edits.</li>
+<li>filename.rNEWREV<br>This is the file that your Subversion client just received from the server when you updated your working copy. This file corresponds to the HEAD revision of the repository.</li>
+</ul>
+<p>If you’ve postponed a conflict, you need to resolve the conflict before Subversion will allow you to commit your changes. You’ll do this with the svn resolve command and one of several arguments to the —accept option.</p>
+<ul>
+<li>If you want to choose the version of the file that you last checked out before making your edits, choose the base argument.</li>
+<li>If you want to choose the version that contains only your edits, choose the mine-full argument.</li>
+<li>If you want to choose the version that your most recent update pulled from the server, choose the theirs-full argument.</li>
+<li>However, if you want to pick and choose from your changes and the changes that your update fetched from the server, merge the conflicted text “by hand” (by examining and editing the conflict markers within the file) and then choose the working argument.</li>
+</ul>
+<p>svn resolve removes the three temporary files and accepts the version of the file that you specified with the —accept option, and Subversion no longer considers the file to be in a state of conflict:<br><figure class="highlight pf"><table><tr><td class="code"><pre><span class="line">$ svn resolve --accept working sandwich.txt</span><br><span class="line">Resolved conflicted <span class="keyword">state</span> of 'sandwich.txt'</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/12/09/svn日常工作流程/" data-id="cihy9shl60000j03a5no9uuqe" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svn/">svn</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/12/09/svn高级话题/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          svn高级话题
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/12/01/svn基本操作/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">svn基本操作</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/linux点滴/" style="font-size: 10px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 20px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/12/13/svn分支和合并/">svn分支和合并</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/locale/">locale</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/svn高级话题/">svn高级话题</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/svn日常工作流程/">svn日常工作流程</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/01/svn基本操作/">svn基本操作</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

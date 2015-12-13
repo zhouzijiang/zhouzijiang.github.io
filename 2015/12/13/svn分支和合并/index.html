@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>svn分支和合并 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Creating a BranchCreating a branch is very simple—you make a copy of the project in the repository using the svn copy command.$ svn copy http://svn.example.com/repos/calc/trunk \           http://svn.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="svn分支和合并">
+<meta property="og:url" content="https://zhouzijiang.github.io/2015/12/13/svn分支和合并/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="Creating a BranchCreating a branch is very simple—you make a copy of the project in the repository using the svn copy command.$ svn copy http://svn.example.com/repos/calc/trunk \           http://svn.">
+<meta property="og:updated_time" content="2015-12-13T12:44:43.132Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="svn分支和合并">
+<meta name="twitter:description" content="Creating a BranchCreating a branch is very simple—you make a copy of the project in the repository using the svn copy command.$ svn copy http://svn.example.com/repos/calc/trunk \           http://svn.">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-svn分支和合并" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/13/svn分支和合并/" class="article-date">
+  <time datetime="2015-12-13T04:11:59.000Z" itemprop="datePublished">2015-12-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      svn分支和合并
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Creating_a_Branch">Creating a Branch</h1><p>Creating a branch is very simple—you make a copy of the project in the repository using the svn copy command.<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">copy</span> http:<span class="comment">//svn.example.com/repos/calc/trunk \</span></span><br><span class="line">           http:<span class="comment">//svn.example.com/repos/calc/branches/my-calc-branch \</span></span><br><span class="line">        -<span class="keyword">m</span> <span class="string">"Creating a private branch of /calc/trunk."</span></span><br><span class="line">Committed revision 341.</span><br></pre></td></tr></table></figure></p>
+<h1 id="Working_with_Your_Branch">Working with Your Branch</h1><p>Now that you’ve created a branch of the project, you can check out a new working copy to start using it:<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">$ svn checkout http:<span class="comment">//svn.example.com/repos/calc/branches/my-calc-branch</span></span><br><span class="line">A my-calc-branch/Makefile</span><br><span class="line">A my-calc-branch/integer<span class="class">.c</span></span><br><span class="line">A my-calc-branch/<span class="tag">button</span><span class="class">.c</span></span><br><span class="line">Checked out revision <span class="number">341</span>.</span><br></pre></td></tr></table></figure></p>
+<p>There’s nothing special about this working copy; it simply mirrors a different directory in the repository. Subversion has no internal concept of a branch—it knows only how to make copies. When you copy a directory, the resultant directory is only a “branch” because you attach that meaning to it. You may think of the directory differently, or treat it differently, but to Subversion it’s just an ordinary directory that happens to carry some extra historical information. Most teams follow a convention of putting all branches into a /branches directory, but you’re free to invent any policy you wish.</p>
+<h1 id="Changeset">Changeset</h1><p>A changeset is just a collection of changes with a unique name. The changes might include textual edits to file contents, modifications to tree structure, or tweaks to metadata. In more common speak, a changeset is just a patch with a name you can refer<br>to.<br>In Subversion, a global revision number N names a tree in the repository.  It’s also the name of an implicit changeset: if you<br>compare tree N with tree N-1, you can derive the exact patch that was committed.  For this reason, it’s easy to think of revision N as not just a tree, but a changeset as well. And Subversion’s svn merge command is able to use revision numbers. You can merge specific changesets from one branch to another by naming them in the merge arguments: passing -c 9238 to svn merge would merge changeset r9238 into your working copy.</p>
+<h1 id="Merge">Merge</h1><p>A better name for the merge command might have been svn diff-and-apply, because that’s all that happens: two repository trees are compared, and the differences are applied to a working copy. If you’re using svn merge to do basic copying of changes between branches, it will generally do the right thing automatically. For example, a command such as the following:<br><code>$ svn merge http://svn.example.com/repos/calc/some-branch</code><br>will attempt to duplicate any changes made on some-branch into your current working directory. The command is smart enough to only duplicate changes that your working copy doesn’t yet have. If you repeat this command once a week, it will only duplicate the<br>“newest” branch changes that happened since you last merged.If you choose to use the svn merge command in all its full glory by giving it specific revision ranges to duplicate, the command takes three main arguments:</p>
+<ol>
+<li>An initial repository tree (often called the left side of the comparison)</li>
+<li>A final repository tree (often called the right side of the comparison)</li>
+<li>A working copy to accept the differences as local changes (often called the target of the merge)<br>Once these three arguments are specified, the two trees are compared, and the differences are applied to the target working copy as local modifications. When the command is done, the results are no different than if you had hand-edited the files or run various svn add or svn delete commands yourself. If you like the results, you can commit them. If you don’t like the results, you can simply svn revert all of the changes.<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">$ svn merge <span class="string">http:</span><span class="comment">//svn.example.com/repos/branch1@150 \</span></span><br><span class="line"><span class="string">http:</span><span class="comment">//svn.example.com/repos/branch2@212 \</span></span><br><span class="line">my-working-copy</span><br><span class="line">$ svn merge -r <span class="number">100</span>:<span class="number">200</span> <span class="string">http:</span><span class="comment">//svn.example.com/repos/trunk my-working-copy</span></span><br><span class="line">$ svn merge -r <span class="number">100</span>:<span class="number">200</span> <span class="string">http:</span><span class="comment">//svn.example.com/repos/trunk</span></span><br><span class="line">$ svn merge -c <span class="number">355</span> <span class="string">http:</span><span class="comment">//svn.example.com/repos/calc/trunk</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>The first syntax lays out all three arguments explicitly, naming each tree in the form URL@REV and naming the working copy target. The second syntax can be used as a shorthand for situations when you’re comparing two different revisions of the same URL.<br>The last syntax shows how the working copy argument is optional; if omitted, it defaults to the current directory. The last syntax shows only replicate just a single change.</p>
+<h1 id="Keeping_a_Branch_in_Sync">Keeping a Branch in Sync</h1><p>Let’s suppose that a week has passed since you started working on your private branch. Your new feature isn’t finished yet, but at the same time you know that other people on your team have continued to make important changes in the project’s /trunk. In fact, this is a best practice: frequently keeping your branch in sync with the main development line helps prevent “surprise” conflicts when it comes time for you to fold your changes back into the trunk.<br>Subversion is aware of the history of your branch and knows when it divided away from the trunk. To replicate the latest, greatest trunk changes to your branch, first make sure your working copy of the branch is “clean”—that it has no local modifications reported by svn status. Then simply run:<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">$ svn merge http:<span class="comment">//svn.example.com/repos/calc/trunk</span></span><br><span class="line">--- Merging r345 through r356 into <span class="string">'.'</span>:</span><br><span class="line">U <span class="tag">button</span><span class="class">.c</span></span><br><span class="line">U integer.c</span><br></pre></td></tr></table></figure></p>
+<p>This basic syntax—svn merge URL—tells Subversion to merge all recent changes from the URL to the current working directory. After running the prior example, your branch working copy now contains new local modifications, and these edits are duplications of all of the changes that have happened on the trunk since you first created your branch:<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">$ svn status</span><br><span class="line">M .</span><br><span class="line">M <span class="tag">button</span><span class="class">.c</span></span><br><span class="line">M integer.c</span><br></pre></td></tr></table></figure></p>
+<p>At this point, the wise thing to do is look at the changes carefully with svn diff, and then build and test your branch. Notice that the current working directory (“.”) has also been modified; the svn diff will show that its svn:mergeinfo property has been either created or modified. This is important merge-related metadata that you should not touch, since it will be needed by future svn merge commands.<br>After performing the merge, you might also need to resolve some conflicts (just as you do with svn update) or possibly make some small edits to get things working properly. (Remember, just because there are no syntactic conflicts doesn’t mean there aren’t any semantic conflicts!) If you encounter serious problems, you can always abort the local changes by running svn revert . -R (which will undo all local modifications) and start a long “what’s going on?” discussion with your collaborators. If things look good, however, you can submit these changes into the repository:<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">$ svn commit -m <span class="string">"Merged latest trunk changes to my-calc-branch."</span></span><br><span class="line">Sending .</span><br><span class="line">Sending <span class="tag">button</span><span class="class">.c</span></span><br><span class="line">Sending integer<span class="class">.c</span></span><br><span class="line">Transmitting file data ..</span><br><span class="line">Committed revision <span class="number">357</span>.</span><br></pre></td></tr></table></figure></p>
+<p>At this point, your private branch is now “in sync” with the trunk, so you can rest easier knowing that as you continue to work in isolation, you’re not drifting too far away from what everyone else is doing.<br>Suppose that another week has passed. You’ve committed more changes to your branch, and your comrades have continued to improve the trunk as well. Once again, you’d like to replicate the latest trunk changes to your branch and bring yourself in sync. Just run the same merge command again!<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>svn merge <span class="symbol">http:</span>/<span class="regexp">/svn.example.com/repos</span><span class="regexp">/calc/trunk</span></span><br><span class="line">--- <span class="constant">Merging </span>r357 through r38<span class="number">0</span> into <span class="string">'.'</span><span class="symbol">:</span></span><br><span class="line"><span class="constant">U </span>integer.c</span><br><span class="line"><span class="constant">U Makefile</span></span><br><span class="line"><span class="constant">A README</span></span><br></pre></td></tr></table></figure></p>
+<p>Subversion knows which trunk changes you’ve already replicated to your branch, so it carefully replicates only those changes you don’t yet have. What happens when you finally finish your work, though?  The process is simple. First, bring your branch in sync with the trunk again, just as you’ve been doing all along:<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>svn merge <span class="symbol">http:</span>/<span class="regexp">/svn.example.com/repos</span><span class="regexp">/calc/trunk</span></span><br><span class="line">--- <span class="constant">Merging </span>r381 through r385 into <span class="string">'.'</span><span class="symbol">:</span></span><br><span class="line"><span class="constant">U </span>button.c</span><br><span class="line"><span class="constant">U README</span></span><br><span class="line"><span class="variable">$ </span><span class="comment"># build, test, ...</span></span><br><span class="line"><span class="variable">$ </span>svn commit -m <span class="string">"Final merge of trunk changes to my-calc-branch."</span></span><br><span class="line"><span class="constant">Sending </span>.</span><br><span class="line"><span class="constant">Sending </span>button.c</span><br><span class="line"><span class="constant">Sending README</span></span><br><span class="line"><span class="constant">Transmitting </span>file data ..</span><br><span class="line"><span class="constant">Committed </span>revision <span class="number">390</span>.</span><br></pre></td></tr></table></figure></p>
+<p>Now, you use svn merge to replicate your branch changes back into the trunk. You’ll need an up-to-date working copy of /trunk. However you get a trunk working copy, remember that it’s a best practice to do your merge into a working copy that has no local edits and has been recently updated (i.e., is not a mixture of local revisions).<br><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">$ svn <span class="operator"><span class="keyword">update</span> # (make sure the working copy <span class="keyword">is</span> up <span class="keyword">to</span> <span class="built_in">date</span>)</span><br><span class="line"><span class="keyword">At</span> revision <span class="number">390.</span></span><br><span class="line">$ svn <span class="keyword">merge</span> <span class="comment">--reintegrate http://svn.example.com/repos/calc/branches/my-calc-branch</span></span><br><span class="line"><span class="comment">--- Merging differences between repository URLs into '.':</span></span><br><span class="line">U button.c</span><br><span class="line">U <span class="built_in">integer</span>.c</span><br><span class="line">U Makefile</span><br><span class="line">U .</span><br><span class="line">$ # build, test, verify, ...</span><br><span class="line">$ svn <span class="keyword">commit</span> -m <span class="string">"Merge my-calc-branch back into trunk!"</span></span><br><span class="line">Sending .</span><br><span class="line">Sending button.c</span><br><span class="line">Sending <span class="built_in">integer</span>.c</span><br><span class="line">Sending Makefile</span><br><span class="line">Transmitting file <span class="keyword">data</span> ..</span><br><span class="line">Committed revision <span class="number">391.</span></span></span><br></pre></td></tr></table></figure></p>
+<p>Notice our use of the —reintegrate option this time around. The option is critical for reintegrating changes from a branch back into its original line of development—don’t forget it! It’s needed because this sort of “merge back” is a different sort of work than what you’ve been doing up until now. Now that your private branch is merged to trunk, you may wish to remove it from the repository:<br><figure class="highlight actionscript"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">delete</span> http:<span class="comment">//svn.example.com/repos/calc/branches/my-calc-branch \</span></span><br><span class="line">-m <span class="string">"Remove my-calc-branch."</span></span><br><span class="line">Committed revision <span class="number">392.</span></span><br></pre></td></tr></table></figure></p>
+<p>In Subversion 1.5, once a —reintegrate merge is done from branch to trunk, the branch is no longer usable for further work. It’s not able to correctly absorb new trunk changes, nor can it be properly reintegrated to trunk again. For this reason, if you want to<br>keep working on your feature branch, we recommend destroying it and then recreating it from the trunk:</p>
+<h1 id="Mergeinfo">Mergeinfo</h1><p>The basic mechanism Subversion uses to track changesets—that is, which changes have been merged to which branches—is by recording data in properties. Specifically, merge data is tracked in the svn:mergeinfo property attached to files and directories.<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>cd my-calc-branch</span><br><span class="line"><span class="variable">$ </span>svn propget <span class="symbol">svn:</span>mergeinfo .</span><br><span class="line">/<span class="symbol">trunk:</span><span class="number">341</span>-<span class="number">390</span></span><br></pre></td></tr></table></figure></p>
+<p>There’s also a subcommand, svn mergeinfo, which can be helpful in seeing not only which changesets a directory has absorbed, but also which changesets it’s still eligible to receive. This gives a sort of preview of the next set of changes that svn merge will replicate to your branch.<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>cd my-calc-branch</span><br><span class="line"><span class="comment"># Which changes have already been merged from trunk to branch?</span></span><br><span class="line"><span class="variable">$ </span>svn mergeinfo <span class="symbol">http:</span>/<span class="regexp">/svn.example.com/repos</span><span class="regexp">/calc/trunk</span></span><br><span class="line">r341</span><br><span class="line">r342</span><br><span class="line">…</span><br><span class="line">r389</span><br><span class="line">r39<span class="number">0</span></span><br><span class="line"><span class="comment"># Which changes are still eligible to merge from trunk to branch?</span></span><br><span class="line"><span class="variable">$ </span>svn mergeinfo <span class="symbol">http:</span>/<span class="regexp">/svn.example.com/repos</span><span class="regexp">/calc/trunk</span> --show-revs eligible</span><br><span class="line">r391</span><br><span class="line">r392</span><br><span class="line">r393</span><br><span class="line">r394</span><br><span class="line">r395</span><br></pre></td></tr></table></figure></p>
+<p>The svn mergeinfo command requires a “source” URL (where the changes would be coming from), and takes an optional “target” URL (where the changes would be merged to). If no target URL is given, it assumes that the current working directory is the target. In the prior example, because we’re querying our branch working copy, the command assumes we’re interested in receiving changes to /branches/mybranch from the specified trunk URL. Another way to get a more precise preview of a merge operation is to use the<br>—dry-run option:<br><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="variable">$ </span>svn merge <span class="symbol">http:</span>/<span class="regexp">/svn.example.com/repos</span><span class="regexp">/calc/trunk</span> --dry-run</span><br><span class="line"><span class="constant">U </span>integer.c</span><br><span class="line"><span class="variable">$ </span>svn status</span><br><span class="line"><span class="comment"># nothing printed, working copy is still unchanged.</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="Undoing_Changes">Undoing Changes</h1><p>An extremely common use for svn merge is to roll back a change that has already been committed. Suppose you’re working away happily on a working copy of /calc/trunk, and you discover that the change made way back in revision 303, which changed integer.c, is completely wrong. All you need to do is to specify a reverse difference. (You can do this by specifying —revision 303:302, or by an equivalent —change -303.)</p>
+<h1 id="Traversing_Branches">Traversing Branches</h1><p>The svn switch command transforms an existing working copy to reflect a different branch. “Switching” a working copy that has no local modifications to a different branch results in the working copy looking just as it would if you’d done a fresh checkout of the directory.<br><figure class="highlight livecodeserver"><table><tr><td class="code"><pre><span class="line">$ svn info | grep <span class="built_in">URL</span></span><br><span class="line"><span class="built_in">URL</span>: <span class="keyword">http</span>://svn.example.com/repos/calc/trunk</span><br><span class="line">$ svn <span class="keyword">switch</span> <span class="keyword">http</span>://svn.example.com/repos/calc/branches/my-calc-branch</span><br><span class="line">U <span class="keyword">integer</span>.c</span><br><span class="line">U button.c</span><br><span class="line">U Makefile</span><br><span class="line">Updated <span class="built_in">to</span> revision <span class="number">341.</span></span><br><span class="line">$ svn info | grep <span class="built_in">URL</span></span><br><span class="line"><span class="built_in">URL</span>: <span class="keyword">http</span>://svn.example.com/repos/calc/branches/my-calc-branch</span><br></pre></td></tr></table></figure></p>
+<h1 id="Tags">Tags</h1><p>A tag is just a “snapshot” of a project in time. Once again, svn copy comes to the rescue. If you want to create a snapshot of<br>/calc/trunk exactly as it looks in the HEAD revision, make a copy of it:<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">$ svn <span class="keyword">copy</span> http:<span class="comment">//svn.example.com/repos/calc/trunk \</span></span><br><span class="line">           http:<span class="comment">//svn.example.com/repos/calc/tags/release-1.0 \</span></span><br><span class="line">        -<span class="keyword">m</span> <span class="string">"Tagging the 1.0 release of the 'calc' project."</span></span><br><span class="line">Committed revision 902.</span><br></pre></td></tr></table></figure></p>
+<p>This example assumes that a /calc/tags directory already exists. (If it doesn’t, you can create it using svn mkdir.)  After the copy completes, the new release-1.0 directory is forever a snapshot of how the /trunk directory looked in the HEAD revision at the time you made the copy.<br>In Subversion, there’s no difference between a tag and a branch. Both are just ordinary directories that are created by copying. Just as with branches, the only reason a copied directory is a “tag” is because humans have decided to treat it that way: as long as nobody ever commits to the directory, it forever remains a snapshot. If people start committing to it, it becomes a branch.</p>
+<h1 id="Common_Branching_Patterns">Common Branching Patterns</h1><h2 id="1-_Release_Branches">1. Release Branches</h2><p>Most software has a typical life cycle: code, test, release, repeat. There are two problems with this process. First, developers need to keep writing new features while quality assurance teams take time to test supposedly stable versions of the software. New work cannot halt while the software is tested. Second, the team almost always needs to support older, released versions of software; if a bug is discovered in the latest code, it most likely exists in released versions as well, and customers will want to get that bug fix without having to wait for a major new release. The typical procedure looks like this:</p>
+<ol>
+<li>Developers commit all new work to the trunk. Day-to-day changes are committed to /trunk: new features, bug fixes, and so on.</li>
+<li>The trunk is copied to a “release” branch. When the team thinks the software is ready for release (say, a 1.0 release), /trunk might be copied to /branches/1.0.</li>
+<li>Teams continue to work in parallel. One team begins rigorous testing of the release branch, while another team continues new work (say, for version 2.0) on /trunk. If bugs are discovered in either location, fixes are ported back and forth as necessary. At<br>some point, however, even that process stops. The branch is “frozen” for final testing right before a release.</li>
+<li>The branch is tagged and released. When testing is complete, /branches/1.0 is copied to /tags/1.0.0 as a reference snapshot. The tag is packaged and released to customers.</li>
+<li>The branch is maintained over time. While work continues on /trunk for version 2.0, bug fixes continue to be ported from /trunk to /branches/1.0. When enough bug fixes have accumulated, management may decide to do a 1.0.1 release: /branches/1.0 is copied to /tags/1.0.1, and the tag is packaged and released.<br>This entire process repeats as the software matures: when the 2.0 work is complete, a new 2.0 release branch is created, tested, tagged, and eventually released. After some years, the repository ends up with a number of release branches in “maintenance” mode, and a number of tags representing final shipped versions.</li>
+</ol>
+<h2 id="2-_Feature_Branches">2. Feature Branches</h2><p>It’s a temporary branch created to work on a complex change without interfering with the stability of /trunk. Unlike release branches (which may need to be supported forever), feature branches are born, used for a while, merged back to the trunk, and then ultimately deleted.<br>Here’s a great risk to working on a branch for weeks or months; trunk changes may continue to pour in, to the point where the two lines of development differ so greatly that it may become a nightmare trying to merge the branch back to the trunk. This situation is best avoided by regularly merging trunk changes to the branch. Make up a policy: once a week, merge the last week’s worth of trunk changes to the branch.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2015/12/13/svn分支和合并/" data-id="cii40luo40000s83a3e4mx2a8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svn/">svn</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/12/09/locale/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">locale</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/linux点滴/" style="font-size: 10px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 20px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/12/13/svn分支和合并/">svn分支和合并</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/locale/">locale</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/svn高级话题/">svn高级话题</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/09/svn日常工作流程/">svn日常工作流程</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/01/svn基本操作/">svn基本操作</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
