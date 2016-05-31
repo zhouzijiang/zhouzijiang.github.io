@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>修改linux系统下的最大文件描述符限制 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="linux下最大文件描述符的限制有两个方面，一个是进程级的限制，另外一个则是系统级限制。
+1. 系统级的限制/proc/sys/fs/file-max是系统中的所有进程总共可以同时打开的文件数量，可以通过修改内核参数来更改该限制：sysctl -w fs.file-max=102400。但是，使用sysctl命令更改是临时的，如果想永久更改需要在/etc/sysctl.conf添加fs.file-">
+<meta property="og:type" content="article">
+<meta property="og:title" content="修改linux系统下的最大文件描述符限制">
+<meta property="og:url" content="https://zhouzijiang.github.io/2016/02/28/修改linux系统下的最大文件描述符限制/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="linux下最大文件描述符的限制有两个方面，一个是进程级的限制，另外一个则是系统级限制。
+1. 系统级的限制/proc/sys/fs/file-max是系统中的所有进程总共可以同时打开的文件数量，可以通过修改内核参数来更改该限制：sysctl -w fs.file-max=102400。但是，使用sysctl命令更改是临时的，如果想永久更改需要在/etc/sysctl.conf添加fs.file-">
+<meta property="og:updated_time" content="2016-02-29T13:25:17.792Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="修改linux系统下的最大文件描述符限制">
+<meta name="twitter:description" content="linux下最大文件描述符的限制有两个方面，一个是进程级的限制，另外一个则是系统级限制。
+1. 系统级的限制/proc/sys/fs/file-max是系统中的所有进程总共可以同时打开的文件数量，可以通过修改内核参数来更改该限制：sysctl -w fs.file-max=102400。但是，使用sysctl命令更改是临时的，如果想永久更改需要在/etc/sysctl.conf添加fs.file-">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-修改linux系统下的最大文件描述符限制" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/02/28/修改linux系统下的最大文件描述符限制/" class="article-date">
+  <time datetime="2016-02-28T13:12:41.000Z" itemprop="datePublished">2016-02-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      修改linux系统下的最大文件描述符限制
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>linux下最大文件描述符的限制有两个方面，一个是进程级的限制，另外一个则是系统级限制。</p>
+<h2 id="1-_系统级的限制">1. 系统级的限制</h2><p>/proc/sys/fs/file-max是系统中的所有进程总共可以同时打开的文件数量，可以通过修改内核参数来更改该限制：<code>sysctl -w fs.file-max=102400</code>。但是，使用sysctl命令更改是临时的，如果想永久更改需要在/etc/sysctl.conf添加<code>fs.file-max=102400</code>，保存退出后使用<code>sysctl -p</code> 命令使其生效。</p>
+<p>/proc/sys/fs/file-max：This  file defines a system-wide limit on the number of open files for all processes.  (See also setrlimit(2), which can be used by a process to set the per-process limit, RLIMIT_NOFILE, on the number of files it may open.) If  you get lots of error messages about running out of file handles, try increasing this value: <code>echo 100000 &gt; /proc/sys/fs/file-max</code>. The kernel constant NR_OPEN imposes an upper limit on the value that may be placed in file-max. If you  increase /proc/sys/fs/file-max, be sure to increase /proc/sys/fs/inode-max to 3-4 times the new value of /proc/sys/fs/file-max, or you will run out of inodes.</p>
+<h2 id="2-_进程级的限制">2. 进程级的限制</h2><p>修改一个进程能够同时打开的文件数量限制有两种方式：(1)通过bash的内置命令ulimit (2)在程序中调用setrlimit函数</p>
+<p>(1)ulimit is a bash built_in command. It provides control over the resources available to the shell and to processes started by it.<br>执行<code>ulimit -n</code>命令可以看到本次登录的shell会话的文件描述符的限制，一般情况下是1024。当然可以通过<code>ulimit -SHn 102400</code> 命令来修改该限制。<br>(2) The getrlimit() and setrlimit() system calls get and set resource limits respectively. Each resource has an associated soft and hard limit, as defined by the rlimit structure:<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> rlimit &#123;</span><br><span class="line">    <span class="keyword">rlim_t</span> rlim_cur;  <span class="comment">/* Soft limit */</span></span><br><span class="line">    <span class="keyword">rlim_t</span> rlim_max;  <span class="comment">/* Hard limit (ceiling for rlim_cur) */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>The soft limit is the value that the kernel enforces for the corresponding resource. The hard limit acts as a ceiling for the soft limit: an unprivileged process may only set its soft limit to a value in the range from 0 up to the hard limit, and (irreversibly) lower its hard limit. A privileged process may make arbitrary changes to either limit value. The value RLIM_INFINITY denotes no limit on a resource. </p>
+<p>不管通过ulimit还是setrlimit来修改限制，都只能对当前进程及其子进程有效。而且它们都会受到/etc/security/limits.conf文件中的数量限制。如下所示，<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">vi /etc/security/limits<span class="class">.conf</span></span><br><span class="line">xiaohua hard nofile <span class="number">100</span></span><br><span class="line">xiaohua soft nofile <span class="number">100</span></span><br></pre></td></tr></table></figure></p>
+<p>则用户xiaohua的每个进程能够同时打开的文件数量的上限是100，通过ulimit和setrlimit的修改的上限值不能超过它。而且可以看出，其实/etc/security/limits.conf是用户级的限制，能够限制某个用户或者用户组的每个进程能够同时打开的文件数量的上限。修改该文件，保存退出后重新登录，里面设置的值才会生效。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2016/02/28/修改linux系统下的最大文件描述符限制/" data-id="cinvexiqi0009tw3ag0r2xz8y" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux点滴/">linux点滴</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/10/c-primer笔记5/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer笔记5
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/02/28/linux点滴-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">linux点滴(1)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-基础/">c++基础</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/TCP/" style="font-size: 18px;">TCP</a> <a href="/tags/c/" style="font-size: 12px;">c++</a> <a href="/tags/c-基础/" style="font-size: 20px;">c++基础</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/linux点滴/" style="font-size: 14px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 16px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/gdb-1-启动和退出/">gdb(1):启动和退出</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/最让人头疼的歧义most-vexing-parse/">最让人头疼的歧义most vexing parse</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/不可复制noncopyable/">不可复制noncopyable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/线程同步之条件变量/">线程同步之条件变量</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/21/c-primer笔记27-Pointer-to-Class-Member/">c++ primer笔记27: Pointer to Class Member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

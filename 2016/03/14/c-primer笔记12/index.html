@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>c++ primer笔记12 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. Member TemplatesAny class (template or otherwise) may have a member that is itself a class or function template. Such members are referred to as member templates. One example of a member template i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++ primer笔记12">
+<meta property="og:url" content="https://zhouzijiang.github.io/2016/03/14/c-primer笔记12/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="1. Member TemplatesAny class (template or otherwise) may have a member that is itself a class or function template. Such members are referred to as member templates. One example of a member template i">
+<meta property="og:updated_time" content="2016-03-14T10:21:18.648Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++ primer笔记12">
+<meta name="twitter:description" content="1. Member TemplatesAny class (template or otherwise) may have a member that is itself a class or function template. Such members are referred to as member templates. One example of a member template i">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c-primer笔记12" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/14/c-primer笔记12/" class="article-date">
+  <time datetime="2016-03-14T09:10:40.000Z" itemprop="datePublished">2016-03-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++ primer笔记12
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-_Member_Templates">1. Member Templates</h2><p>Any class (template or otherwise) may have a member that is itself a class or function template. Such members are referred to as member templates. One example of a member template is the assign member of the standard containers. The version  assign that takes two iterators uses a template parameter to represent the type of its iterator parameters. Another member template example is the container constructor that takes two iterators. This constructor and the assign member allow containers to be built from sequences of different but compatible element types and/or different container types.</p>
+<p>Consider the Queue copy constructor: It takes a single parameter that is a reference to a Queue<type> . If we wanted to create a  Queue by copying elements from a vector, we could not do so; there is no conversion from  vector to  Queue . Similarly, if we wanted to copy elements from a Queue<short> into a  Queue<int>, we could not do so. Again, even though we can convert a  short<br>to an  int , there is no conversion from  Queue<short> to  Queue<int>. The same logic applies to the Queue assignment operator, which also takes a parameter of type  Queue<type>&amp;.</type></int></short></int></short></type></p>
+<p>The problem is that the copy constructor and assignment operator fix both the container and element type. We’d like to define a constructor and an  assign member that allow both the container and element type to vary. When we need a parameter type to vary, we need to define a function template. In this case, we’ll define the constructor and  assign member to take a pair ofiterators that denote a range in some other sequence. These functions will have a single template type parameter that represents an iterator type.</p>
+<h2 id="2-_Defining_a_Member_Template">2. Defining a Member Template</h2><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;class <span class="type">Type</span>&gt; class <span class="type">Queue</span> &#123;</span><br><span class="line">    public:</span><br><span class="line">        // construct a <span class="type">Queue</span> <span class="keyword">from</span> a pair <span class="keyword">of</span> iterators on some sequence</span><br><span class="line">        <span class="keyword">template</span> &lt;class <span class="type">It</span>&gt;</span><br><span class="line">        <span class="type">Queue</span>(<span class="type">It</span> beg, <span class="type">It</span> <span class="keyword">end</span>):</span><br><span class="line">        head(<span class="number">0</span>), tail(<span class="number">0</span>) &#123; copy_elems(beg, <span class="keyword">end</span>); &#125;</span><br><span class="line">        // replace current <span class="type">Queue</span> by contents delimited by a pair <span class="keyword">of</span> iterators</span><br><span class="line">        <span class="keyword">template</span> &lt;class <span class="type">Iter</span>&gt; <span class="type">void</span> assign(<span class="type">Iter</span>, <span class="type">Iter</span>);</span><br><span class="line">        // rest <span class="keyword">of</span> <span class="type">Queue</span> class <span class="keyword">as</span> before</span><br><span class="line">    private:</span><br><span class="line">        // version <span class="keyword">of</span> copy to be used by assign to copy elements <span class="keyword">from</span> <span class="keyword">iterator</span> <span class="type">range</span></span><br><span class="line">        <span class="keyword">template</span> &lt;class <span class="type">Iter</span>&gt; <span class="type">void</span> copy_elems(<span class="type">Iter</span>, <span class="type">Iter</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>When we define a member template outside the scope of a class template, we must include both template parameter lists:<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;class T&gt; <span class="keyword">template</span> &lt;class <span class="type">Iter</span>&gt;</span><br><span class="line"><span class="type">void</span> <span class="type">Queue</span>&lt;T&gt;::assign(<span class="type">Iter</span> beg, <span class="type">Iter</span> <span class="keyword">end</span>)</span><br><span class="line">&#123;</span><br><span class="line">    destroy(); // remove existing elements <span class="keyword">in</span> this <span class="type">Queue</span></span><br><span class="line">    copy_elems(beg, <span class="keyword">end</span>); // copy elements <span class="keyword">from</span> the input <span class="type">range</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>When a member template is a member of a class template, then its definition must include the class-template parameters as well as its own template parameters. The class-template parameter list comes first, followed by the member’s own template parameter list. The definition of assign starts with <code>template &lt;class T&gt; template &lt;class Iter&gt;</code>.</p>
+<h2 id="3-_Member_Templates_and_Instantiation">3. Member Templates and Instantiation</h2><p>Like any other member, a member template is instantiated only when it is used in a program. Member templates have two kinds of<br>template parameters: Those that are defined by the class and those defined by the member template itself. The class template parameters are fixed by the type of the object through which the function is called. The template parameters defined by the member act like parameters of ordinary function templates. These parameters are resolved through normal template argument deduction.<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line">short a[<span class="number">4</span>] = &#123; <span class="number">0</span>, <span class="number">3</span>, <span class="number">6</span>, <span class="number">9</span> &#125;;</span><br><span class="line">// instantiates <span class="type">Queue</span>&lt;<span class="type">int</span>&gt;::<span class="type">Queue</span>(short *, short *)</span><br><span class="line"><span class="type">Queue</span>&lt;<span class="type">int</span>&gt; qi(a, a + <span class="number">4</span>); // copies elements <span class="keyword">from</span> a into qi</span><br><span class="line">vector&lt;<span class="type">int</span>&gt; vi(a, a + <span class="number">4</span>);</span><br><span class="line">// instantiates <span class="type">Queue</span>&lt;<span class="type">int</span>&gt;::assign(vector&lt;<span class="type">int</span>&gt;::<span class="keyword">iterator</span>,</span><br><span class="line">//                                          vector&lt;<span class="type">int</span>&gt;::<span class="keyword">iterator</span>)</span><br><span class="line">qi.assign(vi.begin(), vi.<span class="keyword">end</span>());</span><br></pre></td></tr></table></figure></p>
+<h2 id="4-_The_Complete_Queue_Class">4. The Complete Queue Class</h2><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line">// declaration that <span class="type">Queue</span> <span class="keyword">is</span> a <span class="keyword">template</span> needed <span class="keyword">for</span> friend declaration <span class="keyword">in</span> <span class="type">QueueItem</span></span><br><span class="line"><span class="keyword">template</span> &lt;class <span class="type">Type</span>&gt; class <span class="type">Queue</span>;</span><br><span class="line">// function <span class="keyword">template</span> declaration must precede friend declaration <span class="keyword">in</span> <span class="type">QueueItem</span></span><br><span class="line"><span class="keyword">template</span> &lt;class T&gt;</span><br><span class="line">    std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, <span class="keyword">const</span> <span class="type">Queue</span>&lt;T&gt;&amp;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;class <span class="type">Type</span>&gt; class <span class="type">QueueItem</span> &#123;</span><br><span class="line">    friend class <span class="type">Queue</span>&lt;<span class="type">Type</span>&gt;;</span><br><span class="line">    // needs access to item <span class="keyword">and</span> next</span><br><span class="line">    friend std::ostream&amp; // defined on page <span class="number">659</span></span><br><span class="line">    operator&lt;&lt; &lt;<span class="type">Type</span>&gt; (std::ostream&amp;, <span class="keyword">const</span> <span class="type">Queue</span>&lt;<span class="type">Type</span>&gt;&amp;);</span><br><span class="line">    // private class: no public section</span><br><span class="line">    <span class="type">QueueItem</span>(<span class="keyword">const</span> <span class="type">Type</span> &amp;t): item(t), next(<span class="number">0</span>) &#123; &#125;</span><br><span class="line">    <span class="type">Type</span> item; // value stored <span class="keyword">in</span> this element</span><br><span class="line">    <span class="type">QueueItem</span> *next; // <span class="type">pointer</span> to next element <span class="keyword">in</span> the <span class="type">Queue</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;class <span class="type">Type</span>&gt; class <span class="type">Queue</span> &#123;</span><br><span class="line">    // needs access to head</span><br><span class="line">    friend std::ostream&amp; // defined on page <span class="number">659</span></span><br><span class="line">                operator&lt;&lt; &lt;<span class="type">Type</span>&gt; (std::ostream&amp;, <span class="keyword">const</span> <span class="type">Queue</span>&lt;<span class="type">Type</span>&gt;&amp;);</span><br><span class="line">    public:</span><br><span class="line">        // empty <span class="type">Queue</span></span><br><span class="line">        <span class="type">Queue</span>(): head(<span class="number">0</span>), tail(<span class="number">0</span>) &#123; &#125;</span><br><span class="line">        // construct a <span class="type">Queue</span> <span class="keyword">from</span> a pair <span class="keyword">of</span> iterators on some sequence</span><br><span class="line">        <span class="keyword">template</span> &lt;class <span class="type">It</span>&gt;</span><br><span class="line">        <span class="type">Queue</span>(<span class="type">It</span> beg, <span class="type">It</span> <span class="keyword">end</span>):</span><br><span class="line">                head(<span class="number">0</span>), tail(<span class="number">0</span>) &#123; copy_elems(beg, <span class="keyword">end</span>); &#125;</span><br><span class="line">        // copy control to manage pointers to <span class="type">QueueItems</span> <span class="keyword">in</span> the <span class="type">Queue</span></span><br><span class="line">        <span class="type">Queue</span>(<span class="keyword">const</span> <span class="type">Queue</span> &amp;Q): head(<span class="number">0</span>), tail(<span class="number">0</span>)</span><br><span class="line">        &#123; copy_elems(Q); &#125;</span><br><span class="line">        <span class="type">Queue</span>&amp; operator=(<span class="keyword">const</span> <span class="type">Queue</span>&amp;); // left <span class="keyword">as</span> exercise <span class="keyword">for</span> the reader</span><br><span class="line">        ~<span class="type">Queue</span>() &#123; destroy(); &#125;</span><br><span class="line">        // replace current <span class="type">Queue</span> by contents delimited by a pair <span class="keyword">of</span> iterators</span><br><span class="line">        <span class="keyword">template</span> &lt;class <span class="type">Iter</span>&gt; <span class="type">void</span> assign(<span class="type">Iter</span>, <span class="type">Iter</span>);</span><br><span class="line">        // <span class="keyword">return</span> element <span class="keyword">from</span> head <span class="keyword">of</span> <span class="type">Queue</span></span><br><span class="line">        // unchecked operation: front on an empty <span class="type">Queue</span> <span class="keyword">is</span> undefined</span><br><span class="line">        <span class="type">Type</span>&amp; front() &#123; <span class="keyword">return</span> head-&gt;item; &#125;</span><br><span class="line">        <span class="keyword">const</span> <span class="type">Type</span> &amp;front() <span class="keyword">const</span> &#123; <span class="keyword">return</span> head-&gt;item; &#125;</span><br><span class="line">        <span class="type">void</span> push(<span class="keyword">const</span> <span class="type">Type</span> &amp;);// defined on page <span class="number">652</span></span><br><span class="line">        <span class="type">void</span> pop(); // defined on page <span class="number">651</span></span><br><span class="line">        <span class="type">bool</span> empty() <span class="keyword">const</span> &#123; // <span class="literal">true</span> <span class="keyword">if</span> no elements <span class="keyword">in</span> the <span class="type">Queue</span></span><br><span class="line">        <span class="keyword">return</span> head == <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    private:</span><br><span class="line">        <span class="type">QueueItem</span>&lt;<span class="type">Type</span>&gt; *head; // <span class="type">pointer</span> to first element <span class="keyword">in</span> <span class="type">Queue</span></span><br><span class="line">        <span class="type">QueueItem</span>&lt;<span class="type">Type</span>&gt; *tail; // <span class="type">pointer</span> to last element <span class="keyword">in</span> <span class="type">Queue</span></span><br><span class="line">        // utility functions used by copy constructor, assignment, <span class="keyword">and</span> destructor</span><br><span class="line">        <span class="type">void</span> destroy(); // defined on page <span class="number">651</span></span><br><span class="line">        <span class="type">void</span> copy_elems(<span class="keyword">const</span> <span class="type">Queue</span>&amp;); // defined on page <span class="number">652</span></span><br><span class="line">        // version <span class="keyword">of</span> copy to be used by assign to copy elements <span class="keyword">from</span> <span class="keyword">iterator</span> <span class="type">range</span></span><br><span class="line">        // defined on page <span class="number">662</span></span><br><span class="line">        <span class="keyword">template</span> &lt;class <span class="type">Iter</span>&gt; <span class="type">void</span> copy_elems(<span class="type">Iter</span>, <span class="type">Iter</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// <span class="type">Inclusion</span> <span class="type">Compilation</span> <span class="type">Model</span>: <span class="keyword">include</span> member function definitions <span class="keyword">as</span> well</span><br><span class="line"><span class="comment">#include "Queue.cc"</span></span><br></pre></td></tr></table></figure>
+<h2 id="5-_static_Members_of_Class_Templates">5. static Members of Class Templates</h2><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;class T&gt; class <span class="type">Foo</span> &#123;</span><br><span class="line">    public:</span><br><span class="line">        <span class="keyword">static</span> std::size_t count() &#123; <span class="keyword">return</span> ctr; &#125;</span><br><span class="line">        // other <span class="keyword">interface</span> members</span><br><span class="line">    private:</span><br><span class="line">        <span class="keyword">static</span> std::size_t ctr;</span><br><span class="line">        // other implementation members</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// <span class="type">Each</span> <span class="keyword">object</span> shares the same <span class="type">Foo</span>&lt;<span class="type">int</span>&gt;::ctrand <span class="type">Foo</span>&lt;<span class="type">int</span>&gt;::count members</span><br><span class="line"><span class="type">Foo</span>&lt;<span class="type">int</span>&gt; fi, fi2, fi3;</span><br><span class="line"></span><br><span class="line">// has <span class="keyword">static</span> members <span class="type">Foo</span>&lt;<span class="type">string</span>&gt;::ctrand <span class="type">Foo</span>&lt;<span class="type">string</span>&gt;::count</span><br><span class="line"><span class="type">Foo</span>&lt;<span class="type">string</span>&gt; fs;</span><br><span class="line"></span><br><span class="line"><span class="type">Foo</span>&lt;<span class="type">int</span>&gt; fi, fi2; // instantiates <span class="type">Foo</span>&lt;<span class="type">int</span>&gt; class</span><br><span class="line">size_t ct = <span class="type">Foo</span>&lt;<span class="type">int</span>&gt;::count(); // instantiates <span class="type">Foo</span>&lt;<span class="type">int</span>&gt;::count</span><br><span class="line">ct = fi.count(); // ok: uses <span class="type">Foo</span>&lt;<span class="type">int</span>&gt;::count</span><br><span class="line">ct = fi2.count(); // ok: uses <span class="type">Foo</span>&lt;<span class="type">int</span>&gt;::count</span><br><span class="line">ct = <span class="type">Foo</span>::count(); // error: which <span class="keyword">template</span> instantiation?</span><br></pre></td></tr></table></figure>
+<p>As with any other  static data member, there must be a definition for the data member that appears outside the class. In the case of a class template  static , the member definition must inidicate that it is for a class template:<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;class T&gt;</span><br><span class="line">size_t <span class="type">Foo</span>&lt;T&gt;::ctr = <span class="number">0</span>; // define <span class="keyword">and</span> initialize ctr</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2016/03/14/c-primer笔记12/" data-id="cinvexiy2002jtw3alxy5371s" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-基础/">c++基础</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/14/c-primer笔记13/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer笔记13
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/14/c-primer笔记11/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">c++ primer笔记11</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-基础/">c++基础</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/TCP/" style="font-size: 18px;">TCP</a> <a href="/tags/c/" style="font-size: 12px;">c++</a> <a href="/tags/c-基础/" style="font-size: 20px;">c++基础</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/linux点滴/" style="font-size: 14px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 16px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/gdb-1-启动和退出/">gdb(1):启动和退出</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/最让人头疼的歧义most-vexing-parse/">最让人头疼的歧义most vexing parse</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/不可复制noncopyable/">不可复制noncopyable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/线程同步之条件变量/">线程同步之条件变量</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/21/c-primer笔记27-Pointer-to-Class-Member/">c++ primer笔记27: Pointer to Class Member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

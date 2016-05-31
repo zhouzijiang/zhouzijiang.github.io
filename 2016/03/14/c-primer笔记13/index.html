@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>c++ primer笔记13 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. Defining the Generic Handle ClassTo create a  Handle , a user will be expected to pass the address of a dynamically allocated object of the type (or a typederived from that type) managed by the  Ha">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++ primer笔记13">
+<meta property="og:url" content="https://zhouzijiang.github.io/2016/03/14/c-primer笔记13/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="1. Defining the Generic Handle ClassTo create a  Handle , a user will be expected to pass the address of a dynamically allocated object of the type (or a typederived from that type) managed by the  Ha">
+<meta property="og:updated_time" content="2016-03-14T14:34:47.241Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++ primer笔记13">
+<meta name="twitter:description" content="1. Defining the Generic Handle ClassTo create a  Handle , a user will be expected to pass the address of a dynamically allocated object of the type (or a typederived from that type) managed by the  Ha">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c-primer笔记13" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/14/c-primer笔记13/" class="article-date">
+  <time datetime="2016-03-14T10:21:27.000Z" itemprop="datePublished">2016-03-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++ primer笔记13
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-_Defining_the_Generic_Handle_Class">1. Defining the Generic Handle Class</h2><p>To create a  Handle , a user will be expected to pass the address of a dynamically allocated object of the type (or a type<br>derived from that type) managed by the  Handle . From that point on, the  Handle will “own” the given object. In particular, the  Handle class will assume responsibility for deleting that object once there are no longer any  Handle s attached to it. Once an object is bound to a Handle, the user must not delete that object.<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt; <span class="keyword">class</span> Handle &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="comment">// unbound handle</span></span><br><span class="line">        Handle(T *p = <span class="number">0</span>): ptr(p), use(<span class="keyword">new</span> <span class="keyword">size_t</span>(<span class="number">1</span>)) &#123; &#125;</span><br><span class="line">        <span class="comment">// overloaded operators to support pointer behavior</span></span><br><span class="line">        T&amp; <span class="keyword">operator</span>*();</span><br><span class="line">        T* <span class="keyword">operator</span>-&gt;();</span><br><span class="line">        <span class="keyword">const</span> T&amp; <span class="keyword">operator</span>*() <span class="keyword">const</span>;</span><br><span class="line">        <span class="keyword">const</span> T* <span class="keyword">operator</span>-&gt;() <span class="keyword">const</span>;</span><br><span class="line">        <span class="comment">// copy control: normal pointer behavior, but last Handle deletes the object</span></span><br><span class="line">        Handle(<span class="keyword">const</span> Handle&amp; h): ptr(h.ptr), use(h.use)</span><br><span class="line">        &#123; ++*use; &#125;</span><br><span class="line">        Handle&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> Handle&amp;);</span><br><span class="line">        ~Handle() &#123; rem_ref(); &#125;</span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        T* ptr; <span class="comment">// shared object</span></span><br><span class="line">        <span class="keyword">size_t</span> *use; <span class="comment">// count of how many Handle spointto *ptr</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">rem_ref</span><span class="params">()</span></span><br><span class="line">        </span>&#123; <span class="keyword">if</span> (--*use == <span class="number">0</span>) &#123; <span class="keyword">delete</span> ptr; <span class="keyword">delete</span> use; &#125; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</span><br><span class="line"><span class="keyword">inline</span> Handle&lt;T&gt;&amp; Handle&lt;T&gt;::<span class="keyword">operator</span>=(<span class="keyword">const</span> Handle &amp;rhs)</span><br><span class="line">&#123;</span><br><span class="line">    ++*rhs.use; <span class="comment">// protect against self-assignment</span></span><br><span class="line">    rem_ref(); <span class="comment">// decrement use count and delete pointers if needed</span></span><br><span class="line">    ptr = rhs.ptr;</span><br><span class="line">    use = rhs.use;</span><br><span class="line">    <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-_Using_the_Handle">2. Using the Handle</h2><p>We intend this class to be used by other classes in their internal implementations. However, as an aid to understanding how the  Handle class works, we’ll look at a simpler example first. This example illustrates the behavior of the  Handle by allocating an  int and binding a Handle to that newly allocated object:<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">&#123; <span class="comment">// new scope</span></span><br><span class="line">    <span class="comment">// user allocates but must not delete the object to which the Handle is attached</span></span><br><span class="line">    Handle&lt;<span class="keyword">int</span>&gt; hp(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">42</span>));</span><br><span class="line">    &#123; <span class="comment">// new scope</span></span><br><span class="line">        Handle&lt;<span class="keyword">int</span>&gt; hp2 = hp; <span class="comment">// copies pointer; use count incremented</span></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; *hp &lt;&lt; <span class="string">" "</span> &lt;&lt; *hp2 &lt;&lt; endl; <span class="comment">// prints 42 42</span></span><br><span class="line">        *hp2 = <span class="number">10</span>; <span class="comment">// changes value of shared underlying int</span></span><br><span class="line">    &#125; <span class="comment">// hp2 goes out of scope; use count is decremented</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; *hp &lt;&lt; endl; <span class="comment">// prints 10</span></span><br><span class="line">&#125; <span class="comment">// hp goes out of scope; its destructor deletes the int</span></span><br></pre></td></tr></table></figure></p>
+<p>As an example of using  Handle in a class implementation, we might reimplement our Sales_item class. This version of the class defines the same interface, but we can eliminate the copy-control members by replacing the pointer to Item_base by a Handle<item\_base>:<br><figure class="highlight aspectj"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sales_item</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        // <span class="keyword">default</span> constructor: unbound handle</span><br><span class="line">        Sales_item(): h() &#123; &#125;</span><br><span class="line">        <span class="comment">// copy item and attach handle to the copy</span></span><br><span class="line">        Sales_item(<span class="keyword">const</span> Item_base &amp;item): h(item.clone()) &#123; &#125;</span><br><span class="line">        <span class="comment">// no copy control members: synthesized versions work</span></span><br><span class="line">        <span class="comment">// member access operators: forward their work to the Handle class</span></span><br><span class="line">        <span class="keyword">const</span> Item_base&amp; operator*() <span class="keyword">const</span> &#123; <span class="keyword">return</span> *h; &#125;</span><br><span class="line">        <span class="keyword">const</span> Item_base* operator-&gt;() <span class="keyword">const</span></span><br><span class="line">        &#123; <span class="keyword">return</span> h.operator-&gt;(); &#125;</span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        Handle&lt;Item_base&gt; h; <span class="comment">// use-counted handle</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></item\_base></p>
+<h2 id="3-_***_Template_Specializations_***">3. *** Template Specializations ***</h2><p>It is not always possible to write a single template that is best suited for every possible template argument with which the template might be instantiated. In some cases, the general template definition is simply wrong for a type. The general definition might not compile or might do the wrong thing. At other times, we may be able to take advantage of some specific knowledge<br>about a type to write a more efficient function than the one that is instantiated from the template. Let’s look again at our  compare function template. If we call this template definition on two  const char* arguments, the function compares the pointer values.<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;typename T&gt;</span><br><span class="line"><span class="type">int</span> compare(<span class="keyword">const</span> T &amp;v1, <span class="keyword">const</span> T &amp;v2)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (v1 &lt; v2) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (v2 &lt; v1) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="4-_Specializing_a_Function_Template">4. Specializing a Function Template</h2><p>A template spacialization is a separate definition in which the actual type(s) or value(s) of one or more template parameter(s) is (are) specified. The declaration for the specialization must match that of the corresponding template.<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line">// special version <span class="keyword">of</span> compare to handle C-style character strings</span><br><span class="line"><span class="keyword">template</span> &lt;&gt;</span><br><span class="line"><span class="type">int</span> compare&lt;<span class="keyword">const</span> <span class="type">char</span>*&gt;(<span class="keyword">const</span> <span class="type">char</span>* <span class="keyword">const</span> &amp;v1,</span><br><span class="line"><span class="keyword">const</span> <span class="type">char</span>* <span class="keyword">const</span> &amp;v2)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> strcmp(v1, v2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Now when we call  compare , passing it two character pointers, the compiler will call our specialized version. It will call the generic version for any other argument types (including plain char*,也就是说要完全匹配):<br><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *cp1 = <span class="string">"world"</span>, *cp2 = <span class="string">"hi"</span>;</span><br><span class="line">int i1, i2;</span><br><span class="line"><span class="keyword">compare</span>(cp1, cp2); <span class="comment">// calls the specialization</span></span><br><span class="line"><span class="keyword">compare</span>(i1, i2); <span class="comment">// calls the generic version instantiated with int</span></span><br></pre></td></tr></table></figure></p>
+<p>As with any function, we can declare a function template specialization without defining it. A template specialization declaration looks like the definition but omits the function body. If the template arguments can be inferred from the function parameter<br>list, there is no need to explicitly specify the template arguments:<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line">// error: invalid specialization declarations</span><br><span class="line">// missing <span class="keyword">template</span>&lt;&gt;</span><br><span class="line"><span class="type">int</span> compare&lt;<span class="keyword">const</span> <span class="type">char</span>*&gt;(<span class="keyword">const</span> <span class="type">char</span>* <span class="keyword">const</span>&amp;, <span class="keyword">const</span> <span class="type">char</span>* <span class="keyword">const</span>&amp;);</span><br><span class="line"></span><br><span class="line">// error: function parameter list missing</span><br><span class="line"><span class="keyword">template</span>&lt;&gt; <span class="type">int</span> compare&lt;<span class="keyword">const</span> <span class="type">char</span>*&gt;;</span><br><span class="line"></span><br><span class="line">// ok: explicit <span class="keyword">template</span> argument <span class="keyword">const</span> <span class="type">char</span>* deduced <span class="keyword">from</span> parameter types</span><br><span class="line"><span class="keyword">template</span>&lt;&gt; <span class="type">int</span> compare(<span class="keyword">const</span> <span class="type">char</span>* <span class="keyword">const</span>&amp;, <span class="keyword">const</span> <span class="type">char</span>* <span class="keyword">const</span>&amp;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="5-_Function_Overloading_versus_Template_Specializations">5. Function Overloading versus Template Specializations</h2><p>Omitting the empty template parameter list,  template&lt;&gt; , on a specialization may have surprising effects. If the specialization syntax is missing, then the effect is to declare an overloaded nontemplate version of the function:<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line">// <span class="keyword">generic</span> <span class="keyword">template</span> definition</span><br><span class="line"><span class="keyword">template</span> &lt;class T&gt;</span><br><span class="line"><span class="type">int</span> compare(<span class="keyword">const</span> T&amp; t1, <span class="keyword">const</span> T&amp; t2) &#123; /* ... */ &#125;</span><br><span class="line">// <span class="type">OK</span>: ordinary function declaration</span><br><span class="line"><span class="type">int</span> compare(<span class="keyword">const</span> <span class="type">char</span>* <span class="keyword">const</span>&amp;, <span class="keyword">const</span> <span class="type">char</span>* <span class="keyword">const</span>&amp;);</span><br></pre></td></tr></table></figure></p>
+<p>The definition of compare does not define a template specialization. Instead, it declares an ordinary function with a return type and a parameter list that could match those of a template instantiation.</p>
+<p>We’ll look at the interaction of overloading and templates in more detail in the next section. For now, what’s important to know is that when we define a nontemplate function, normal conversions are applied to the arguments. When we specialize a template, conversions are not applied to the argument types. In a call to a specialized version of a template, the argument type(s) in the call must match the specialized version function parameter type(s) exactly. If they don’t, then the compiler will instantiate an instantiation for the argument(s) from the template definition.</p>
+<p>If a program consists of more than one file, the declaration for a template specialization must be visible in every file in which the specialization is used. As with other function declarations, declarations for template specializations should be included in a header file. That header should then be included in every source file that uses the specialization.</p>
+<h2 id="6-_Ordinary_Scope_Rules_Apply_to_Specializations">6. Ordinary Scope Rules Apply to Specializations</h2><p>Before we can declare or define a specialization, a declaration for the template that it specializes must be in scope. Similarly, a declaration for the specialization must be in scope before that version of the template is called:<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line">// define the general compare <span class="keyword">template</span></span><br><span class="line"><span class="keyword">template</span> &lt;class T&gt;</span><br><span class="line"><span class="type">int</span> compare(<span class="keyword">const</span> T&amp; t1, <span class="keyword">const</span> T&amp; t2) &#123; /* ... */ &#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> main() &#123;</span><br><span class="line">// uses the <span class="keyword">generic</span> <span class="keyword">template</span> definition</span><br><span class="line"><span class="type">int</span> i = compare(<span class="string">"hello"</span>, <span class="string">"world"</span>);</span><br><span class="line">// ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// invalid program: explicit specialization after call</span><br><span class="line"><span class="keyword">template</span>&lt;&gt;</span><br><span class="line"><span class="type">int</span> compare&lt;<span class="keyword">const</span> <span class="type">char</span>*&gt;(<span class="keyword">const</span> <span class="type">char</span>* <span class="keyword">const</span>&amp; s1, <span class="keyword">const</span> <span class="type">char</span>* <span class="keyword">const</span>&amp; s2)</span><br><span class="line">&#123; /* ... */ &#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2016/03/14/c-primer笔记13/" data-id="cinvexixz002htw3a9g1klwwj" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-基础/">c++基础</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/14/c-primer笔记14/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer笔记14
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/14/c-primer笔记12/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">c++ primer笔记12</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-基础/">c++基础</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/TCP/" style="font-size: 18px;">TCP</a> <a href="/tags/c/" style="font-size: 12px;">c++</a> <a href="/tags/c-基础/" style="font-size: 20px;">c++基础</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/linux点滴/" style="font-size: 14px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 16px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/gdb-1-启动和退出/">gdb(1):启动和退出</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/最让人头疼的歧义most-vexing-parse/">最让人头疼的歧义most vexing parse</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/不可复制noncopyable/">不可复制noncopyable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/线程同步之条件变量/">线程同步之条件变量</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/21/c-primer笔记27-Pointer-to-Class-Member/">c++ primer笔记27: Pointer to Class Member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

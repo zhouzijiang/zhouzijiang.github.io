@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>c++ primer笔记11 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. Class-Template Member FunctionsThe definition of a member function of a class template has the following form:
+
+It must start with the keyword template followed by the template parameter list for t">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++ primer笔记11">
+<meta property="og:url" content="https://zhouzijiang.github.io/2016/03/14/c-primer笔记11/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="1. Class-Template Member FunctionsThe definition of a member function of a class template has the following form:
+
+It must start with the keyword template followed by the template parameter list for t">
+<meta property="og:updated_time" content="2016-03-14T08:58:04.304Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++ primer笔记11">
+<meta name="twitter:description" content="1. Class-Template Member FunctionsThe definition of a member function of a class template has the following form:
+
+It must start with the keyword template followed by the template parameter list for t">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c-primer笔记11" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/14/c-primer笔记11/" class="article-date">
+  <time datetime="2016-03-14T07:20:05.000Z" itemprop="datePublished">2016-03-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++ primer笔记11
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-_Class-Template_Member_Functions">1. Class-Template Member Functions</h2><p>The definition of a member function of a class template has the following form:</p>
+<ul>
+<li>It must start with the keyword template followed by the template parameter list for the class.</li>
+<li>It must indicate the class of which it is a member.</li>
+<li>The class name must include its template parameters.</li>
+</ul>
+<p><code>template &lt;class T&gt; ret-type Queue&lt;T&gt;::member-name</code><br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;class <span class="type">Type</span>&gt;</span><br><span class="line"><span class="type">void</span> <span class="type">Queue</span>&lt;<span class="type">Type</span>&gt;::copy_elems(<span class="keyword">const</span> <span class="type">Queue</span> &amp;orig)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">QueueItem</span>&lt;<span class="type">Type</span>&gt; *pt = orig.head; pt; pt = pt-&gt;next)</span><br><span class="line">        push(pt-&gt;item);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Member functions of class templates are themselves function templates. Like any other function template, a member function of a class template is used to generate instantiations of that member. Unlike other function templates, the compiler does not perform template-argument deduction when instantiating class template member functions. Instead, the template parameters of a class template member function are determined by the type of the object on which the call is made. For example, when we call the  push member of an object of type Queue<int> , the push function that is instantiated is <code>void Queue&lt;int&gt;::push(const int &amp;val)</code>.<br><figure class="highlight perl"><table><tr><td class="code"><pre><span class="line">Queue&lt;<span class="keyword">int</span>&gt; qi; <span class="regexp">//</span> instantiates class Queue&lt;<span class="keyword">int</span>&gt;</span><br><span class="line">short <span class="keyword">s</span> = <span class="number">42</span>;</span><br><span class="line"><span class="keyword">int</span> i = <span class="number">42</span>;</span><br><span class="line"><span class="regexp">//</span> ok: <span class="keyword">s</span> converted to <span class="keyword">int</span> <span class="keyword">and</span> passed to <span class="keyword">push</span></span><br><span class="line">qi.<span class="keyword">push</span>(<span class="keyword">s</span>); <span class="regexp">//</span> instantiates Queue&lt;<span class="keyword">int</span>&gt;::<span class="keyword">push</span>(const <span class="keyword">int</span>&amp;)</span><br><span class="line">qi.<span class="keyword">push</span>(i); <span class="regexp">//</span> uses Queue&lt;<span class="keyword">int</span>&gt;::<span class="keyword">push</span>(const <span class="keyword">int</span>&amp;)</span><br><span class="line">f(<span class="keyword">s</span>); <span class="regexp">//</span> instantiates f(const short&amp;)</span><br><span class="line">f(i); <span class="regexp">//</span> instantiates f(const <span class="keyword">int</span>&amp;)</span><br></pre></td></tr></table></figure></int></p>
+<p>Member functions of a class template are instantiated only for functions that are used by the program. <code>If a function is never used, then that member function is never instantiated</code>. This behavior implies that types used to instantiate a template need to meet only the requirements of the operations that are actually used. When we define an object of a template type, that definition causes the class template to be instantiated. Defining an object also instantiates whichever constructor was used to initialize the object, along with any members called by that constructor:<br><figure class="highlight lasso"><table><tr><td class="code"><pre><span class="line"><span class="comment">// instantiates Queue&lt;string&gt; class and Queue&lt;string&gt;::Queue()</span></span><br><span class="line"><span class="built_in">Queue</span><span class="subst">&lt;</span><span class="built_in">string</span><span class="subst">&gt;</span> qs;</span><br><span class="line">qs<span class="built_in">.</span>push(<span class="string">"hello"</span>); <span class="comment">// instantiates Queue&lt;string&gt;::push</span></span><br><span class="line"></span><br><span class="line">template <span class="subst">&lt;</span>class <span class="keyword">Type</span><span class="subst">&gt;</span> <span class="literal">void</span> <span class="built_in">Queue</span><span class="subst">&lt;</span><span class="keyword">Type</span><span class="subst">&gt;</span><span class="tag">::push</span>(const <span class="keyword">Type</span> <span class="subst">&amp;</span>val)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// allocate a new QueueItem object</span></span><br><span class="line">    QueueItem<span class="subst">&lt;</span><span class="keyword">Type</span><span class="subst">&gt;</span> <span class="subst">*</span>pt <span class="subst">=</span> <span class="literal">new</span> QueueItem<span class="subst">&lt;</span><span class="keyword">Type</span><span class="subst">&gt;</span>(val);</span><br><span class="line">    <span class="comment">// put item onto existing queue</span></span><br><span class="line">    <span class="keyword">if</span> (empty())</span><br><span class="line">        head <span class="subst">=</span> tail <span class="subst">=</span> pt; <span class="comment">// the queue now has only one element</span></span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        tail<span class="subst">-&gt;</span>next <span class="subst">=</span> pt; <span class="comment">// add new element to end of the queue</span></span><br><span class="line">        tail <span class="subst">=</span> pt;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>in turn instantiates the companion  QueueItem<string> class and its constructor. The QueueItem members in Queue are pointers. Defining a pointer to a class template doesn’t instantiate the class; the class is instantiated only when we use such a pointer. Thus, QueueItem is not instantiated when we create a Queue object. Instead, the QueueItem class is instanatiated when a Queue member such as front, push, or pop is used.</string></p>
+<h2 id="2-_Template_Arguments_for_Nontype_Parameters">2. Template Arguments for Nontype Parameters</h2><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="type">int</span> hi, <span class="type">int</span> wid&gt;</span><br><span class="line">class <span class="type">Screen</span> &#123;</span><br><span class="line">    public:</span><br><span class="line">        // <span class="keyword">template</span> nontype parameters used to initialize data members</span><br><span class="line">        <span class="type">Screen</span>(): screen(hi * wid, '<span class="comment">#'), cursor (0),</span></span><br><span class="line">                                height(hi), width(wid) &#123; &#125;</span><br><span class="line">    // ...</span><br><span class="line">    private:</span><br><span class="line">        std::<span class="type">string</span> screen;</span><br><span class="line">        std::<span class="type">string</span>::size_type cursor;</span><br><span class="line">        std::<span class="type">string</span>::size_type height, width;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// define <span class="type">Screen</span>() outside the class</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="type">int</span> hi, <span class="type">int</span> wid&gt;</span><br><span class="line"><span class="type">Screen</span>&lt;hi, wid&gt;::<span class="type">Screen</span>&lt;hi, wid&gt;() : screen(hi * wid, '<span class="comment">#'), cursor (0),</span></span><br><span class="line">                                                height(hi), width(wid) &#123; &#125;</span><br><span class="line"></span><br><span class="line"><span class="type">Screen</span>&lt;<span class="number">24</span>,<span class="number">80</span>&gt; hp2621;</span><br></pre></td></tr></table></figure>
+<p>Nontype template arguments must be compile-time constant expressions.</p>
+<h2 id="3-_Friend_Declarations_in_Class_Templates">3. Friend Declarations in Class Templates</h2><p>(1) A friend declaration for an ordinary nontemplate class or function, which grants friendship to the specific named class or function.<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;class <span class="type">Type</span>&gt; class <span class="type">Bar</span> &#123;</span><br><span class="line">    // grants access to ordinary, nontemplate class <span class="keyword">and</span> function</span><br><span class="line">    friend class <span class="type">FooBar</span>;</span><br><span class="line">    friend <span class="type">void</span> fcn();</span><br><span class="line">    // ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>(2) A friend declaration for a class template or function template, which grants access to all instances of the friend.<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;class <span class="type">Type</span>&gt; class <span class="type">Bar</span> &#123;</span><br><span class="line">    // grants access to <span class="type">Foo1</span> <span class="keyword">or</span> templ_fcn1 parameterized by <span class="type">any</span> <span class="keyword">type</span></span><br><span class="line">    <span class="keyword">template</span> &lt;class T&gt; friend class <span class="type">Foo1</span>;</span><br><span class="line">    <span class="keyword">template</span> &lt;class T&gt; friend <span class="type">void</span> templ_fcn1(<span class="keyword">const</span> T&amp;);</span><br><span class="line">// ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>(3) A friend declaration that grants access only to a specific instance of a class or function template.<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;class T&gt; class <span class="type">Foo2</span>;</span><br><span class="line"><span class="keyword">template</span> &lt;class T&gt; <span class="type">void</span> templ_fcn2(<span class="keyword">const</span> T&amp;);</span><br><span class="line"><span class="keyword">template</span> &lt;class <span class="type">Type</span>&gt; class <span class="type">Bar</span> &#123;</span><br><span class="line">    // grants access to a single specific instance parameterized by <span class="type">char</span>*</span><br><span class="line">    friend class <span class="type">Foo2</span>&lt;<span class="type">char</span>*&gt;;</span><br><span class="line">    friend <span class="type">void</span> templ_fcn2&lt;<span class="type">char</span>*&gt;(<span class="type">char</span>* <span class="keyword">const</span> &amp;);</span><br><span class="line">    // ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>More common are friend declarations of the following form:<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;class T&gt; class <span class="type">Foo3</span>;</span><br><span class="line"><span class="keyword">template</span> &lt;class T&gt; <span class="type">void</span> templ_fcn3(<span class="keyword">const</span> T&amp;);</span><br><span class="line"><span class="keyword">template</span> &lt;class <span class="type">Type</span>&gt; class <span class="type">Bar</span> &#123;</span><br><span class="line">    // each instantiation <span class="keyword">of</span> <span class="type">Bar</span> grants access to the</span><br><span class="line">    // version <span class="keyword">of</span> <span class="type">Foo3</span> <span class="keyword">or</span> templ_fcn3 instantiated <span class="keyword">with</span> the same <span class="keyword">type</span></span><br><span class="line">    friend class <span class="type">Foo3</span>&lt;<span class="type">Type</span>&gt;;</span><br><span class="line">    friend <span class="type">void</span> templ_fcn3&lt;<span class="type">Type</span>&gt;(<span class="keyword">const</span> <span class="type">Type</span>&amp;);</span><br><span class="line">    // ...</span><br><span class="line">    &#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="4-_Declaration_Dependencies">4. Declaration Dependencies</h2><p>When we grant access to all instances of a given template, there need not be a declaration for that class or function template in scope. Essentially, the compiler treats the friend declaration as a declaration of the class or function as well. When we want to restrict friendship to a specific instantiation, then the class or function must have been declared before it can be used in a friend declaration:<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;class T&gt; class A;</span><br><span class="line"><span class="keyword">template</span> &lt;class T&gt; class B &#123;</span><br><span class="line">    public:</span><br><span class="line">        friend class A&lt;T&gt;; // ok: A <span class="keyword">is</span> known to be a <span class="keyword">template</span></span><br><span class="line">        friend class C; // ok: C must be an ordinary, nontemplate class</span><br><span class="line">        <span class="keyword">template</span> &lt;class S&gt; friend class D; // ok: D <span class="keyword">is</span> a <span class="keyword">template</span></span><br><span class="line">        friend class E&lt;T&gt;; // error: E wasn't declared <span class="keyword">as</span> a <span class="keyword">template</span></span><br><span class="line">        friend class F&lt;<span class="type">int</span>&gt;; // error: F wasn't declared <span class="keyword">as</span> a <span class="keyword">template</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="5-_Making_a_Function_Template_a_Friend">5. Making a Function Template a Friend</h2><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line">// function <span class="keyword">template</span> declaration must precede friend declaration <span class="keyword">in</span> <span class="type">QueueItem</span></span><br><span class="line"><span class="keyword">template</span> &lt;class T&gt;</span><br><span class="line">std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, <span class="keyword">const</span> <span class="type">Queue</span>&lt;T&gt;&amp;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;class T&gt; class <span class="type">Queue</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;class <span class="type">Type</span>&gt; class <span class="type">QueueItem</span> &#123;</span><br><span class="line">    friend class <span class="type">Queue</span>&lt;<span class="type">Type</span>&gt;;</span><br><span class="line">    // needs access to item <span class="keyword">and</span> next</span><br><span class="line">    friend std::ostream&amp;</span><br><span class="line">        operator&lt;&lt; &lt;<span class="type">Type</span>&gt; (std::ostream&amp;, <span class="keyword">const</span> <span class="type">Queue</span>&lt;<span class="type">Type</span>&gt;&amp;);</span><br><span class="line">    // ...</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;class <span class="type">Type</span>&gt; class <span class="type">Queue</span> &#123;</span><br><span class="line">    // needs access to head</span><br><span class="line">    friend std::ostream&amp;</span><br><span class="line">        operator&lt;&lt; &lt;<span class="type">Type</span>&gt; (std::ostream&amp;, <span class="keyword">const</span> <span class="type">Queue</span>&lt;<span class="type">Type</span>&gt;&amp;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2016/03/14/c-primer笔记11/" data-id="cinvexiy5002ltw3auc7klp0i" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-基础/">c++基础</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/14/c-primer笔记12/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer笔记12
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/12/c-primer笔记10/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">c++ primer笔记10</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-基础/">c++基础</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/TCP/" style="font-size: 18px;">TCP</a> <a href="/tags/c/" style="font-size: 12px;">c++</a> <a href="/tags/c-基础/" style="font-size: 20px;">c++基础</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/linux点滴/" style="font-size: 14px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 16px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/gdb-1-启动和退出/">gdb(1):启动和退出</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/最让人头疼的歧义most-vexing-parse/">最让人头疼的歧义most vexing parse</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/不可复制noncopyable/">不可复制noncopyable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/线程同步之条件变量/">线程同步之条件变量</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/21/c-primer笔记27-Pointer-to-Class-Member/">c++ primer笔记27: Pointer to Class Member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

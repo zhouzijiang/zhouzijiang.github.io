@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>c++ primer笔记7 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. Containers and InheritanceWe’d like to use containers (or built-in arrays) to hold objects that are related by inheritance. However, the fact that objects are not polymorphic affects how we can use">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++ primer笔记7">
+<meta property="og:url" content="https://zhouzijiang.github.io/2016/03/11/c-primer笔记7/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="1. Containers and InheritanceWe’d like to use containers (or built-in arrays) to hold objects that are related by inheritance. However, the fact that objects are not polymorphic affects how we can use">
+<meta property="og:image" content="https://zhouzijiang.github.io/img/pointerlike-handle.PNG">
+<meta property="og:updated_time" content="2016-03-11T04:32:15.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++ primer笔记7">
+<meta name="twitter:description" content="1. Containers and InheritanceWe’d like to use containers (or built-in arrays) to hold objects that are related by inheritance. However, the fact that objects are not polymorphic affects how we can use">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c-primer笔记7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/11/c-primer笔记7/" class="article-date">
+  <time datetime="2016-03-11T03:14:44.000Z" itemprop="datePublished">2016-03-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++ primer笔记7
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-_Containers_and_Inheritance">1. Containers and Inheritance</h2><p>We’d like to use containers (or built-in arrays) to hold objects that are related by inheritance. However, the fact that objects are not polymorphic affects how we can use containers with types in an inheritance hierarchy. Because derived objects are “sliced down” when assigned to a base object, containers and types related by inheritance do not mix well.</p>
+<p>The only viable alternative would be to use the container to hold pointers to our objects. This strategy works, but at the cost of pushing onto our users the problem of managing the objects and pointers. The user must ensure that the objects pointed to stay around for as long as the container. If the objects are dynamically allocated, then the user must ensure that they are properly freed when the container goes away. </p>
+<h2 id="2-_Handle_Classes_and_Inheritance">2. Handle Classes and Inheritance</h2><p>One of the ironies of object-oriented programming in C++ is that we cannot use objects to support polymorphism. Instead, we must use pointers and references, not objects. Unfortunately, using pointers or references puts a burden on the users of our classes.</p>
+<p>A common technique in C++ is to define a so-called <code>handle</code> class . The handle class stores and manages a pointer to the base class. The type of the object to which that pointer points will vary; it can point at either a base- or a derived-type object. Users access the operations of the inheritance hierarchy through the handle. Because the handle uses its pointer to execute those operations, the behavior of virtual members will vary at run time depending on the kind of object to which the handle is actually bound. Users of the handle thus obtain dynamic behavior but do not themselves have to worry about managing the pointer.</p>
+<h2 id="3-_A_Pointerlike_Handle">3. A Pointerlike Handle</h2><p>We’ll define a pointerlike handle class, named  Sales_item , to represent our Item_base hierarchy. Users of Sales_item will use it as if it were a pointer: Users will bind a Sales_item to an object of type Item_base and will then use the  * and  -&gt; operations to execute Item_base operations:<br><figure class="highlight openscad"><table><tr><td class="code"><pre><span class="line"><span class="comment">// bind a handle to a Bulk_item object</span></span><br><span class="line">Sales_item item<span class="params">(Bulk_item<span class="params">(<span class="string">"0-201-82470-1"</span>, <span class="number">35</span>, <span class="number">3</span>, .<span class="number">20</span>)</span>)</span>;</span><br><span class="line">item-&gt;net_price<span class="params">()</span>; <span class="comment">// virtual call to net_price function</span></span><br></pre></td></tr></table></figure></p>
+<p>However, users won’t have to manage the object to which the handle points; the Sales_item class will do that part of the job. When users call a function through a  Sales_item , they’ll get polymorphic behavior.</p>
+<p>The use-counted classes we’ve used so far have used a companion class to store the pointer and associated use count. In this class, we’ll use a different design. The  Sales_item class will have two data members, both of which are pointers: One pointer will point to the  Item_base object and the other will point to the use count. The Item_base pointer might point to an  Item_base object or an object of a type derived from Item_base.<br><img src="/img/pointerlike-handle.PNG" alt=""><br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> Sales_item &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="comment">// default constructor: unbound handle</span></span><br><span class="line">        Sales_item(): p(<span class="number">0</span>), use(<span class="keyword">new</span> <span class="built_in">std</span>::<span class="keyword">size_t</span>(<span class="number">1</span>)) &#123; &#125;</span><br><span class="line">        <span class="comment">// attaches a handle to a copy of the Item_base object</span></span><br><span class="line">        Sales_item(<span class="keyword">const</span> Item_base&amp;);</span><br><span class="line">        <span class="comment">// copy control members to manage the use count and pointers</span></span><br><span class="line">        Sales_item(<span class="keyword">const</span> Sales_item &amp;i):</span><br><span class="line">                        p(i.p), use(i.use) &#123; ++*use; &#125;</span><br><span class="line">        ~Sales_item() &#123; decr_use(); &#125;</span><br><span class="line">        Sales_item&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> Sales_item&amp;);</span><br><span class="line">        <span class="comment">// member access operators</span></span><br><span class="line">        <span class="keyword">const</span> Item_base *<span class="keyword">operator</span>-&gt;() <span class="keyword">const</span> &#123; <span class="keyword">if</span> (p) <span class="keyword">return</span> p;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">throw</span> <span class="built_in">std</span>::logic_error(<span class="string">"unbound Sales_item"</span>); &#125;</span><br><span class="line">        <span class="keyword">const</span> Item_base &amp;<span class="keyword">operator</span>*() <span class="keyword">const</span> &#123; <span class="keyword">if</span> (p) <span class="keyword">return</span> *p;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">throw</span> <span class="built_in">std</span>::logic_error(<span class="string">"unbound Sales_item"</span>); &#125;</span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        Item_base *p; <span class="comment">// pointer to shared item</span></span><br><span class="line">        <span class="built_in">std</span>::<span class="keyword">size_t</span> *use; <span class="comment">// pointer to shared use count</span></span><br><span class="line">        <span class="comment">// called by both destructor and assignment operator to free pointers</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">decr_use</span><span class="params">()</span></span><br><span class="line">        </span>&#123; <span class="keyword">if</span> (--*use == <span class="number">0</span>) &#123; <span class="keyword">delete</span> p; <span class="keyword">delete</span> use; &#125; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Sales_item&amp;</span><br><span class="line">Sales_item::<span class="keyword">operator</span>=(<span class="keyword">const</span> Sales_item &amp;rhs)</span><br><span class="line">&#123;</span><br><span class="line">    ++*rhs.use;</span><br><span class="line">    decr_use();</span><br><span class="line">    p = rhs.p;</span><br><span class="line">    use = rhs.use;</span><br><span class="line">    <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>Sales_item(const Item_base&amp;);</code>The constructor will allocate a new object of the appropriate type and copy the parameter into that newly allocated object. That way the Sales_item class will own the object and can guarantee that the object is not deleted until the last Sales_item attached to the object goes away. To implement the constructor that takes an  Item_base , we must first solve a problem: We do not know the actual type of the object that the constructor is given. We know that it is an Item_base or an object of a type derived from Item_base. The common approach to solving this problem is to define a virtual operation to do the copy, which we’ll name  clone.<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> Item_base &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="keyword">virtual</span> Item_base* clone() <span class="keyword">const</span></span><br><span class="line">        &#123; <span class="keyword">return</span> <span class="keyword">new</span> Item_base(*<span class="keyword">this</span>); &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> Bulk_item : <span class="keyword">public</span> Item_base &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        Bulk_item* clone() <span class="keyword">const</span></span><br><span class="line">        &#123; <span class="keyword">return</span> <span class="keyword">new</span> Bulk_item(*<span class="keyword">this</span>); &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Sales_item::Sales_item(<span class="keyword">const</span> Item_base &amp;item):</span><br><span class="line">        p(item.clone()), use(<span class="keyword">new</span> <span class="built_in">std</span>::<span class="keyword">size_t</span>(<span class="number">1</span>)) &#123; &#125;</span><br></pre></td></tr></table></figure></p>
+<p>If the base instance of a virtual function returns a reference or pointer to a class type, the derived version of the virtual may return a class  publicly derived from the class returned by the base class instance (or a pointer or a reference to a class type).</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2016/03/11/c-primer笔记7/" data-id="cinvexis8001dtw3aixboh630" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-基础/">c++基础</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/12/c-primer笔记8-template/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer笔记8: template
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/10/c-primer笔记6/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">c++ primer笔记6</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-基础/">c++基础</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/TCP/" style="font-size: 18px;">TCP</a> <a href="/tags/c/" style="font-size: 12px;">c++</a> <a href="/tags/c-基础/" style="font-size: 20px;">c++基础</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/linux点滴/" style="font-size: 14px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 16px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/gdb-1-启动和退出/">gdb(1):启动和退出</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/最让人头疼的歧义most-vexing-parse/">最让人头疼的歧义most vexing parse</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/不可复制noncopyable/">不可复制noncopyable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/线程同步之条件变量/">线程同步之条件变量</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/21/c-primer笔记27-Pointer-to-Class-Member/">c++ primer笔记27: Pointer to Class Member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

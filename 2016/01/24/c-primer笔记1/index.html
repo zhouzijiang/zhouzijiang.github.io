@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>c++ primer笔记1 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. 基本数据类型
+
+
+容器定义的类型别名
+&amp;nbsp;
+
+
+
+
+size_type
+Unsigned integral type large enough to hold size of largest possible container of this container type
+
+
+iterator
+Type of the iterator for this container type">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++ primer笔记1">
+<meta property="og:url" content="https://zhouzijiang.github.io/2016/01/24/c-primer笔记1/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="1. 基本数据类型
+
+
+容器定义的类型别名
+&amp;nbsp;
+
+
+
+
+size_type
+Unsigned integral type large enough to hold size of largest possible container of this container type
+
+
+iterator
+Type of the iterator for this container type">
+<meta property="og:updated_time" content="2016-03-12T09:09:58.497Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++ primer笔记1">
+<meta name="twitter:description" content="1. 基本数据类型
+
+
+容器定义的类型别名
+&amp;nbsp;
+
+
+
+
+size_type
+Unsigned integral type large enough to hold size of largest possible container of this container type
+
+
+iterator
+Type of the iterator for this container type">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c-primer笔记1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/24/c-primer笔记1/" class="article-date">
+  <time datetime="2016-01-24T02:11:17.000Z" itemprop="datePublished">2016-01-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++ primer笔记1
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-_基本数据类型">1. 基本数据类型</h2><table>
+<thead>
+<tr>
+<th>容器定义的类型别名</th>
+<th>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>size_type</td>
+<td>Unsigned integral type large enough to hold size of largest possible container of this container type</td>
+</tr>
+<tr>
+<td>iterator</td>
+<td>Type of the iterator for this container type</td>
+</tr>
+<tr>
+<td>const_iterator</td>
+<td>Type of the iterator that can read but not write the elements</td>
+</tr>
+<tr>
+<td>reverse_iterator</td>
+<td>Iterator that addresses elements in reverse order</td>
+</tr>
+<tr>
+<td>const_reverse_iterator</td>
+<td>Reverse iterator that can read but not write the elements</td>
+</tr>
+<tr>
+<td>difference_type</td>
+<td>Signed integral type large enough to hold the difference, which might be negative, between two iterators</td>
+</tr>
+<tr>
+<td>value_type</td>
+<td>Element type</td>
+</tr>
+<tr>
+<td>reference</td>
+<td>Element’s lvalue type; synonym for value_type&amp;</td>
+</tr>
+<tr>
+<td>const_reference</td>
+<td>Element’s const lvalue type; same as  const value_type&amp;</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Types Defined by the map Class</th>
+<th>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>map<k, v="">::key_type</k,></td>
+<td>The type of the keys used to index the map.</td>
+</tr>
+<tr>
+<td>map<k, v="">::mapped_type</k,></td>
+<td>The type of the values associated with the keys in the map.</td>
+</tr>
+<tr>
+<td>map<k, v="">::value_type</k,></td>
+<td>A pair whose first element has type const map<k, v="">::key_type and  second has type map<k, v="">::mapped_type </k,></k,></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>iterator的类型成员</th>
+<th>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>value_type</td>
+<td>该迭代器实际指向的数据的类型T</td>
+</tr>
+<tr>
+<td>pointer</td>
+<td>T *</td>
+</tr>
+<tr>
+<td>reference</td>
+<td>T&amp;</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2、对迭代器解引用返回的是元素的引用">2、对迭代器解引用返回的是元素的引用</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (!ilist.empty()) </span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// val and val2 refer to the same element</span></span><br><span class="line">    <span class="built_in">list</span>&lt;<span class="keyword">int</span>&gt;::reference val = *ilist.begin();</span><br><span class="line">    <span class="built_in">list</span>&lt;<span class="keyword">int</span>&gt;::reference val2 = ilist.front();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// last and last2 refer to the same element</span></span><br><span class="line">    <span class="built_in">list</span>&lt;<span class="keyword">int</span>&gt;::reference last = *--ilist.end();</span><br><span class="line">    <span class="built_in">list</span>&lt;<span class="keyword">int</span>&gt;::reference last2 = ilist.back(); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3、map的下标操作">3、map的下标操作</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">map</span> &lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; word_count;</span><br><span class="line">word_count[<span class="string">"Anna"</span>] = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>word_count is searched for the element whose key is  Anna . The element is not found.</li>
+<li>A new keyvalue pair is inserted into  word_count . The key is a  const string holding  Anna .<br>The value is value initialized, meaning in this case that the value is 0.</li>
+<li>The new keyvalue pair is inserted into  word_count .</li>
+<li>The newly inserted element is fetched and is given the value 1.</li>
+</ol>
+<p>For map , if the key is not already present, a new element is created and inserted into the  map for that key. </p>
+<h2 id="4、Algorithms_Never_Execute_Container_Operations">4、Algorithms Never Execute Container Operations</h2><p>The generic algorithms do not themselves execute container operations. They operate solely in terms of iterators and iterator operations. The fact that the algorithms operate in terms of iterators and not container operations has a perhaps surprising but essential implication: When used on “ordinary” iterators, algorithms never change the size of the underlying container. As we’ll see, algorithms may change the values of the elements stored in the container, and they may move elements around within the<br>container. They do not, however, ever add or remove elements directly.<br>There is a special class of iterator, the inserters, that do more than traverse the sequence to which they are bound. When we assign to these iterators, they execute insert operations on the underlying container. When an algorithm operates on one of these<br>iterators, the iterator may have the effect of adding elements to the container. The algorithm itself, however, never does so.</p>
+<h2 id="5、类的前向声明">5、类的前向声明</h2><p>An incomplete type can be used only in limited ways. Objects of the type may not be defined. An incomplete type may be used to define only pointers or references to the type or to declare (but not define) functions that use the type as a paremeter or return type.</p>
+<h2 id="6、Returning_*this_from_a_const_Member_Function">6、Returning  *this from a  const Member Function</h2><p>In an ordinary non const member function, the type of  this is a  const pointer to the class type. We may change the value to which  this points but cannot change the address that  this holds. In a  const member function, the type of  this is a  const pointer to a const class-type object. We may change neither the object to which  this points nor the address that  this holds.<br>We cannot return a plain reference to the class object from a  const member function. A  const member function may return  *this only as a const reference.<br><figure class="highlight actionscript"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Screen</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="keyword">const</span> Screen&amp; print() <span class="keyword">const</span></span><br><span class="line">        &#123;</span><br><span class="line">            cout &lt;&lt; <span class="string">"print"</span> &lt;&lt; endl;</span><br><span class="line">            <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="7、Overloading_Based_on_const">7、Overloading Based on  const</h2><p>We can overload a member function based on whether it is  const for the same reasons that we can overload a function based on whether a pointer parameter points to  const. A  const object will use only the  const member. A non const object could use<br>either member, but the non const version is a better match.<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> Screen </span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        Screen&amp; display(<span class="built_in">std</span>::ostream &amp;os)</span><br><span class="line">        &#123; do_display(os); <span class="keyword">return</span> *<span class="keyword">this</span>; &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">const</span> Screen&amp; display(<span class="built_in">std</span>::ostream &amp;os) <span class="keyword">const</span></span><br><span class="line">        &#123; do_display(os); <span class="keyword">return</span> *<span class="keyword">this</span>; &#125;</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">do_display</span><span class="params">(<span class="built_in">std</span>::ostream &amp;os)</span> <span class="keyword">const</span></span><br><span class="line">        </span>&#123; os &lt;&lt; contents; &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="8、Parameter_Lists_and_Function_Bodies_Are_in_Class_Scope">8、Parameter Lists and Function Bodies Are in Class Scope</h2><p>In a member function defined outside the class, the parameter list and member-function body both appear after the member name. These are defined inside the class scope and so may refer to other class members without qualification.</p>
+<h2 id="9、Function_Return_Types_Aren’t_Always_in_Class_Scope">9、Function Return Types Aren’t Always in Class Scope</h2><p>In contrast to the parameter types, the return type appears before the member name. If the function is defined outside the class body, then the name used for the return type is outside the class scope. If the return type uses a type defined by the class, it must use the fully qualified name. </p>
+<h2 id="10、类成员声明中的名字查找(Name_Lookup_for_Class_Member_Declarations)">10、类成员声明中的名字查找(Name Lookup for Class Member Declarations)</h2><p>1、The declarations of the class members that appear before the use of the name are considered.<br>2、If the lookup in step 1 is not successful, the declarations that appear in the scope in which the class is defined, and that appear before the class definition itself, are considered.</p>
+<h2 id="11、类成员定义中的名字查找(Name_Lookup_in_Class_Member_Definitions)">11、类成员定义中的名字查找(Name Lookup in Class Member Definitions)</h2><p>1、Declarations in the member-function local scopes are considered first.<br>2、If the a declaration for the name is not found in the member function, the declarations for all the class members are considered.<br>3、If a declaration for the name is not found in the class, the declarations that appear in scope before the member function definition are considered.<br><figure class="highlight processing"><table><tr><td class="code"><pre><span class="line"><span class="built_in">int</span> <span class="variable">height</span>;</span><br><span class="line">class Screen </span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="keyword">void</span> dummy_fcn(<span class="built_in">int</span> <span class="variable">height</span>) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">cursor</span> = <span class="variable">width</span> * <span class="variable">height</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        <span class="built_in">int</span> <span class="built_in">cursor</span>;</span><br><span class="line">        <span class="built_in">int</span> <span class="variable">height</span>, <span class="variable">width</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>dummy_fun函数内赋值语句中的height指的是dummy_fun函数参数中的height。如果想使用Screen中的成员height，则<code>cursor = width * Screen::height;</code> 如果想使用全局变量height，则<code>cursor = width * ::height;</code></p>
+<h2 id="12、typedef_引起的微妙错误">12、typedef 引起的微妙错误</h2><figure class="highlight dart"><table><tr><td class="code"><pre><span class="line"><span class="literal">typedef</span> string <span class="built_in">Type</span>;</span><br><span class="line"><span class="built_in">Type</span> initVal();</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Exercise</span> </span><br><span class="line"></span>&#123;</span><br><span class="line">    public:</span><br><span class="line">            <span class="literal">typedef</span> <span class="built_in">double</span> <span class="built_in">Type</span>;</span><br><span class="line">            <span class="built_in">Type</span> setVal(<span class="built_in">Type</span>); <span class="comment">// Type为double</span></span><br><span class="line">            <span class="built_in">Type</span> initVal(); <span class="comment">// Type为double</span></span><br><span class="line">    private:</span><br><span class="line">            <span class="built_in">int</span> val;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注意，在类的外部定义函数时，返回值的类型</span></span><br><span class="line">Exercise::<span class="built_in">Type</span> Exercise::setVal(<span class="built_in">Type</span> parm) </span><br><span class="line">&#123;</span><br><span class="line">    val = parm + initVal();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果把<code>typedef double Type</code>放到setVal和initVal的后面，就会出现错误。因为按照类成员声明的名字查找规则，setVal中的Type为string。等到编译器解析到<code>typedef double Type</code>语句时，Type有两种意思了，于是发生编译错误。<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">error: declaration of ‘<span class="keyword">typedef</span> <span class="keyword">double</span> Exercise::Type’</span><br><span class="line">error: changes meaning of ‘Type’ from ‘<span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="built_in">std</span>::<span class="built_in">string</span> Type’</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2016/01/24/c-primer笔记1/" data-id="cinvexiyj002ptw3a900zn0aa" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-基础/">c++基础</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/24/c-primer笔记2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer笔记2
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/12/23/wpa-supplicant-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">wpa_supplicant</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-基础/">c++基础</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/TCP/" style="font-size: 18px;">TCP</a> <a href="/tags/c/" style="font-size: 12px;">c++</a> <a href="/tags/c-基础/" style="font-size: 20px;">c++基础</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/linux点滴/" style="font-size: 14px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 16px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/gdb-1-启动和退出/">gdb(1):启动和退出</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/最让人头疼的歧义most-vexing-parse/">最让人头疼的歧义most vexing parse</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/不可复制noncopyable/">不可复制noncopyable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/线程同步之条件变量/">线程同步之条件变量</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/21/c-primer笔记27-Pointer-to-Class-Member/">c++ primer笔记27: Pointer to Class Member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

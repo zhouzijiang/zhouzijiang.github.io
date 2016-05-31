@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>c++ primer笔记24: Optimizing Memory Allocation | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. operator new and operator delete FunctionsWe have learned how to use the allocate class. Now we are using the more primitive library facilities. string * sp = new string(&amp;quot;initialized&amp;quot;); T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++ primer笔记24: Optimizing Memory Allocation">
+<meta property="og:url" content="https://zhouzijiang.github.io/2016/03/20/c-primer笔记24-Optimizing-Memory-Allocation/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="1. operator new and operator delete FunctionsWe have learned how to use the allocate class. Now we are using the more primitive library facilities. string * sp = new string(&amp;quot;initialized&amp;quot;); T">
+<meta property="og:updated_time" content="2016-03-20T12:54:53.398Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++ primer笔记24: Optimizing Memory Allocation">
+<meta name="twitter:description" content="1. operator new and operator delete FunctionsWe have learned how to use the allocate class. Now we are using the more primitive library facilities. string * sp = new string(&amp;quot;initialized&amp;quot;); T">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c-primer笔记24-Optimizing-Memory-Allocation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/20/c-primer笔记24-Optimizing-Memory-Allocation/" class="article-date">
+  <time datetime="2016-03-20T11:04:19.000Z" itemprop="datePublished">2016-03-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++ primer笔记24: Optimizing Memory Allocation
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-_operator_new_and_operator_delete_Functions">1. operator new and operator delete Functions</h2><p>We have learned how to use the allocate class. Now we are using the more primitive library facilities. <code>string * sp = new string(&quot;initialized&quot;);</code> Three steps actually take place. First, the expression calls a library function named <code>operator new</code> to allocate raw, untyped memory large enough to hold an object of the specified type. Next, a constructor for the type is run to construct the object from the specified initializers. Finally, a pointer to the newly allocated and constructed object is returned. When we use a  delete expression to delete a dynamically allocated object: <code>delete sp;</code> Two steps happen. First, the appropriate destructor is run on the object to which sp points. Then, the memory used by the object is freed by calling a library function named  operator delete.</p>
+<p>The library functions operator new and operator delete are misleadingly named. Unlike other operator functions, such as operator= , these functions do not overload the new or delete expressions. In fact, we cannot redefine the behavior of the  new and delete expressions. A new expression executes by calling an operator new function to obtain memory and then constructs an object in that memory. A delete expression executes by destroying an object and then calls an operator delete function to free the memory used by the object.</p>
+<p>There are two overloaded versions of  operator new and operator delete functions. Each version supports the related new and delete expression:<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">void</span> *<span class="function"><span class="keyword">operator</span> <span class="title">new</span><span class="params">(size_t)</span></span>; <span class="comment">// allocate an object</span></span><br><span class="line"><span class="keyword">void</span> *<span class="keyword">operator</span> <span class="keyword">new</span>[](<span class="keyword">size_t</span>); <span class="comment">// allocate an array</span></span><br><span class="line"><span class="keyword">void</span> *<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">void</span>*)</span></span>; <span class="comment">// free an object</span></span><br><span class="line"><span class="keyword">void</span> *<span class="keyword">operator</span> <span class="keyword">delete</span>[](<span class="keyword">void</span>*); <span class="comment">// free an array</span></span><br><span class="line"></span><br><span class="line">T* newelements = alloc.allocate(newcapacity);</span><br><span class="line"><span class="comment">// which could be rewritten as</span></span><br><span class="line">T* newelements = <span class="keyword">static_cast</span>&lt;T*&gt;(<span class="keyword">operator</span> <span class="keyword">new</span>[](newcapacity * <span class="keyword">sizeof</span>(T)));</span><br><span class="line"></span><br><span class="line">alloc.deallocate(elements, end - elements);</span><br><span class="line"><span class="comment">// which could be rewritten as</span></span><br><span class="line"><span class="keyword">operator</span> <span class="keyword">delete</span>[](elements);</span><br></pre></td></tr></table></figure></p>
+<p>In general, it is more type-safe to use an allocator rather than using the operator new and operator delete functions directly.</p>
+<h2 id="2-_Placement_new_Expressions">2. Placement new Expressions</h2><p>The library functions operator new and operator delete are lower-level versions of the allocator members  allocate and deallocate. Each allocates but does not initialize memory. There are also lower-level alternatives to the allocator members construct and  destroy. These members initialize and destroy objects in space allocated by an allocator object. Placement new allows us to construct an object at a specific, preallocated memory address. The form of a placement  new expression is:<br><figure class="highlight fsharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> (place_address) <span class="class"><span class="keyword">type</span></span></span><br><span class="line"><span class="keyword">new</span> (place_address) <span class="class"><span class="keyword">type</span> </span>(initializer-list)</span><br><span class="line"></span><br><span class="line">alloc.construct(first_free, t);</span><br><span class="line"><span class="comment">// would be replaced by the equivalent placement new expression</span></span><br><span class="line"><span class="comment">// copy t into element addressed by first_free</span></span><br><span class="line"><span class="keyword">new</span> (first_free) T(t);</span><br></pre></td></tr></table></figure></p>
+<p>Placement new expressions are more flexible than the construct member of class allocator. When placement new initializes an object, it can use any constructor, and builds the object directly. The construct function always uses the copy constructor.<br><figure class="highlight vim"><table><tr><td class="code"><pre><span class="line">allocator&lt;<span class="built_in">string</span>&gt; alloc;</span><br><span class="line"><span class="built_in">string</span> *<span class="keyword">sp</span> = alloc.allocate(<span class="number">2</span>); // allocate space <span class="keyword">to</span> hold <span class="number">2</span> strings</span><br><span class="line">// two ways <span class="keyword">to</span> construct <span class="keyword">a</span> <span class="built_in">string</span> from <span class="keyword">a</span> pair of iterators</span><br><span class="line"><span class="keyword">new</span> (<span class="keyword">sp</span>) <span class="built_in">string</span>(<span class="keyword">b</span>, <span class="keyword">e</span>); // construct directly in place</span><br><span class="line">alloc.construct(<span class="keyword">sp</span> + <span class="number">1</span>, <span class="built_in">string</span>(<span class="keyword">b</span>, <span class="keyword">e</span>)); // build <span class="built_in">and</span> <span class="built_in">copy</span> <span class="keyword">a</span> temporary</span><br></pre></td></tr></table></figure></p>
+<p>The placement new expression uses the  string constructor that takes a pair of iterators to construct the string directly in the space to which sp points. When we call construct, we must first construct the string from the iterators to get a string object to pass to construct. That function then uses the string copy constructor to copy that unnamed, temporary string into the object to which sp points.</p>
+<h2 id="3-_Explicit_Destructor_Invocation">3. Explicit Destructor Invocation</h2><figure class="highlight openscad"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> <span class="params">(T *p = first_free; p != elements; /* empty */ )</span></span><br><span class="line">    alloc.destroy<span class="params">(--p)</span>;</span><br><span class="line"><span class="keyword">for</span> <span class="params">(T *p = first_free; p != elements; /* empty */ )</span></span><br><span class="line">    p-&gt;~T<span class="params">()</span>; <span class="comment">// call the destructor</span></span><br></pre></td></tr></table></figure>
+<p>The effect of calling the destructor explicitly is that the object itself is properly cleaned up. However, the memory in which the object resided is not freed. We can reuse the space if desired.</p>
+<h2 id="4-_Class_Specific_new_and_delete">4. Class Specific new and delete</h2><p>Another way to optimize memory allocation involves optimizing the behavior of new expressions. As an example, consider the Queue class from Chapter 16. That class doesn’t hold its elements directly. Instead, it uses new expressions to allocate objects of type  QueueItem.</p>
+<p>It might be possible to improve the performance of Queue by preallocating a block of raw memory to hold QueueItem objects. When a new QueueItem object is created, it could be constructed in this preallocated space. When QueueItem objects are freed, we’d put them back in the block of preallocated objects rather than actually returning memory to the system.</p>
+<p>By default, new expressions allocate memory by calling the version of operator new that is defined by the library. A class may manage the memory used for objects of its type by defining its own members named operator new and operator delete.</p>
+<p>When the compiler sees a  new or  delete expression for a class type, it looks to see if the class has a member  operator new or  operator delete . If the class defines (or inherits) its own member  new and  delete functions, then those functions are used to allocate and free the memory for the object. Otherwise, the standard library versions of these functions are called.</p>
+<p>When we optimize the behavior of  new and  delete , we need only define new versions of the operator new and  operator delete . The  new and  delete expressions themselves take care of constructing and destroying the objects. If a class defines either of these members, it should define both of them.</p>
+<p>A class member  operator new function must have a return type of  void* and take a parameter of type  size_t . The function’s  size_t parameter is initialized by the  new expression with the size, in bytes, of the amount of memory to allocate. A class member  operator delete function must have a  void return type. It can be defined to take a single parameter of type  void<em> or to take two parameters, a  void</em> and a  size_t . The void* parameter is initialized by the  delete expression with the pointer that was  delete d. That pointer might be a null pointer. If present, the  size_t parameter is initialized automatically by the compiler with the size in bytes of the object addressed by the first parameter.</p>
+<p>The  size_t parameter is unnecessary unless the class is part of an inheritance hierarchy. When we  delete a pointer to a type in an inheritance hierarchy, the pointer might point to a base-class object or an object of a derived class. In general, the size of a derived-type object is larger than the size of a base-class object. If the base class has a  virtual destructor, then the size passed to  operator delete will vary depending on the dynamic type of the object to which the deleted pointer points. If the base class does not have a virtual destructor, then, as usual, the behavior of deleting a pointer to a derived object through a base-class pointer is undefined.</p>
+<p>These functions are implicitly static members. There is no need to declare them  static explicitly, although it is legal to do so. The member  new and  delete functions must be static because they are used either before the object is constructed ( operator<br>new ) or after it has been destroyed ( operator delete ). There are, therefore, no member data for these functions to manipulate. As with any other static member function,  new and  delete may access only static members of their class directly.</p>
+<p>We can also define member  operator new[] and  operator delete[] to manage arrays of the class type. If these  operator functions exist, the compiler uses them in place of the global versions.</p>
+<p>A class member  operator new[] must have a return type of  void* and take a first parameter of type  size_t . The operator’s  size_t parameter is initialized automatically with a value that represents the number of bytes required to store an array of the given number of elements of the specified type.</p>
+<p>The member operator  delete[] must have a  void return type and a first parameter of type void<em> . The operator’s  void</em> parameter is initialized automatically with a value that represents the beginning of the storage in which the array is stored.</p>
+<p>The operator  delete[] for a class may also have two parameters instead of one, the second parameter being a  size_t . If present, the additional parameter is initialized automatically by the compiler with the size in bytes of the storage required to store the array.</p>
+<p>A user of a class that defines its own member  new and  delete can force a  new or  delete expression to use the global library functions through the use of the global scope resolution operator. If the user writes<br><figure class="highlight coffeescript"><table><tr><td class="code"><pre><span class="line">Type *p = ::<span class="keyword">new</span> Type; <span class="regexp">//</span> uses <span class="built_in">global</span> operator <span class="keyword">new</span></span><br><span class="line">::<span class="keyword">delete</span> p; <span class="regexp">//</span> uses <span class="built_in">global</span> operator <span class="keyword">delete</span></span><br></pre></td></tr></table></figure></p>
+<p>If storage was allocated with a  new expression invoking the global operator new function, then the  delete expression should also<br>invoke the global  operator delete function.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2016/03/20/c-primer笔记24-Optimizing-Memory-Allocation/" data-id="cinvexiwk001ttw3a8cleatc5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-基础/">c++基础</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/20/c-primer笔记25-Optimizing-Memory-Allocation/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer笔记25: Optimizing Memory Allocation
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/20/c-primer笔记23-Optimizing-Memory-Allocation/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">c++ primer笔记23: Optimizing Memory Allocation</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-基础/">c++基础</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/TCP/" style="font-size: 18px;">TCP</a> <a href="/tags/c/" style="font-size: 12px;">c++</a> <a href="/tags/c-基础/" style="font-size: 20px;">c++基础</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/linux点滴/" style="font-size: 14px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 16px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/gdb-1-启动和退出/">gdb(1):启动和退出</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/最让人头疼的歧义most-vexing-parse/">最让人头疼的歧义most vexing parse</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/不可复制noncopyable/">不可复制noncopyable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/线程同步之条件变量/">线程同步之条件变量</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/21/c-primer笔记27-Pointer-to-Class-Member/">c++ primer笔记27: Pointer to Class Member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

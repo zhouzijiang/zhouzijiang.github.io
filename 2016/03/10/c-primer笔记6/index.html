@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>c++ primer笔记6 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. Using a Derived Object to Initialize or Assign a Base ObjectBecause there is a conversion from reference to derived to reference to base, these copy-control members can be used to initialize or ass">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++ primer笔记6">
+<meta property="og:url" content="https://zhouzijiang.github.io/2016/03/10/c-primer笔记6/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="1. Using a Derived Object to Initialize or Assign a Base ObjectBecause there is a conversion from reference to derived to reference to base, these copy-control members can be used to initialize or ass">
+<meta property="og:updated_time" content="2016-03-10T12:28:50.777Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++ primer笔记6">
+<meta name="twitter:description" content="1. Using a Derived Object to Initialize or Assign a Base ObjectBecause there is a conversion from reference to derived to reference to base, these copy-control members can be used to initialize or ass">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c-primer笔记6" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/10/c-primer笔记6/" class="article-date">
+  <time datetime="2016-03-10T11:24:59.000Z" itemprop="datePublished">2016-03-10</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++ primer笔记6
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-_Using_a_Derived_Object_to_Initialize_or_Assign_a_Base_Object">1. Using a Derived Object to Initialize or Assign a Base Object</h2><p>Because there is a conversion from reference to derived to reference to base, these copy-control members can be used to initialize or assign a base object from a derived object:<br><figure class="highlight armasm"><table><tr><td class="code"><pre><span class="line"><span class="keyword">Item_base </span><span class="keyword">item; </span>// object of <span class="keyword">base </span>type</span><br><span class="line"><span class="keyword">Bulk_item </span><span class="keyword">bulk; </span>// object of derived type</span><br><span class="line">// ok: uses <span class="keyword">Item_base::Item_base(const </span><span class="keyword">Item_base&amp;) </span>constructor</span><br><span class="line"><span class="keyword">Item_base </span><span class="keyword">item(bulk); </span>// <span class="keyword">bulk </span>is <span class="string">"sliced down"</span> to <span class="keyword">its </span><span class="keyword">Item_base </span>portion</span><br><span class="line">// ok: calls <span class="keyword">Item_base::operator=(const </span><span class="keyword">Item_base&amp;)</span><br><span class="line"></span><span class="keyword">item </span>= <span class="keyword">bulk; </span>// <span class="keyword">bulk </span>is <span class="string">"sliced down"</span> to <span class="keyword">its </span><span class="keyword">Item_base </span>portion</span><br></pre></td></tr></table></figure></p>
+<p>When we call the  Item_base copy constructor or assignment operator on an object of type Bulk_item , the following steps happen:</p>
+<ul>
+<li>The  Bulk_item object is converted to a reference to  Item_base, which means only that an Item_base reference is bound to the Bulk_item object.</li>
+<li>That reference is passed as an argument to the copy constructor or assignment operator.</li>
+<li>Those operators use the  Item_base part of  Bulk_item to initialize and assign, respectively, the members of the  Item_base on which the constructor or assignment was called.</li>
+<li>Once the operator completes, the object is an  Item_base . It contains a copy of the Item_base part of the  Bulk_item from which it was initialized or assigned, but the  Bulk_item parts of the argument are ignored.</li>
+</ul>
+<h2 id="2-_Defining_a_Default_Constructor">2. Defining a Default Constructor</h2><figure class="highlight less"><table><tr><td class="code"><pre><span class="line"><span class="tag">Item_base</span>(const <span class="attribute">std</span>::string &amp;book = <span class="string">""</span>, double sales_price = <span class="number">0.0</span>): </span><br><span class="line">                                    <span class="tag">isbn</span>(book), <span class="tag">price</span>(sales_price) &#123; &#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">class</span> <span class="tag">Bulk_item</span> : <span class="tag">public</span> <span class="tag">Item_base</span> &#123;</span><br><span class="line">    <span class="tag">public</span>:</span><br><span class="line">        <span class="tag">Bulk_item</span>(): <span class="tag">min_qty</span>(<span class="number">0</span>), <span class="tag">discount</span>(<span class="number">0.0</span>) &#123; &#125;</span><br><span class="line">        <span class="comment">// as before</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>This constructor uses the constructor initializer list to initialize its min_qty and  discount members. The constructor initializer also implicitly invokes the  Item_base default constructor to initialize its base-class part. The effect of running this constructor is that first the  Item_base part is initialized using the Item_base default constructor. That constructor sets  isbn to the empty string and  price to zero. After the  Item_base constructor finishes, the members of the  Bulk_item part are initialized, and the (empty) body of the constructor is executed.<br>The constructor initializer list supplies initial values for a class’ base class and members. It does not specify the order in which those initializations are done. The base class is initialized first and then the members of the derived class are initialized in the order in which they are declared.<br>A class may initialize only its own immediate base class. An immediate base class is the class named in the derivation list. </p>
+<h2 id="3-_Defining_a_Derived_Copy_Constructor">3. Defining a Derived Copy Constructor</h2><p>If a derived class explicitly defines its own copy constructor or assignment operator, that definition completely overrides the<br>defaults. The copy constructor and assignment operator for inherited classes are responsible for copying or assigning their base-<br>class components as well as the members in the class itself.<br><figure class="highlight actionscript"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span> </span>&#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span>: <span class="title">public</span> <span class="title">Base</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="comment">// Base::Base(const Base&amp;) not invoked automatically</span></span><br><span class="line">        Derived(<span class="keyword">const</span> Derived&amp; d):</span><br><span class="line">            Base(d) <span class="comment">/* other member initialization */</span> &#123; <span class="comment">/*... */</span> &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>The initializer Base(d) converts the derived object, d , to a reference to its base part and invokes the base-class copy constructor. Had the initializer for the base class been omitted,<br><figure class="highlight gherkin"><table><tr><td class="code"><pre><span class="line">Derived(const Derived&amp; d) /<span class="keyword">*</span> derived member initizations <span class="keyword">*</span>/</span><br><span class="line">&#123;/<span class="keyword">*</span> ... <span class="keyword">*</span>/ &#125;</span><br></pre></td></tr></table></figure></p>
+<p>the effect would be to run the  Base default constructor to initialize the base part of the object. Assuming that the initialization of the Derived members copied the corresponding elements from d , then the newly constructed object would be oddly configured: Its Base part would hold default values, while its  Derived members would be copies of another object.</p>
+<h2 id="4-_Derived-Class_Assignment_Operator">4. Derived-Class Assignment Operator</h2><p>If the derived class defines its own assignment operator, then that operator must assign the base part explicitly:<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Base::operator=(const Base&amp;) not invoked automatically</span></span><br><span class="line">Derived &amp;Derived::<span class="keyword">operator</span>=(<span class="keyword">const</span> Derived &amp;rhs)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span> != &amp;rhs) &#123;</span><br><span class="line">        Base::<span class="keyword">operator</span>=(rhs); <span class="comment">// assigns the base part</span></span><br><span class="line">        <span class="comment">// do whatever needed to clean up the old value in the derived part</span></span><br><span class="line">        <span class="comment">// assign the members from the derived</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="5-_Derived-Class_Destructor">5. Derived-Class Destructor</h2><p>The destructor works differently from the copy constructor and assignment operator: The derived destructor is never responsible for destroying the members of its base objects. The compiler always implicitly invokes the destructor for the base part of a derived object. Objects are destroyed in the opposite order from which they are constructed: The derived destructor is run first, and then the base-class destructors are invoked, walking back up the inheritance hierarchy.<br>The root class of an inheritance hierarchy should define a virtual destructor even if the destructor has no work to do.</p>
+<h2 id="6-_Virtuals_in_Constructors_and_Destructors">6. Virtuals in Constructors and Destructors</h2><p>A derived object is constructed by first running a base-class constructor to initialize the base part of the object. While the base-class constructor is executing, the derived part of the object is uninitialized. In effect, the object is not yet a derived object.</p>
+<p>When a derived object is destroyed, its derived part is destroyed first, and then its base parts are destroyed in the reverse order of how they were constructed.</p>
+<p>In both cases, while a constructor or destructor is running, the object is incomplete. To accommodate this incompleteness, the compiler treats the object as if its type changes during construction or destruction. Inside a base-class constructor or destructor, a derived object is treated as if it were an object of the base type.</p>
+<p>If a virtual is called from inside a constructor or destructor, then the version that is run is the one defined for the type of the constructor or destructor itself.</p>
+<h2 id="7-_Name_Collisions_and_Inheritance">7. Name Collisions and Inheritance</h2><p>A derived-class member with the same name as a member of the base class hides direct access to the base-class member. We can access a hidden base-class member by using the scope operator. The derived-class member hides the base-class member within the scope of the derived class. The base member is hidden, even if the prototypes of the functions differ :<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> Base &#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">memfcn</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">struct</span> Derived : Base &#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">memfcn</span><span class="params">(<span class="keyword">int</span>)</span></span>; <span class="comment">// hides memfcn in the base</span></span><br><span class="line">&#125;;</span><br><span class="line">Derived d; Base b;</span><br><span class="line">b.memfcn(); <span class="comment">// calls Base::memfcn</span></span><br><span class="line">d.memfcn(<span class="number">10</span>); <span class="comment">// calls Derived::memfcn</span></span><br><span class="line">d.memfcn(); <span class="comment">// error: memfcn with no arguments is hidden</span></span><br><span class="line">d.Base::memfcn(); <span class="comment">// ok: calls Base::memfcn</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="8-_Name_Lookup_and_Inheritance">8. Name Lookup and Inheritance</h2><p>Understanding how function calls are resolved is crucial to understanding inheritance hierarchies in C++. The following four steps are followed:</p>
+<ul>
+<li>Start by determining the static type of the object, reference, or pointer through which the function is called.</li>
+<li>Look for the function in that class. If it is not found, look in the immediate base class and continue up the chain of classes until either the function is found or the last class is searched. If the name is not found in the class or its enclosing base classes, then the call is in error.</li>
+<li>Once the name is found, do normal type-checking to see if this call is legal given the definition that was found.</li>
+<li>Assuming the call is legal, the compiler generates code. If the function is virtual and the call is through a reference or pointer, then the compiler generates code to determine which version to run based on the dynamic type of the object. Otherwise, the compiler generates code to call the function directly.</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2016/03/10/c-primer笔记6/" data-id="cinvexis9001ftw3a9or454x3" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-基础/">c++基础</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/11/c-primer笔记7/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer笔记7
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/10/c-primer笔记5/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">c++ primer笔记5</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-基础/">c++基础</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/TCP/" style="font-size: 18px;">TCP</a> <a href="/tags/c/" style="font-size: 12px;">c++</a> <a href="/tags/c-基础/" style="font-size: 20px;">c++基础</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/linux点滴/" style="font-size: 14px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 16px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/gdb-1-启动和退出/">gdb(1):启动和退出</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/最让人头疼的歧义most-vexing-parse/">最让人头疼的歧义most vexing parse</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/不可复制noncopyable/">不可复制noncopyable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/线程同步之条件变量/">线程同步之条件变量</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/21/c-primer笔记27-Pointer-to-Class-Member/">c++ primer笔记27: Pointer to Class Member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

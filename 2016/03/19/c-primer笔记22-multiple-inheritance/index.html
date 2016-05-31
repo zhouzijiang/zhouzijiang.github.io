@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>c++ primer笔记22: multiple inheritance | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. Multiple Inheritanceclass Bear : public ZooAnimal &amp;#123; &amp;#125;;class Panda : public Bear, public Endangered &amp;#123; &amp;#125;;
+The constructor initializer controls only the values that are used to ini">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++ primer笔记22: multiple inheritance">
+<meta property="og:url" content="https://zhouzijiang.github.io/2016/03/19/c-primer笔记22-multiple-inheritance/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="1. Multiple Inheritanceclass Bear : public ZooAnimal &amp;#123; &amp;#125;;class Panda : public Bear, public Endangered &amp;#123; &amp;#125;;
+The constructor initializer controls only the values that are used to ini">
+<meta property="og:image" content="https://zhouzijiang.github.io/img/virtual_inheritance.PNG">
+<meta property="og:updated_time" content="2016-03-19T12:58:23.811Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++ primer笔记22: multiple inheritance">
+<meta name="twitter:description" content="1. Multiple Inheritanceclass Bear : public ZooAnimal &amp;#123; &amp;#125;;class Panda : public Bear, public Endangered &amp;#123; &amp;#125;;
+The constructor initializer controls only the values that are used to ini">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c-primer笔记22-multiple-inheritance" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/19/c-primer笔记22-multiple-inheritance/" class="article-date">
+  <time datetime="2016-03-19T07:25:38.000Z" itemprop="datePublished">2016-03-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++ primer笔记22: multiple inheritance
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-_Multiple_Inheritance">1. Multiple Inheritance</h2><figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bear</span> : <span class="typename">public ZooAnimal &#123; &#125;;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Panda</span> : <span class="typename">public Bear</span>, <span class="typename">public Endangered &#123; &#125;;</span></span></span><br></pre></td></tr></table></figure>
+<p>The constructor initializer controls only the values that are used to initialize the base classes, not the order in which the base classes are constructed. The base-class constructors are invoked in the order in which they appear in the class derivation list. For  Panda , the order of base-class initialization is:</p>
+<ul>
+<li>ZooAnimal, the ultimate base class up the hierarchy from  Panda ‘s immediate base clas  Bear.</li>
+<li>Bear, the first immediate base class.</li>
+<li>Endangered, the second immediate base, which itself has no base class.</li>
+<li>Panda, the members of  Panda itself are initialized, and then the body of its constructor is run. </li>
+</ul>
+<p>Destructors are always invoked in the reverse order from which the constructors are run. In our example, the order in which the destructors are called is  ~Panda, ~Endangered, ~Bear, ~ZooAnimal.<br><figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">X</span> </span>&#123; ... &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123; ... &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> : <span class="typename">public A &#123; ... &#125;;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> : <span class="typename">private B &#123; ... &#125;;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> : <span class="typename">public X</span>, <span class="typename">public C &#123; ... &#125;;</span></span></span><br><span class="line"></span><br><span class="line">which, <span class="keyword">if</span> any, of the following conversions are not permitted?</span><br><span class="line">D *pd = new D;</span><br><span class="line">(a) X *px = pd; (c) B *pb = pd;</span><br><span class="line">(b) A *pa = pd; (d) C *pc = pd;</span><br></pre></td></tr></table></figure></p>
+<p>b和c是错误的，因为C对B是私有继承的，对于C的子类而言，它完全不知道有B的存在，所有无法转化为B和A。</p>
+<p>As is the case for single inheritance, if a class with multiple bases defines its own destructor, that destructor is responsible only for cleaning up the derived class. If the derived class defines its own copy constructor or assignment operator, then the class is responsible for copying (assigning) all the base class subparts. The base parts are automatically copied or assigned only if the derived class uses the synthesized versions of these members.</p>
+<p>As usual, name lookup for a name used in a member function starts in the function itself. If the name is not found locally, then lookup continues in the member’s class and then searches each base class in turn. Under multiple inheritance, the search simultaneously examines all the base-class inheritance subtreesin our example, both the  Endangered and the  Bear / ZooAnimal subtrees are examined in parallel. If the name is found in more than one subtree, then the use of that name must explicitly specify which base class to use. Otherwise, the use of the name is ambiguous.</p>
+<h2 id="2-_Multiple_Base_Classes_Can_Lead_to_Ambiguities">2. Multiple Base Classes Can Lead to Ambiguities</h2><p>Assume both  Bear and  Endangered define a member named  print . If  Panda does not define that member, then a statement such as the following <code>ying_yang.print(cout);</code>results in a compile-time error. Although the ambiguity of the two inherited  print members is reasonably obvious, it might be more surprising to learn that an error would be generated even if the two inherited functions had<br>different parameter lists. Similarly, it would be an error even if the  print function were private in one class and public or protected in the other. Finally, if  print were defined in ZooAnimal and not Bear, the call would still be in error. It’s because name lookup happens first. As always, name lookup happens in two steps: First the compiler finds a matching declaration (or, in this case, two matching declarations, which causes the ambiguity). Only then does the compiler decide whether the declaration it found is legal.</p>
+<p>We could resolve the  print ambiguity by specifying which class to use:<code>ying_yang.Endangered::print(cout);</code>. The best way to avoid potential ambiguities is to define a version of the function in the derived class that resolves the ambiguity. </p>
+<h2 id="3-_Virtual_Inheritance">3. Virtual Inheritance</h2><figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">istream</span> : <span class="typename">public virtual ios &#123; ... &#125;;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ostream</span> : <span class="typename">virtual public ios &#123; ... &#125;;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">iostream</span>: <span class="typename">public istream</span>, <span class="typename">public ostream &#123; ... &#125;;</span></span></span><br></pre></td></tr></table></figure>
+<p>Members in the shared virtual base can be accessed unambiguously and directly. Similarly, if a member from the virtual base is redefined along only one derivation path, then that redefined member can be accessed directly. Under a nonvirtual derivation, both kinds of access would be ambiguous. Assume a member named  X is inherited through more than one derivation path. There are three<br>possibilities:</p>
+<ul>
+<li>If in each path X represents the same virtual base class member, then there is no ambiguity because a single instance of the member is shared.</li>
+<li>If in one path X is a member of the virtual base class member and in another path X is a member of a subsequently derived class, there is also no ambiguitythe specialized derived class instance is given precedence over the shared virtual base class instance.</li>
+<li>If along each inheritance path  X represents a different member of a subsequently derived class, then the direct access of the member is ambiguous.</li>
+</ul>
+<h2 id="4-_Special_Initialization_Semantics">4. Special Initialization Semantics</h2><p>To solve the duplicate-initialization problem, classes that inherit from a class that has a virtual base have special handling for initialization. In a virtual derivation, the virtual base is initialized by the most derived constructor. Although the virtual base is initialized by the most derived class, any classes that inherit immediately or indirectly from the virtual base usually also have to provide their own initializers for that base. As long as we can create independent objects of a type derived from a virtual base, that class must initialize its virtual base. These initializers are used only when we create objects of the intermediate type.<br><figure class="highlight less"><table><tr><td class="code"><pre><span class="line"><span class="tag">Panda</span><span class="pseudo">::Panda</span>(<span class="attribute">std</span>::string name, bool onExhibit) : <span class="tag">ZooAnimal</span>(name, onExhibit, <span class="string">"Panda"</span>),</span><br><span class="line">                                    <span class="tag">Bear</span>(name, onExhibit),</span><br><span class="line">                                    <span class="tag">Raccoon</span>(name, onExhibit),</span><br><span class="line">                                    <span class="tag">Endangered</span>(<span class="attribute">Endangered</span>::critical),</span><br><span class="line">                                    <span class="tag">sleeping_flag</span>(false) &#123; &#125;</span><br></pre></td></tr></table></figure></p>
+<p>When a  Panda object is created:</p>
+<ul>
+<li>The ZooAnimal part is constructed first, using the initializers specified in the Panda constructor initializer list.</li>
+<li>Next, the Bear part is constructed. The initializers for ZooAnimal Bear’s constructor initializer list are ignored.</li>
+<li>Then the Raccoon part is constructed, again ignoring the ZooAnimal initializers. </li>
+<li>Finally, the Panda part is constructed.</li>
+</ul>
+<p>If the Panda constructor does not explicitly initialize the  ZooAnimal base class, then the  ZooAnimal default constructor is used. If ZooAnimal doesn’t have a default constructor, then the code is in error. </p>
+<h2 id="5-_Constructor_and_Destructor_Order">5. Constructor and Destructor Order</h2><p>Virtual base classes are always constructed prior to nonvirtual base classes regardless of where they appear in the inheritance hierarchy.<br><img src="/img/virtual_inheritance.PNG" alt=""><br>The immediate base classes are examined in declaration order to determine whether there are any virtual base classes. In our example, the inheritance subtree of BookCharacter is examined first, then that of  Bear , and finally that of ToyAnimal. Each subtree is examined starting at the root class down to the most derived class.</p>
+<p>The order in which the virtual base classes are constructed for TeddyBear is ZooAnimal followed by ToyAnimal. Once the virtual base classes are constructed, the nonvirtual base-class constructors are invoked in declaration order:  BookCharacter, which causes the Character constructor to be invoked, and then  Bear. Thus, to create a TeddyBear, the constructors are invoked in the following order:<br><figure class="highlight ruby"><table><tr><td class="code"><pre><span class="line"><span class="constant">ZooAnimal</span>(); <span class="regexp">//</span> <span class="constant">Bear</span><span class="string">'s virtual base class</span><br><span class="line">ToyAnimal(); // immediate virtual base class</span><br><span class="line">Character(); // BookCharacter'</span>s nonvirtual base <span class="class"><span class="keyword">class</span></span></span><br><span class="line"><span class="constant">BookCharacter</span>(); <span class="regexp">//</span> immediate nonvirtual base <span class="class"><span class="keyword">class</span></span></span><br><span class="line"><span class="constant">Bear</span>(); <span class="regexp">//</span> immediate nonvirtual base <span class="class"><span class="keyword">class</span></span></span><br><span class="line"><span class="constant">TeddyBear</span>(); <span class="regexp">//</span> most derived <span class="class"><span class="keyword">class</span></span></span><br></pre></td></tr></table></figure></p>
+<p>where the initializers used for ZooAnimal and ToyAnimal are specified by the most derived class TeddyBear. The same construction order is used in the synthesized copy constructor; the base classes also are assigned in this order in the synthesized assignment operator. The order of base-class destructor calls is guaranteed to be the reverse order of constructor invocation.</p>
+<h2 id="6-_example1">6. example1</h2><figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Class</span> </span>&#123; ... &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span> : <span class="typename">public Class &#123; ... &#125;;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived1</span> : <span class="typename">virtual public Base &#123; ... &#125;;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived2</span> : <span class="typename">virtual public Base &#123; ... &#125;;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MI</span> : <span class="typename">public Derived1</span>, <span class="typename">public Derived2 &#123; ... &#125;;</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Final</span> : <span class="typename">public MI</span>, <span class="typename">public Class &#123; ... &#125;;</span></span></span><br></pre></td></tr></table></figure>
+<p>What is the order of constructor and destructor for the definition of a Final object?<br><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="title">Class</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="title">Base</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="title">Derived1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="title">Derived2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="title">MI</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="title">Class</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="title">Final</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure></p>
+<p>将首先调用虚基类Base的构造函数(导致调用Class())。</p>
+<h2 id="7-_example2">7. example2</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> Base &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        Base(<span class="built_in">std</span>::<span class="built_in">string</span>);</span><br><span class="line">    <span class="keyword">protected</span>:</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">string</span> name;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 假设Base有上面的构造函数，则</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> Derived1 : <span class="keyword">virtual</span> <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        Derived1(<span class="built_in">std</span>::<span class="built_in">string</span> s) : Base(s) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> Derived2 : <span class="keyword">virtual</span> <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        Derived2(<span class="built_in">std</span>::<span class="built_in">string</span> s) : Base(s) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> MI : <span class="keyword">public</span> Derived1, <span class="keyword">public</span> Derived2</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        MI(<span class="built_in">std</span>::<span class="built_in">string</span> s) : Base(s), Derived1(s), Derived2(s) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> Final : <span class="keyword">public</span> MI, <span class="keyword">public</span> Class</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        Final(<span class="built_in">std</span>::<span class="built_in">string</span> s) : Base(s), MI(s) &#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>注意，任何直接或间接继承虚基类Base的类都要必须为Base类提供显示初始化式(例如MI、Final)，否则将无法创建相应类的对象。而且编译的时候还会有警告<code>warning: direct base ‘Class’ inaccessible in ‘Final’ due to ambiguity</code></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2016/03/19/c-primer笔记22-multiple-inheritance/" data-id="cinvexiwv001xtw3amzxyleaq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-基础/">c++基础</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/20/c-primer笔记23-Optimizing-Memory-Allocation/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer笔记23: Optimizing Memory Allocation
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/19/c-primer笔记21-namespace/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">c++ primer笔记21: namespace</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-基础/">c++基础</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/TCP/" style="font-size: 18px;">TCP</a> <a href="/tags/c/" style="font-size: 12px;">c++</a> <a href="/tags/c-基础/" style="font-size: 20px;">c++基础</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/linux点滴/" style="font-size: 14px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 16px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/gdb-1-启动和退出/">gdb(1):启动和退出</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/最让人头疼的歧义most-vexing-parse/">最让人头疼的歧义most vexing parse</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/不可复制noncopyable/">不可复制noncopyable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/线程同步之条件变量/">线程同步之条件变量</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/21/c-primer笔记27-Pointer-to-Class-Member/">c++ primer笔记27: Pointer to Class Member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

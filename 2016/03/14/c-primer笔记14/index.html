@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>c++ primer笔记14 | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. Specializing a Class TemplateOur Queue class has a problem similar to the one in compare when used with C-style strings. In this case, the problem is in the  push function. That function copies the">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++ primer笔记14">
+<meta property="og:url" content="https://zhouzijiang.github.io/2016/03/14/c-primer笔记14/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="1. Specializing a Class TemplateOur Queue class has a problem similar to the one in compare when used with C-style strings. In this case, the problem is in the  push function. That function copies the">
+<meta property="og:updated_time" content="2016-03-14T15:22:09.725Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++ primer笔记14">
+<meta name="twitter:description" content="1. Specializing a Class TemplateOur Queue class has a problem similar to the one in compare when used with C-style strings. In this case, the problem is in the  push function. That function copies the">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c-primer笔记14" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/14/c-primer笔记14/" class="article-date">
+  <time datetime="2016-03-14T14:42:25.000Z" itemprop="datePublished">2016-03-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++ primer笔记14
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-_Specializing_a_Class_Template">1. Specializing a Class Template</h2><p>Our Queue class has a problem similar to the one in compare when used with C-style strings. In this case, the problem is in the  push function. That function copies the value it’s given to create a new element in the Queue. By default, copying a C-style character string copies only the pointer, not the characters.<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;&gt; class <span class="type">Queue</span>&lt;<span class="keyword">const</span> <span class="type">char</span>*&gt; &#123;</span><br><span class="line">    public:</span><br><span class="line">        // no copy control: <span class="type">Synthesized</span> versions work <span class="keyword">for</span> this class</span><br><span class="line">        // similarly, no need <span class="keyword">for</span> explicit default constructor either</span><br><span class="line">        <span class="type">void</span> push(<span class="keyword">const</span> <span class="type">char</span>*);</span><br><span class="line">        <span class="type">void</span> pop() &#123;real_queue.pop();&#125;</span><br><span class="line">        <span class="type">bool</span> empty() <span class="keyword">const</span> &#123;<span class="keyword">return</span> real_queue.empty();&#125;</span><br><span class="line">        // <span class="type">Note</span>: <span class="keyword">return</span> <span class="keyword">type</span> does <span class="keyword">not</span> match <span class="keyword">template</span> parameter <span class="keyword">type</span></span><br><span class="line">        std::<span class="type">string</span> front() &#123;<span class="keyword">return</span> real_queue.front();&#125;</span><br><span class="line">        <span class="keyword">const</span> std::<span class="type">string</span> &amp;front() <span class="keyword">const</span></span><br><span class="line">        &#123;<span class="keyword">return</span> real_queue.front();&#125;</span><br><span class="line">    private:</span><br><span class="line">        <span class="type">Queue</span>&lt;std::<span class="type">string</span>&gt; real_queue; // forward calls to real_queue</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>It is worth noting that a specialization may define completely different members than the template itself. If a specialization fails to define a member from the template, that member may not be used on objects of the specilization type. The member definitions of the class template are not used to create the definitions for the members of an explicit specialization.</p>
+<p>A class template specialization ought to define the same interface as the template it specializes. Doing otherwise will surprise users when they attempt to use a member that is not defined.</p>
+<h2 id="2-_Class_Specialization_Definition">2. Class Specialization Definition</h2><p>When a member is defined outside the class specialization, it is not preceded by the tokens  template&lt;&gt;.<br><figure class="highlight aspectj"><table><tr><td class="code"><pre><span class="line"><span class="keyword">void</span> Queue&lt;<span class="keyword">const</span> <span class="keyword">char</span>*&gt;::push(<span class="keyword">const</span> <span class="keyword">char</span>* val)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">return</span> real_queue.<span class="title">push</span><span class="params">(val)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="3-_Specializing_Members_but_Not_the_Class">3. Specializing Members but Not the Class</h2><p>If we look a bit more deeply at our class, we can see that we can simplify our code: Rather than specializing the whole template, we can specialize just the  push and  pop members. We’ll specialize  push to copy the character array and  pop to free the memory we used for that copy:<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;&gt;</span><br><span class="line"><span class="keyword">void</span> Queue&lt;<span class="keyword">const</span> <span class="keyword">char</span>*&gt;::push(<span class="keyword">const</span> <span class="keyword">char</span> *<span class="keyword">const</span> &amp;val)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// allocate a new character array and copy characters from val</span></span><br><span class="line">    <span class="keyword">char</span>* new_item = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="built_in">strlen</span>(val) + <span class="number">1</span>];</span><br><span class="line">    <span class="built_in">strncpy</span>(new_item, val, <span class="built_in">strlen</span>(val) + <span class="number">1</span>);</span><br><span class="line">    <span class="comment">// store pointer to newly allocated and initialized element</span></span><br><span class="line">    QueueItem&lt;<span class="keyword">const</span> <span class="keyword">char</span>*&gt; *pt = <span class="keyword">new</span> QueueItem&lt;<span class="keyword">const</span> <span class="keyword">char</span>*&gt;(new_item);</span><br><span class="line">    <span class="comment">// put item onto existing queue</span></span><br><span class="line">    <span class="keyword">if</span> (empty())</span><br><span class="line">        head = tail = pt; <span class="comment">// queue has only one element</span></span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        tail-&gt;next = pt; <span class="comment">// add new element to end of queue</span></span><br><span class="line">        tail = pt;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;&gt;</span><br><span class="line"><span class="keyword">void</span> Queue&lt;<span class="keyword">const</span> <span class="keyword">char</span>*&gt;::pop()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// remember head so we can delete it</span></span><br><span class="line">    QueueItem&lt;<span class="keyword">const</span> <span class="keyword">char</span>*&gt; *p = head;</span><br><span class="line">    <span class="keyword">delete</span> head-&gt;item; <span class="comment">// delete the array allocated in push</span></span><br><span class="line">    head = head-&gt;next; <span class="comment">// head now points to next element</span></span><br><span class="line">    <span class="keyword">delete</span> p; <span class="comment">// delete old head element</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="4-_Specialization_Declarations">4. Specialization Declarations</h2><p>Member specializations are declared just as any other function template specialization. They must start with an empty template parameter list:<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line">// push <span class="keyword">and</span> pop specialized <span class="keyword">for</span> <span class="keyword">const</span> <span class="type">char</span>*</span><br><span class="line"><span class="keyword">template</span> &lt;&gt;</span><br><span class="line"><span class="type">void</span> <span class="type">Queue</span>&lt;<span class="keyword">const</span> <span class="type">char</span>*&gt;::push(<span class="keyword">const</span> <span class="type">char</span>* <span class="keyword">const</span> &amp;);</span><br><span class="line"><span class="keyword">template</span> &lt;&gt; <span class="type">void</span> <span class="type">Queue</span>&lt;<span class="keyword">const</span> <span class="type">char</span>*&gt;::pop();</span><br></pre></td></tr></table></figure></p>
+<h2 id="5-_***_Class-Template_Partial_Specializations_***">5. *** Class-Template Partial Specializations ***</h2><p>If a class template has more than one template parameter, we might want to specialize some but not all of the template parameters. We can do so using a class template partial specialization:<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;class <span class="type">T1</span>, class <span class="type">T2</span>&gt;</span><br><span class="line">class some_template</span><br><span class="line">&#123;</span><br><span class="line">    public:</span><br><span class="line">        <span class="type">void</span> print()</span><br><span class="line">        &#123;</span><br><span class="line">            cout &lt;&lt; <span class="string">"hello"</span> &lt;&lt; endl;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// partial specialization: fixes <span class="type">T2</span> <span class="keyword">as</span> <span class="type">int</span> <span class="keyword">and</span> allows <span class="type">T1</span> to vary</span><br><span class="line"><span class="keyword">template</span> &lt;class <span class="type">T1</span>&gt;</span><br><span class="line">class some_template&lt;<span class="type">T1</span>, <span class="type">int</span>&gt;</span><br><span class="line">&#123;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>As with any other class template, a partial specialization is instantiated implicitly when used in a program:<br><figure class="highlight nimrod"><table><tr><td class="code"><pre><span class="line">some_template&lt;<span class="type">int</span>, <span class="type">string</span>&gt; foo; // uses <span class="keyword">template</span></span><br><span class="line">some_template&lt;<span class="type">string</span>, <span class="type">int</span>&gt; bar; // uses partial specialization</span><br></pre></td></tr></table></figure></p>
+<p>The definition of a partial specialization is completely disjointed from the definition of the generic template. The partial specialization may have a completely different set of members from the generic class template. The generic definitions for the members of a class template are never used to instantiate the members of the class template partial specialization.<br><figure class="highlight fortran"><table><tr><td class="code"><pre><span class="line">Demo&lt;<span class="type">double</span>, <span class="built_in">int</span>&gt; d;</span><br><span class="line">d.<span class="built_in">print</span>();</span><br><span class="line"></span><br><span class="line">// error: ‘<span class="keyword">class</span> Demo&lt;<span class="type">double</span>, <span class="built_in">int</span>&gt;’ has no member <span class="keyword">named</span> ‘<span class="built_in">print</span>’</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2016/03/14/c-primer笔记14/" data-id="cinvexixx002ftw3acfxynp3t" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-基础/">c++基础</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/15/c-primer笔记15/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer笔记15
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/14/c-primer笔记13/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">c++ primer笔记13</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-基础/">c++基础</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/TCP/" style="font-size: 18px;">TCP</a> <a href="/tags/c/" style="font-size: 12px;">c++</a> <a href="/tags/c-基础/" style="font-size: 20px;">c++基础</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/linux点滴/" style="font-size: 14px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 16px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/gdb-1-启动和退出/">gdb(1):启动和退出</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/最让人头疼的歧义most-vexing-parse/">最让人头疼的歧义most vexing parse</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/不可复制noncopyable/">不可复制noncopyable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/线程同步之条件变量/">线程同步之条件变量</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/21/c-primer笔记27-Pointer-to-Class-Member/">c++ primer笔记27: Pointer to Class Member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

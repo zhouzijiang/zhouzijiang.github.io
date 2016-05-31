@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>c++ primer笔记18: exception | 周子江</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1. Standard  exception Class Hierarchy
+2. User-Defined Exception Typesclass out_of_stock: public std::runtime_error &amp;#123;    public:    explicit out_of_stock(const std::string &amp;amp;s):std::runtime_er">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++ primer笔记18: exception">
+<meta property="og:url" content="https://zhouzijiang.github.io/2016/03/18/c-primer笔记18-exception/index.html">
+<meta property="og:site_name" content="周子江">
+<meta property="og:description" content="1. Standard  exception Class Hierarchy
+2. User-Defined Exception Typesclass out_of_stock: public std::runtime_error &amp;#123;    public:    explicit out_of_stock(const std::string &amp;amp;s):std::runtime_er">
+<meta property="og:image" content="https://zhouzijiang.github.io/img/exception.PNG">
+<meta property="og:updated_time" content="2016-03-18T14:37:36.519Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++ primer笔记18: exception">
+<meta name="twitter:description" content="1. Standard  exception Class Hierarchy
+2. User-Defined Exception Typesclass out_of_stock: public std::runtime_error &amp;#123;    public:    explicit out_of_stock(const std::string &amp;amp;s):std::runtime_er">
+  
+    <link rel="alternative" href="/atom.xml" title="周子江" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">周子江</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhouzijiang.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c-primer笔记18-exception" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/18/c-primer笔记18-exception/" class="article-date">
+  <time datetime="2016-03-18T10:57:33.000Z" itemprop="datePublished">2016-03-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++ primer笔记18: exception
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-_Standard_exception_Class_Hierarchy">1. Standard  exception Class Hierarchy</h2><p><img src="/img/exception.PNG" alt=""></p>
+<h2 id="2-_User-Defined_Exception_Types">2. User-Defined Exception Types</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> out_of_stock: <span class="keyword">public</span> <span class="built_in">std</span>::runtime_error &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">explicit</span> <span class="title">out_of_stock</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;s)</span>:<span class="built_in">std</span>::<span class="title">runtime_error</span><span class="params">(s)</span> </span><br><span class="line">    </span>&#123; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> isbn_mismatch: <span class="keyword">public</span> <span class="built_in">std</span>::logic_error &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="function"><span class="keyword">explicit</span> <span class="title">isbn_mismatch</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;s)</span>: <span class="built_in">std</span>::<span class="title">logic_error</span><span class="params">(s)</span> </span><br><span class="line">        </span>&#123; &#125;</span><br><span class="line">        isbn_mismatch(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;s, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;lhs, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;rhs):</span><br><span class="line">                                        <span class="built_in">std</span>::logic_error(s), left(lhs), right(rhs) &#123; &#125;</span><br><span class="line">        <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> left, right;</span><br><span class="line">        <span class="keyword">virtual</span> ~isbn_mismatch() <span class="keyword">throw</span>() &#123; &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="3-_Automatic_Resource_Deallocation">3. Automatic Resource Deallocation</h2><p>We know that local objects are automatically destroyed when an exception occurs. The fact that destructors are run has important implication for the design of applications.<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">()</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="built_in">vector</span>&lt;<span class="built_in">string</span>&gt; v; <span class="comment">// local vector</span></span><br><span class="line">    <span class="built_in">string</span> s;</span><br><span class="line">    <span class="keyword">while</span> (<span class="built_in">cin</span> &gt;&gt; s)</span><br><span class="line">        v.push_back(s); <span class="comment">// populate the vector</span></span><br><span class="line">        <span class="built_in">string</span> *p = <span class="keyword">new</span> <span class="built_in">string</span>[v.size()]; <span class="comment">// dynamic array</span></span><br><span class="line">        <span class="comment">// remaining processing</span></span><br><span class="line">        <span class="comment">// it is possible that an exception occurs in this code</span></span><br><span class="line">        <span class="comment">// function cleanup is bypassed if an exception occurs</span></span><br><span class="line">        <span class="keyword">delete</span> [] p;</span><br><span class="line">    &#125; <span class="comment">// v destroyed automatically when the function exits</span></span><br></pre></td></tr></table></figure></p>
+<p>If an exception occurs inside the function, then the vector will be destroyed but the array will not be freed. The problem is that the array is not freed automatically. No matter when an exception occurs, we are guaranteed that the  vector destructor is run.</p>
+<h2 id="4-_Using_Classes_to_Manage_Resource_Allocation">4. Using Classes to Manage Resource Allocation</h2><p>The fact that destructors are run leads to an important programming technique that makes programs more exception safe . By exception safe, we mean that the programs operate correctly even if an exception occurs. In this case, the “safety” comes from ensuring that any resouce that is allocated is properly freed if an exception occurs. We can guarantee that resources are properly freed by defining a class to encapsulate the acquisition and release of a resource.</p>
+<h2 id="5-_The_auto_ptr_Class">5. The auto_ptr Class</h2><p>The standard-library auto_ptr class is an example of the exception-safe “resource allocation is initialization” technique. The aut_ptr class is a template that takes a single type parameter. It provides exception safety for dynamically allocated<br>objects. The auto_ptr class is defined in the  memory header. auto_ptr can be used only to manage single objects returned from<br>new. It does not manage dynamically allocated arrays. As we’ll see, auto_ptr has unusual behavior when copied or assigned. As a result, auto_ptrs may not be stored in the library container types.<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">()</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *ip = <span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">42</span>); <span class="comment">// dynamically allocate a new object</span></span><br><span class="line">    <span class="comment">// code that throws an exception that is not caught inside f</span></span><br><span class="line">    <span class="keyword">delete</span> ip; <span class="comment">// return the memory before exiting</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">()</span></span><br><span class="line"></span>&#123;</span><br><span class="line"><span class="built_in">auto_ptr</span>&lt;<span class="keyword">int</span>&gt; ap(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">42</span>)); <span class="comment">// allocate a new object</span></span><br><span class="line"><span class="comment">// code that throws an exception that is not caught inside f</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// auto_ptr freed automatically when function ends</span></span><br></pre></td></tr></table></figure></p>
+<table>
+<thead>
+<tr>
+<th>Class auto_ptr</th>
+<th>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auto_ptr&lt;T&gt;     ap</code></td>
+<td>Create an unbound  auto_ptr named ap.</td>
+</tr>
+<tr>
+<td><code>auto_ptr&lt;T&gt; ap(p)</code></td>
+<td>Create an  auto_ptr named ap that owns the object pointed to by the pointer  p. This constructor is explicit.</td>
+</tr>
+<tr>
+<td><code>auto_ptr&lt;T&gt; ap1(ap2)</code></td>
+<td>Create an  auto_ptr named ap1 that holds the pointer originally stored in ap2. Transfers ownership to ap1;  ap2 becomes an unbound auto_ptr.</td>
+</tr>
+<tr>
+<td>ap1 = ap2</td>
+<td>Transfers ownership from ap2 to ap1. Deletes the object to which ap1 points and makes ap1 point to the object to which  ap2 points, making ap2 unbound.</td>
+</tr>
+<tr>
+<td>~ap</td>
+<td>Destructor. Deletes the object to which ap points.</td>
+</tr>
+<tr>
+<td>*ap</td>
+<td>Returns a reference to the object to which ap is bound.</td>
+</tr>
+<tr>
+<td>ap-&gt;</td>
+<td>Returns the pointer that ap holds.</td>
+</tr>
+<tr>
+<td>ap.reset(p)</td>
+<td>If the pointer p is not the same value as ap holds, then it deletes the object to which ap points and binds ap to p.</td>
+</tr>
+<tr>
+<td>ap.release()</td>
+<td>Returns the pointer that ap had held and makes ap unbound.</td>
+</tr>
+<tr>
+<td>ap.get()</td>
+<td>Returns the pointer that ap holds.</td>
+</tr>
+</tbody>
+</table>
+<p>To determine whether the auto_ptr object refers to an object, we can compare the return from <code>get</code> with 0. get should be used only to interrogate an auto_ptr or to use the returned pointer value.  get should not be used as an argument to create another auto_ptr. Using get member to initialize another auto_ptr violates the class design principle that only one auto_ptr holds a given pointer at any one time. If two auto_ptrs hold the same pointer, then the pointer will be  deleted twice.</p>
+<h2 id="6-_Copy_and_Assignment_on_auto_ptr_Are_Destructive_Operations">6. Copy and Assignment on auto_ptr Are Destructive Operations</h2><p>When we copy an auto_ptr or assign its value to another auto_ptr, ownership of the underlying object is transferred from the original to the copy. The original auto_ptr is reset to an unbound state. Unlike other copy or assignment operations,  auto_ptr copy and assignment change the right-hand operand. As a result, both the left- and right-hand operands to assignment must be<br>modifiable lvalues. Because copy and assignment are destructive operations, auto_ptrs cannot be stored in the standard containers. The library container classes require that two objects be equal after a copy or assignment. This requirement is not met by auto_ptr. If we assign ap2 to ap1, then after the assignment  ap1 != ap2.</p>
+<h2 id="7-_Caution:_Auto_ptr_Pitfalls">7. Caution:  Auto_ptr Pitfalls</h2><p>The auto_ptr class template provides a measure of safety and convenience for handling dynamically allocated memory. To use auto_ptr correctly, we must adhere to the restrictions that the class imposes:</p>
+<ul>
+<li>Do not use an auto_ptr to hold a pointer to a statically allocated object. Otherwise, when the auto_ptr itself is destroyed, it will attempt to delete a pointer to a nondynamically allocated object, resulting in undefined behavior.</li>
+<li>Never use two auto_ptrs to refer to the same object. One obvious way to make this mistake is to use the same pointer to initialize or to reset two different auto_ptr objects. A more subtle way to make this mistake would be to use the result from  get on one auto_ptr to initialize or reset another.</li>
+<li>Do not use an auto_ptr to hold a pointer to a dynamically allocated array. When the auto_ptr is destroyed, it frees only a single objectit uses the plain delete operator, not the array delete [] operator.</li>
+<li>Do not store an auto_ptr in a container. Containers require that the types they hold define copy and assignment to behave similarly to how those operations behave on the built-in types: After the copy (or assignment), the two objects must have the same value. auto_ptr does not meet this requirement.</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhouzijiang.github.io/2016/03/18/c-primer笔记18-exception/" data-id="cinvexixb0027tw3a5fuup3ps" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-基础/">c++基础</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/18/c-primer笔记19-exception/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer笔记19: exception
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/18/c-primer笔记17-exception/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">c++ primer笔记17: exception</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-基础/">c++基础</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux点滴/">linux点滴</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/svn/">svn</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/TCP/" style="font-size: 18px;">TCP</a> <a href="/tags/c/" style="font-size: 12px;">c++</a> <a href="/tags/c-基础/" style="font-size: 20px;">c++基础</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/linux点滴/" style="font-size: 14px;">linux点滴</a> <a href="/tags/svn/" style="font-size: 16px;">svn</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/gdb-1-启动和退出/">gdb(1):启动和退出</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/最让人头疼的歧义most-vexing-parse/">最让人头疼的歧义most vexing parse</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/不可复制noncopyable/">不可复制noncopyable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/线程同步之条件变量/">线程同步之条件变量</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/21/c-primer笔记27-Pointer-to-Class-Member/">c++ primer笔记27: Pointer to Class Member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 zhouzijiang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
